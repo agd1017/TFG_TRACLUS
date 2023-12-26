@@ -2,3 +2,4 @@ train_data
 train.csv
 # auxilary_data
 *.png
+*.html
