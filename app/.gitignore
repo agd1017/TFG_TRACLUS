@@ -5,3 +5,9 @@ train.csv
 *.html
 *.jpg
 Prueba_algoritmos.ipynb
+Prueba_rendimiento.ipynb
+# Estrustura final
+style.css
+Web_page.py
+Funtions.py
+*.pyc
