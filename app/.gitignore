@@ -6,8 +6,8 @@ train.csv
 *.jpg
 Prueba_algoritmos.ipynb
 Prueba_rendimiento.ipynb
+Prueba_distancias.ipynb
+TRACLUS_2.py
+__init__.py
 # Estrustura final
-style.css
-Web_page.py
-Funtions.py
 *.pyc
