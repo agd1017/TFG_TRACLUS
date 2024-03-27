@@ -1,0 +1,126 @@
+/* style.css */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(248, 238, 224);
+    text-align: center;
+}
+
+.navbar {
+    background-color: #007bff !important;
+}
+
+.navbar-brand {
+    /*font-weight: bold;*/
+    color: #fff !important;
+    font-size: 300%;
+}
+
+.dropdown-menu {
+    background-color: #007bff;
+}
+
+.dropdown-item {
+    color: #fff !important;
+}
+
+.dropdown-item:hover {
+    background-color: #0056b3 !important;
+}
+
+/* Clases especificas */
+
+/* Main container */
+
+.grid-main-container{
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-areas: 'header-navbar' 
+                            'main-contaner';
+    grid-template-rows: auto 90%;
+}
+
+.header-navbar{
+    grid-area: header-navbar;
+}
+
+.navbar-text{
+    width: 100%;
+    align-content: center;
+}
+
+.main-container{
+    grid-area: main-contaner;
+}
+
+/* Home page */
+
+.grid-home-container{
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-areas: 'menusel map'
+                            'menusel map';
+    grid-template-rows: auto auto;
+    grid-template-columns: 15% auto;
+}
+
+.menusel{
+    grid-area: menusel;
+    margin: 10px;
+}
+
+.maps{
+    grid-area: map;
+}
+
+
+
+/* Compratator page */
+
+.grid-compratator-container{
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-areas: 'header header' 
+                            'menu1 menu2' 
+                            'map1 map2';
+    grid-template-rows: 7% 6% auto;
+    grid-template-columns: 50% 50%;
+}
+
+.box{
+    text-align: center;
+    background-color: rgb(248, 238, 224);
+    /* background-color: #882323;
+    border: 4px solid #000;
+    background-color: rgb(30, 148, 163); */
+}
+
+.title{
+    grid-area: header;
+    /* color: white;
+    background-color: #82b8f3;
+    border: 1px solid #000; */
+}
+
+.menu1{
+    grid-area: menu1;
+}
+.menu2{
+    grid-area: menu2;
+}
+
+.map1{
+    grid-area: map1;
+}
+
+.map2{
+    grid-area: map2;
+}
+
+.container{
+    display: 'block';
+    margin-left: 'auto';
+    margin-right: 'auto';
+}
