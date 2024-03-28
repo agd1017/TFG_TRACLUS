@@ -89,34 +89,31 @@ def get_map_image_as_html(html_map, html_heatmap):
         ], style={'display': 'flex', 'justifyContent': 'center', 'flexWrap': 'wrap'})
 
 def get_home_page():
+    items1 = [
+        dbc.DropdownMenuItem("Item 1", id="option-1-1"), 
+        dbc.DropdownMenuItem("Item 2", id="option-1-2"),
+        dbc.DropdownMenuItem("Item 3", id="option-1-3")
+    ]
+
+    items2 = [
+        dbc.DropdownMenuItem("Item 1", id="option-2-1"), 
+        dbc.DropdownMenuItem("Item 2", id="option-2-2"),
+        dbc.DropdownMenuItem("Item 3", id="option-2-3")
+    ]
+
     return html.Div([
         html.Div([
-            html.H4("Ajustes", className="mt-3"),
-            html.Hr(),
-            dbc.Label("Choose latitude and longitude"),
-            dbc.RadioItems(
-                options=[
-                    {"label": "Option 1", "value": 1},
-                    {"label": "Option 2", "value": 2},
-                    {"label": "Option 3", "value": 3},
-                ],
-                value=1,
-                id="lat-long-radio-items",
-            ),
-            html.Hr(),
-            dbc.Label("Choose zoom and position of the map"),
-            dbc.RadioItems(
-                options=[
-                    {"label": "Option 1", "value": 1},
-                    {"label": "Option 2", "value": 2},
-                    {"label": "Option 3", "value": 3},
-                ],
-                value=1,
-                id="zoom-position-radio-items",
-            ),
-        ], className="box menusel"),
+            dbc.DropdownMenu(
+                items1, label="Cordenadas", color="primary"
+            )
+        ], className="box menu3"),
         html.Div([
-            dcc.Loading(children=[html.Div(id='map-container')], type="circle")  
+            dbc.DropdownMenu(
+                items2, label="Zoom", color="primary"
+            )
+        ], className="box menu4"),
+        html.Div([
+            dbc.Spinner(children=[html.Div(id='map-container')])
         ], className="box maps")
     ], className="grid-home-container")
 
@@ -152,50 +149,37 @@ def get_comparation_page():
 
     return html.Div([
         html.Div([
-            html.H1("Comparación de clusters")
-        ], className="box title"),
-        html.Div([
             dbc.DropdownMenu(
-                items1, label="Algoritmo", color="primary",
+                items1, label="Algoritmo", color="primary"
             )
         ], className="box menu1"),
         html.Div([
             dbc.DropdownMenu(
-                items2, label="Algoritmo", color="primary",
+                items2, label="Algoritmo", color="primary"
             )
         ], className="box menu2"),
         html.Div([
-            dcc.Loading(children=[html.Div(id="map-clusters-1")], type="circle")  
+            dbc.Spinner(children=[html.Div(id='map-clusters-1')])  
         ], className="box map1"),  
         html.Div([
-            dcc.Loading(children=[html.Div(id="map-clusters-2")], type="circle")  
+            dbc.Spinner(children=[html.Div(id='map-clusters-2')])  
         ], className="box map2")      
     ], className="grid-compratator-container")
 
 # Creación de la aplicación Dash
-app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.LUMEN])
+app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
 
 # Definición del layout principal de la aplicación utilizando componentes de Dash
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dbc.Navbar(
         dbc.Container(children=[
-            html.Div([
-                dbc.NavbarBrand("TRACLUS"),
-            ], className="navbar-text"),
-            html.Div([
-                dbc.DropdownMenu(
-                    label="Menú",
-                    children=[
-                        dbc.DropdownMenuItem("Carga de datos", href="/"),
-                        dbc.DropdownMenuItem("Inicio", href="/home"),
-                        dbc.DropdownMenuItem("Comparación", href="/comparacion"),
-                        dbc.DropdownMenuItem("Estadísticas", href="/estadisticas"),
-                    ]
-                ),
-            ]),   
+            dbc.NavItem(dbc.NavLink("TRACLUS", href="/", className="navbar-text-title")),
+            dbc.NavItem(dbc.NavLink("Mapa de trayectorias", href="/home", className="navbar-text")),
+            dbc.NavItem(dbc.NavLink("Comparacion de algoritmos", href="/comparacion", className="navbar-text")),
+            dbc.NavItem(dbc.NavLink("Estadísticas", href="/estadisticas", className="navbar-text"))  
         ]),
-        color="primary",
+        color="success",
         className="header-navbar"
     ),
     html.Div(id='page-content', className="page-content")  
@@ -255,8 +239,41 @@ def display_clusters_2(*args):
             return get_clusters_map()
         elif button_id == 'item-2-3':
             return get_clusters_map()
-    
+
 @app.callback(
+    Output('map-container', 'children'),
+    [Input('option-1-1', 'n_clicks'),
+    Input('option-1-2', 'n_clicks'),
+    Input('option-1-3', 'n_clicks')]
+)
+
+def update_map(*args):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        map = html_map
+        heatmap = html_heatmap # "Seleccione un elemento para el mapa 2."
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        if button_id == 'option-1-1':
+            map = html_map
+            heatmap = html_heatmap
+        elif button_id == 'option-1-2':
+            minx, miny, maxx, maxy = -8.689, 41.107, -8.560, 41.185
+            # Define aquí cómo generas el mapa para la Opción 2
+            map = map_ilustration(gdf, minx, miny, maxx, maxy)
+            heatmap = map_heat(gdf, minx, miny, maxx, maxy)  
+        elif button_id == 'option-1-3':
+            minx, miny, maxx, maxy = solicitar_coordenadas(gdf)
+            # Define aquí cómo generas el mapa para la Opción 3
+            map = map_ilustration(gdf, minx, miny, maxx, maxy)
+            heatmap = map_heat(gdf, minx, miny, maxx, maxy) 
+        
+    map_image = get_map_image_as_html(map, heatmap)  
+        
+    return [map_image]
+    
+""" @app.callback(
     Output('map-container', 'children'),
     [Input('lat-long-radio-items', 'value')]  # Escucha los cambios de latitud y longitud
     #Input('zoom-position-radio-items', 'value')]  # Escucha los cambios de zoom y posición
@@ -284,7 +301,7 @@ def update_map(lat_long_value):
 
     map_image = get_map_image_as_html(map, heatmap)
 
-    return [map_image]
+    return [map_image] """
 
 @app.callback(
     [Output('upload-data', 'children'),

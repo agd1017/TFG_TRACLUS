@@ -70,7 +70,7 @@ def map_ilustration(gdf, minx, miny, maxx, maxy):
     
     # Crear una figura con Matplotlib
     fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
-    gdf.plot(ax=ax, linewidth=0.5, color='blue')
+    gdf.plot(ax=ax, linewidth=0.5, color='green')
 
     # Añadir un mapa base con Contextily
     ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron)
