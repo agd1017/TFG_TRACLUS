@@ -164,3 +164,13 @@ def solicitar_coordenadas(gdf):
     maxx, maxy, minx, miny = max(x_coords_flat), max(y_coords_flat), min(x_coords_flat), min(y_coords_flat)
 
     return minx, miny, maxx, maxy 
+
+def create_dataframe():
+
+    # Esta función podría ser más compleja y cargar o generar los datos
+    return pd.DataFrame({
+        'Columna 1': [1, 2, 3, 4],
+        'Columna 2': ['A', 'B', 'C', 'D'],
+        'Columna 3': [5, 6, 7, 8],
+        'Columna 4': ['E', 'F', 'G', 'H']
+    })

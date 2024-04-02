@@ -38,6 +38,87 @@ body {
 
 /* Clases especificas */
 
+/* Zero container */
+
+.grid-zero-container{
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-areas: 'title' 
+                            'grid-data-container'
+                            'output';
+    grid-template-rows: auto 90% auto;
+}
+
+.title{
+    grid-area: title;
+    margin-top: 3%;
+}
+
+.output{
+    grid-area: output;
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+}
+
+.grid-data-container{
+    grid-area: grid-data-container;
+    height: 100%;
+    width: 50%;
+    margin-left: 25%;
+    margin-top: 6%;
+    border: 1px solid black;
+    display: grid;
+    grid-template-areas: 'file file' 
+                            'number number'
+                            'button1 button2';
+    grid-template-rows: auto auto auto;
+    grid-template-columns: 50% 50%;
+}
+
+.inputfile{
+    grid-area: file;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.file-upload{
+    width: 50%;
+    border: 1px dashed #000;
+    border-Radius: 5px; 
+    text-Align: center;
+    padding: 12px 20px;
+    margin: 0 auto;
+    display: block;
+}
+
+.inputnumber{
+    grid-area: number;
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0 auto;
+    display: block;
+}
+
+.number-input{
+    width: 50%;
+}
+
+.buttonsconfirm{
+    grid-area: button1;
+    margin-top: 3%;
+    margin-bottom: 3%;
+}
+
+.buttonsdefault{
+    grid-area: button2;
+    margin-top: 3%;
+    margin-bottom: 3%;
+}
+
+
+
 /* Main container */
 
 .grid-main-container{

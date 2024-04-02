@@ -1,7 +1,11 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, html, dcc
-from Funtions import map_ilustration, map_heat, solicitar_coordenadas, load_and_simplify_data
+from dash import Input, Output, html, dcc, State
+import base64
+import io
+import pandas as pd
+import dash_table
+from Funtions import map_ilustration, map_heat, solicitar_coordenadas, load_and_simplify_data, create_dataframe
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -18,46 +22,45 @@ html_map, html_heatmap = provisional()
 
 def get_page_zero():
     return html.Div([
-        dbc.Container([
-            html.H1("Introducción de datos previos", className="text-center mb-4"),  # Añadido margen inferior (mb-4)
-            dbc.Row(
-                dbc.Col([
-                    html.H2("Archivo que se va a analizar:", className="text-center"),
-                    dcc.Upload(
-                        id='upload-data',
-                        children=html.Div(['Arrastra o selecciona un archivo'], className="text-center"),
-                        style={
-                            'width': '100%', 'height': '60px', 'lineHeight': '60px',
-                            'borderWidth': '1px', 'borderStyle': 'dashed', 'borderRadius': '5px',
-                            'textAlign': 'center', 'margin': '10px auto', 'display': 'block'
-                        },
-                        className='mb-3',  # Añadido margen inferior
-                    ),
-                ], width=12)
-            ),
-            dbc.Row(
-                dbc.Col([
-                        html.H2("Número de trayectorias que se van a usar:", className="text-center"),
-                        dcc.Input(
-                            id='nrows-input', 
-                            type='number', 
-                            placeholder='Número de filas', 
-                            value='',
-                            className='form-control',  # Estilo de Bootstrap para inputs
-                            style={'margin': '0 auto', 'width': '50%'},  # Centrar y ajustar ancho del input
-                        )
-                ], width=12, className="mb-3")  # Añadido margen inferior        
-            ),
-            dbc.Row(
-                dbc.Col([
-                        dbc.Button('Confirmar', id='confirm-button', n_clicks=0, className='me-2'),  # Botón con margen
-                        dbc.Button('Configuración predeterminada', id='default-config-button', n_clicks=0),
-                        html.Div(id='output-container', className='mt-3')  # Margen superior para el contenedor
-                ], width=12, className='text-center')
-            ),
-            dbc.Spinner(html.Div(id='loading-output-container'))
-        ], fluid=True)      
-    ])
+        html.Div([
+            html.H1("Introducción de datos previos"),
+        ], className='box title'),
+        html.Div([
+            html.Div([
+                html.H2("Archivo que se va a analizar:"),
+                dcc.Upload(
+                    id='upload-data',
+                    children=html.Div(['Arrastra o selecciona un archivo']),
+                    className='file-upload',
+                    accept='.csv'
+                ),
+            ], className='box inputfile'),
+            html.Div([
+                html.H2("Número de trayectorias que se van a usar:"),
+                dcc.Input(
+                    id='nrows-input', 
+                    type='number', 
+                    placeholder='Número de filas', 
+                    value='',
+                    className='number-input'
+                )
+            ], className='box inputnumber'),
+            html.Div([
+                dbc.Button('Configuración selecionada', id='confirm-button', n_clicks=0)
+            ], className='box buttonsconfirm'),
+            html.Div([
+                dbc.Button('Configuración predeterminada', id='default-config-button', n_clicks=0)   
+            ], className='box buttonsdefault'),
+        ], className='grid-data-container'),
+        html.Div([
+            dbc.Spinner(children=[
+                html.Div(id='output-container', className='box output')
+            ]),
+            dbc.Spinner(children=[
+                html.Div(id='predeterminate-data', className='box output')
+            ])
+        ], className='box output')
+    ], className='gid-zero-container')
 
 # Pagina home
 def get_map_image_as_html(html_map, html_heatmap):
@@ -166,6 +169,31 @@ def get_comparation_page():
         ], className="box map2")      
     ], className="grid-compratator-container")
 
+def get_estadistic_page():
+
+    return html.Div([
+        dbc.Container([
+            html.H1("Tabla Interactiva en Dash", className="text-center my-3"),
+            dbc.Button("Actualizar Datos", id="refresh-button", className="mb-3"),
+            dcc.Store(id='stored-data'),  # Almacenamiento en el lado del cliente
+            dbc.Row(
+                dbc.Col(
+                    dash_table.DataTable(
+                        id='table',
+                        columns=[{"name": i, "id": i} for i in create_dataframe().columns],
+                        filter_action='native',
+                        sort_action='native',
+                        page_action='native',
+                        page_size=10,
+                        style_table={'overflowX': 'auto'},
+                    ), width=12
+                )
+            )
+        ], fluid=True)  
+    ])
+        
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
 # Creación de la aplicación Dash
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
 
@@ -195,7 +223,7 @@ def display_page(pathname):
     elif pathname == '/comparacion':
         return get_comparation_page()
     elif pathname == '/estadisticas':
-        return html.Div("Página de Estadísticas")  
+        return get_estadistic_page() 
     else:
         return get_page_zero()
     
@@ -272,62 +300,128 @@ def update_map(*args):
     map_image = get_map_image_as_html(map, heatmap)  
         
     return [map_image]
-    
+
 """ @app.callback(
-    Output('map-container', 'children'),
-    [Input('lat-long-radio-items', 'value')]  # Escucha los cambios de latitud y longitud
-    #Input('zoom-position-radio-items', 'value')]  # Escucha los cambios de zoom y posición
+    [Output('output-container', 'children')],
+    [Input('confirm-button', 'n_clicks'), 
+    Input('default-config-button', 'n_clicks1')],
+    [State('nrows-input', 'value'),
+    State('upload-data', 'contents')],
+    prevent_initial_call=True
 )
 
-def update_map(lat_long_value):
-    # Aquí deberías decidir qué mapa mostrar basado en los valores seleccionados
-    # Este es un pseudocódigo, necesitarás ajustar la lógica según tus datos y necesidades específicas
-    if lat_long_value == 3:
-        minx, miny, maxx, maxy = solicitar_coordenadas(gdf)
-        # Define aquí cómo generas el mapa para la Opción 3
-        map = map_ilustration(gdf, minx, miny, maxx, maxy)
-        heatmap = map_heat(gdf, minx, miny, maxx, maxy)  
-        
-    elif lat_long_value == 2:
-        minx, miny, maxx, maxy = -8.689, 41.107, -8.560, 41.185
-        # Define aquí cómo generas el mapa para la Opción 2
-        map = map_ilustration(gdf, minx, miny, maxx, maxy)
-        heatmap = map_heat(gdf, minx, miny, maxx, maxy)  
+def update_output(n_clicks, n_clicks1, nrows, contents):
+    ctx = dash.callback_context
 
+    if not ctx.triggered:
+        return "No se ha seleccionado ninguna configuración.", "No se ha seleccionado ninguna configuración."
     else:
-        # Define aquí cómo generas el mapa para la Opción 1
-        map = html_map
-        heatmap = html_heatmap
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    map_image = get_map_image_as_html(map, heatmap)
-
-    return [map_image] """
+    if button_id == 'confirm-button':
+        if contents is not None:
+            content_type, content_string = contents.split(',')
+            decoded = base64.b64decode(content_string)
+            try:
+                if 'csv' in content_type:
+                    # Asume que el usuario sube un CSV
+                    df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+                    return html.Div([
+                        html.P(f"Número de trayectorias: {nrows}"),
+                        html.P(f"Primeras filas del archivo CSV:"),
+                        dcc.Graph(
+                            figure={
+                                'data': [{'x': df.index, 'y': df[col], 'type': 'line', 'name': col} for col in df.columns],
+                                'layout': {'title': 'Datos del CSV'}
+                            }
+                        )
+                    ])
+                else:
+                    return 'El archivo no es un CSV.'
+            except Exception as e:
+                print(e)
+                return 'Hubo un error al procesar el archivo.'
+        return 'No se ha subido ningún archivo.'
+    elif button_id == 'default-config-button':
+        nrows = 50000
+        filename = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
+        gdf = load_and_simplify_data(filename, nrows)
+        return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
+                html.Div([f'{nrows} filas cargadas desde {filename}'])) """
 
 @app.callback(
-    [Output('upload-data', 'children'),
-    Output('output-container', 'children')],
+    Output('predeterminate-data', 'children'),
     [Input('default-config-button', 'n_clicks')],
-    prevent_initial_call=True  # Evita que la callback se ejecute al cargar la página
+    prevent_initial_call=True
 )
-def update_output(n_clicks):
-    #global gdf
 
-    if n_clicks is None:
-        # Esto evita que el callback se ejecute en el inicio antes de que cualquier botón sea presionado.
-        return dash.no_update
+def update_output_predeter(n_clicks):
+    if n_clicks > 0:
+        nrows = 50000
+        filename = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
+        gdf = load_and_simplify_data(filename, nrows)
+        return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
+                html.Div([f'{nrows} filas cargadas desde {filename}']))
 
-    # Número de filas a leer del archivo CSV
-    nrows = 100000
-    # Ruta del archivo CSV
-    filename = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
+# Callback para capturar la entrada y mostrarla
+@app.callback(
+    Output('output-container', 'children'),
+    [Input('confirm-button', 'n_clicks')],
+    [State('nrows-input', 'value'),
+    State('upload-data', 'contents')],
+    prevent_initial_call=True
+)
 
+def update_output(n_clicks, nrows, contents):
+    if n_clicks > 0:
+        if contents is not None:
+            content_type, content_string = contents.split(',')
+            decoded = base64.b64decode(content_string)
+            try:
+                if 'csv' in content_type:
+                    # Asume que el usuario sube un CSV
+                    df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+                    return html.Div([
+                        html.P(f"Número de trayectorias: {nrows}"),
+                        html.P(f"Primeras filas del archivo CSV:"),
+                        dcc.Graph(
+                            figure={
+                                'data': [{'x': df.index, 'y': df[col], 'type': 'line', 'name': col} for col in df.columns],
+                                'layout': {'title': 'Datos del CSV'}
+                            }
+                        )
+                    ])
+                else:
+                    return 'El archivo no es un CSV.'
+            except Exception as e:
+                print(e)
+                return 'Hubo un error al procesar el archivo.'
+        return 'No se ha subido ningún archivo.'
+    return 'No hay datos para mostrar.'
 
-    # Asumiendo que 'load_and_simplify_data' es una función definida que carga y procesa tus datos
-    gdf = load_and_simplify_data(filename, nrows)
+@app.callback(
+    Output('stored-data', 'data'),
+    Input('refresh-button', 'n_clicks'),
+    State('stored-data', 'data'),
+    prevent_initial_call=True
+)
+def update_stored_data(n_clicks, data):
+    if n_clicks is None or n_clicks == 0:
+        # Esto evita que la función se ejecute en la carga inicial
+        raise dash.exceptions.PreventUpdate
+    df = create_dataframe()  # Obtener los datos actualizados
+    return df.to_dict('records')
 
-    # Actualiza el contenido del componente 'upload-data' y 'output-container'
-    return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
-            html.Div([f'{nrows} filas cargadas desde {filename}']))
+@app.callback(
+    Output('table', 'data'),
+    Input('stored-data', 'data'),
+    prevent_initial_call=True  # Esto evita que la tabla se llene dos veces en la carga inicial
+)
+def update_table(data):
+    if data is None:
+        # Carga inicial de datos
+        return create_dataframe().to_dict('records')
+    return data
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8050)
