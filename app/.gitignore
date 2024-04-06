@@ -7,7 +7,9 @@ train.csv
 Prueba_algoritmos.ipynb
 Prueba_rendimiento.ipynb
 Prueba_distancias.ipynb
+Prueba_vectorizacion.ipynb
 TRACLUS_2.py
+TRACLUS_3.py
 __init__.py
 # Estrustura final
 *.pyc
