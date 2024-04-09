@@ -68,28 +68,16 @@ def get_map_image_as_html(html_map, html_heatmap):
             html.Div([
                 html.Img(
                     src=f"data:image/png;base64,{html_map}",
-                    style={
-                        'maxHeight': '80vh',  # Altura máxima para evitar que la imagen sea demasiado alta
-                        'width': '100%',      # Ancho ajustado al 100% del contenedor
-                        'display': 'block',
-                        'margin-left': 'auto',
-                        'margin-right': 'auto'
-                    }
+                    className='image-rounded'
                 ),
-            ], style={'flex': '1', 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'paddingRight': '5px'}),
+            ], className="container-map"),
             html.Div([
                 html.Img(
                     src=f"data:image/png;base64,{html_heatmap}",
-                    style={
-                        'maxHeight': '80vh',  # Altura máxima para evitar que la imagen sea demasiado alta
-                        'width': '100%',      # Ancho ajustado al 100% del contenedor
-                        'display': 'block',
-                        'margin-left': 'auto',
-                        'margin-right': 'auto'
-                    }
+                    className='image-rounded'
                 ),
-            ], style={'flex': '1', 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'paddingLeft': '5px'})
-        ], style={'display': 'flex', 'justifyContent': 'center', 'flexWrap': 'wrap'})
+            ], className="container-map")
+        ], className="container-maps")
 
 def get_home_page():
     items1 = [
@@ -133,9 +121,10 @@ def get_clusters_map():
             ],
             controls=True,
             indicators=True,
-            variant="dark"
+            variant="dark",
+            className="image-carousel"
         )
-    ], className="container")
+    ], className="container-map")
 
 def get_comparation_page():
     items1 = [
@@ -191,11 +180,11 @@ def get_estadistic_page():
             )
         ], fluid=True)  
     ])
-        
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # Creación de la aplicación Dash
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
+
+app.server.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024  # 5 GB en bytes
 
 # Definición del layout principal de la aplicación utilizando componentes de Dash
 app.layout = html.Div([
