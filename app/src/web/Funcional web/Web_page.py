@@ -6,19 +6,21 @@ import io
 import pandas as pd
 import dash_table
 from Funtions import map_ilustration, map_heat, solicitar_coordenadas, load_and_simplify_data, create_dataframe
+from TRACLUS_web import get_cluster_trajectories
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def provisional():
     global gdf
-    gdf = load_and_simplify_data("C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv", 100000)
+    gdf, trayectorias = load_and_simplify_data("C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv", 100)
     html_map = map_ilustration(gdf, -8.689, 41.107, -8.560, 41.185)
     html_heatmap = map_heat(gdf, -8.689, 41.107, -8.560, 41.185)
+    TRACLUS_map = get_cluster_trajectories(trayectorias)
 
-    return html_map, html_heatmap
+    return html_map, html_heatmap, TRACLUS_map
 
-html_map, html_heatmap = provisional()
+html_map, html_heatmap, TRACLUS_map = provisional()
 
 def get_page_zero():
     return html.Div([
@@ -110,13 +112,13 @@ def get_home_page():
 
 # Pagina comparacion
 def get_clusters_map():
-    """ minx, miny, maxx, maxy = solicitar_coordenadas(gdf)
-    html_heatmap = map_heat(gdf, minx, miny, maxx, maxy) """
+    #! Debo cabiar los items que se introducion por mapas de seleciones del traclus
+    # TRACLUS_map = get_cluster_trajectories(gdf)
 
     return html.Div([
         dbc.Carousel(
             items=[
-                {"key": "1", "src": f"data:image/png;base64,{html_heatmap}"},
+                {"key": "1", "src": f"data:image/png;base64,{TRACLUS_map}"},
                 {"key": "2", "src": f"data:image/png;base64,{html_map}"}
             ],
             controls=True,

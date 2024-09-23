@@ -29,10 +29,22 @@ def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.0
     # Convertir a Geopandas DataFrame
     gdf = gpd.GeoDataFrame(df, geometry='geometry')
     
+
+    #! ARREGLO PROVISIONAL 
+
     # Simplificar las geometrías
     gdf['geometry'] = gdf['geometry'].simplify(tolerance)
+
+    # Convertir las polilíneas de JSON a listas de coordenadas
+    df['POLYLINE'] = df['POLYLINE'].apply(lambda x: json.loads(x) if pd.notnull(x) else None)
+
+    # Filtrar filas con polilíneas vacías o nulas
+    df = df[df['POLYLINE'].apply(lambda x: x is not None and len(x) > 0)]
+
+    # Preparar las trayectorias para TRACLUS
+    trayectorias = [np.array(polyline) for polyline in df['POLYLINE']]
     
-    return gdf
+    return gdf, trayectorias
 
 def filter_data_in_area(gdf, minx, miny, maxx, maxy):
     # Crear un polígono de área de interés
