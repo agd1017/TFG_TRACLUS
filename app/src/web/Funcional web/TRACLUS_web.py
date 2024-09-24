@@ -2,7 +2,6 @@ import pandas as pd
 import json 
 import numpy as np
 from sklearn.cluster import OPTICS
-from scipy.spatial.distance import euclidean as d_euclidean
 import warnings
 import time
 import threading
@@ -14,125 +13,58 @@ from shapely.geometry import LineString
 import base64
 from io import BytesIO
 
-import argparse
-import numpy as np
-from sklearn.cluster import OPTICS
-from scipy.spatial.distance import euclidean as d_euclidean
+#* Optimizacion provisional y forma original
 
-import pickle
-import os
-import warnings
+def d_euclidean(points1, points2):
+    # Vectorized Euclidean distance
+    return np.sqrt(np.sum((points1 - points2) ** 2, axis=-1))
 
-# UTILITY FUNCTIONS
-
-def load_trajectories(filepath):
-    """
-        Load the trajectories from a pickle file.
-    """
-    if not os.path.exists(filepath):
-        raise FileNotFoundError("File not found at {}".format(filepath))
-
-    with open(filepath, 'rb') as f:
-        trajectories = pickle.load(f)
-
-    return trajectories
-
-def save_results(trajectories, partitions, segments, dist_matrix, clusters, cluster_assignments, representative_trajectories, filepath):
-    """
-        Save the results to a pickle file.
-    """
-    results = {
-        'trajectories': trajectories,
-        'partitions': partitions,
-        'segments': segments,
-        'dist_matrix': dist_matrix,
-        'clusters': clusters,
-        'cluster_assignments': cluster_assignments,
-        'representative_trajectories': representative_trajectories
-    }
-    with open(filepath, 'wb') as f:
-        pickle.dump(results, f)
-
-def sub_sample_trajectory(trajectory, sample_n=30):
-    """
-        Sub sample a trajectory to a given number of points.
-    """
-    if not isinstance(trajectory, np.ndarray):
-        raise TypeError("Trajectory must be of type np.ndarray")
-    elif trajectory.shape[1] != 2:
-        raise ValueError("Trajectory must be of shape (n, 2)")
-
-    include = np.linspace(0, trajectory.shape[0]-1, sample_n, dtype=np.int32)
-    return trajectory[include]
-
-def calculate_line_euclidean_length(line):
-    """
-        Calculate the euclidean length of a all points in the line.
-    """
-    total_length = 0
-    for i in range(0, line.shape[0]):
-        if i == 0:
-            continue
-        total_length += d_euclidean(line[i-1], line[i])
-
-    return total_length
+def slope_to_rotation_matrix(slope):
+    
+    return np.array([[1, slope], [-slope, 1]])
 
 def get_point_projection_on_line(point, line):
-    """
-        Get the projection of a point on a line.
-    """
 
-    # Get the slope of the line using the start and end points
     line_slope = (line[-1, 1] - line[0, 1]) / (line[-1, 0] - line[0, 0]) if line[-1, 0] != line[0, 0] else np.inf
 
-    # In case the slope is infinite, we can directly get the projection
     if np.isinf(line_slope):
         return np.array([line[0,0], point[1]])
     
-    # Convert the slope to a rotation matrix
     R = slope_to_rotation_matrix(line_slope)
 
-    # Rotate the line and point
     rot_line = np.matmul(line, R.T)
     rot_point = np.matmul(point, R.T)
 
-    # Get the projection
     proj = np.array([rot_point[0], rot_line[0,1]])
 
-    # Undo the rotation for the projection
     R_inverse = np.linalg.inv(R)
     proj = np.matmul(proj, R_inverse.T)
 
     return proj
 
-def partition2segments(partition):
-    """
-        Convert a partition to a list of segments.
-    """
-
-    if not isinstance(partition, np.ndarray):
-        raise TypeError("partition must be of type np.ndarray")
-    elif partition.shape[1] != 2:
-        raise ValueError("partition must be of shape (n, 2)")
+def get_point_projection_on_line_optimize(point, line):
+    A = np.array(line[0])
+    B = np.array(line[1])
+    P = np.array(point)
     
-    segments = []
-    for i in range(partition.shape[0]-1):
-        segments.append(np.array([[partition[i, 0], partition[i, 1]], [partition[i+1, 0], partition[i+1, 1]]]))
+    # Vectores AB y AP
+    AB = B - A
+    AP = P - A
+    
+    # Producto escalar de AB y AP, y producto escalar de AB con sí mismo
+    dot_product = np.dot(AP, AB)
+    AB_square = np.dot(AB, AB)
+    
+    # Factor de proyección sobre AB
+    factor = dot_product / AB_square
+    
+    # Proyección en términos de vector
+    projection = A + factor * AB
+    
+    return projection
 
-    return segments
-
-################# EQUATIONS #################
-
-# Euclidean Distance : Accepts two points of type np.ndarray([x,y])
-# DEPRECATED IN FAVOR OF THE SCIPY IMPLEMENTATION OF THE EUCLIDEAN DISTANCE
-# d_euclidean = lambda p1, p2: np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
-
-# Perpendicular Distance
 def d_perpendicular(l1, l2):
-    """
-        Calculate the perpendicular distance between two lines.
-    """
-    # Find the shorter line and assign that as l_shorter
+
     l_shorter = l_longer = None
     l1_len, l2_len = d_euclidean(l1[0], l1[-1]), d_euclidean(l2[0], l2[-1])
     if l1_len < l2_len:
@@ -150,38 +82,38 @@ def d_perpendicular(l1, l2):
 
     if lehmer_1 == 0 and lehmer_2 == 0:
         return 0
-    return (lehmer_1**2 + lehmer_2**2) / (lehmer_1 + lehmer_2)#, ps, pe, l_shorter[0], l_shorter[-1]
-    
-# Parallel Distance
-def d_parallel(l1, l2):
-    """
-        Calculate the parallel distance between two lines.
-    """
-    # Find the shorter line and assign that as l_shorter
-    l_shorter = l_longer = None
-    l1_len, l2_len = d_euclidean(l1[0], l1[-1]), d_euclidean(l2[0], l2[-1])
-    if l1_len < l2_len:
-        l_shorter = l1
-        l_longer = l2
-    else:
-        l_shorter = l2
-        l_longer = l1
+    return (lehmer_1**2 + lehmer_2**2) / (lehmer_1 + lehmer_2)
 
-    ps = get_point_projection_on_line(l_shorter[0], l_longer)
-    pe = get_point_projection_on_line(l_shorter[-1], l_longer)
+def d_perpendicular_vectorized(vectors, line_lengths):
+    n = len(vectors)
+    dist_matrix = np.zeros((n, n))
 
-    parallel_1 = min(d_euclidean(l_longer[0], ps), d_euclidean(l_longer[-1], ps))
-    parallel_2 = min(d_euclidean(l_longer[0], pe), d_euclidean(l_longer[-1], pe))
+    for i in range(n):
+        for j in range(i + 1, n):
+            l1, l2 = vectors[i], vectors[j]
+            l1_len, l2_len = line_lengths[i], line_lengths[j]
+            if l1_len < l2_len:
+                l_shorter, l_longer = l1, l2
+            else:
+                l_shorter, l_longer = l2, l1
 
-    return min(parallel_1, parallel_2)
+            ps = get_point_projection_on_line_optimize(l_shorter[0], l_longer)
+            pe = get_point_projection_on_line_optimize(l_shorter[-1], l_longer)
+            
+            lehmer_1 = d_euclidean(l_shorter[0], ps)
+            lehmer_2 = d_euclidean(l_shorter[-1], pe)
 
-# Angular Distance
+            if lehmer_1 == 0 and lehmer_2 == 0:
+                dist_matrix[i, j] = 0
+            else:
+                dist_matrix[i, j] = (lehmer_1**2 + lehmer_2**2) / (lehmer_1 + lehmer_2)
+
+            dist_matrix[j, i] = dist_matrix[i, j]
+
+    return dist_matrix
+
 def d_angular(l1, l2, directional=True):
-    """
-        Calculate the angular distance between two lines.
-    """
 
-    # Find the shorter line and assign that as l_shorter
     l_shorter = l_longer = None
     l1_len, l2_len = d_euclidean(l1[0], l1[-1]), d_euclidean(l2[0], l2[-1])
     if l1_len < l2_len:
@@ -191,21 +123,17 @@ def d_angular(l1, l2, directional=True):
         l_shorter = l2
         l_longer = l1
 
-    # Get the minimum intersecting angle between both lines
     shorter_slope = (l_shorter[-1,1] - l_shorter[0,1]) / (l_shorter[-1,0] - l_shorter[0,0]) if l_shorter[-1,0] - l_shorter[0,0] != 0 else np.inf
     longer_slope = (l_longer[-1,1] - l_longer[0,1]) / (l_longer[-1,0] - l_longer[0,0]) if l_longer[-1,0] - l_longer[0,0] != 0 else np.inf
 
-    # The case of a vertical line
     theta = None
     if np.isinf(shorter_slope):
-        # Get the angle of the longer line with the x-axis and subtract it from 90 degrees
         tan_theta0 = longer_slope
         tan_theta1 = tan_theta0 * -1
         theta0 = np.abs(np.arctan(tan_theta0))
         theta1 = np.abs(np.arctan(tan_theta1))
         theta = min(theta0, theta1)
     elif np.isinf(longer_slope):
-        # Get the angle of the shorter line with the x-axis and subtract it from 90 degrees
         tan_theta0 = shorter_slope
         tan_theta1 = tan_theta0 * -1
         theta0 = np.abs(np.arctan(tan_theta0))
@@ -230,231 +158,271 @@ def d_angular(l1, l2, directional=True):
     else:
         raise ValueError("Theta is not in the range of 0 to 180 degrees.")
 
-# Total Trajectory Distance
-def distance(l1, l2, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
-    """
-        Get the total trajectory distance using all three distance formulas.
-    """
+def d_angular_vectorized(vectors, line_lengths,  directional=True):
+    n = len(vectors)
+    dist_matrix = np.zeros((n, n))
 
-    perpendicular_distance = d_perpendicular(l1, l2)
-    parallel_distance = d_parallel(l1, l2)
-    angular_distance = d_angular(l1, l2, directional=directional)
+    for i in range(n):
+        for j in range(i + 1, n):
+            l1, l2 = vectors[i], vectors[j]
+            l_shorter = l_longer = None
+            l1_len, l2_len = line_lengths[i], line_lengths[j]
+            if l1_len < l2_len:
+                l_shorter, l_longer = l1, l2
+            else:
+                l_shorter, l_longer = l2, l1
 
-    return (w_perpendicular * perpendicular_distance) + (w_parallel * parallel_distance) + (w_angular * angular_distance)
+            # Get the minimum intersecting angle between both lines
+            shorter_slope = (l_shorter[-1,1] - l_shorter[0,1]) / (l_shorter[-1,0] - l_shorter[0,0]) if l_shorter[-1,0] - l_shorter[0,0] != 0 else np.inf
+            longer_slope = (l_longer[-1,1] - l_longer[0,1]) / (l_longer[-1,0] - l_longer[0,0]) if l_longer[-1,0] - l_longer[0,0] != 0 else np.inf
 
-# Minimum Description Length
+            # The case of a vertical line
+            theta = None
+            if np.isinf(shorter_slope):
+                # Get the angle of the longer line with the x-axis and subtract it from 90 degrees
+                tan_theta0 = longer_slope
+                tan_theta1 = tan_theta0 * -1
+                theta0 = np.abs(np.arctan(tan_theta0))
+                theta1 = np.abs(np.arctan(tan_theta1))
+                theta = min(theta0, theta1)
+            elif np.isinf(longer_slope):
+                # Get the angle of the shorter line with the x-axis and subtract it from 90 degrees
+                tan_theta0 = shorter_slope
+                tan_theta1 = tan_theta0 * -1
+                theta0 = np.abs(np.arctan(tan_theta0))
+                theta1 = np.abs(np.arctan(tan_theta1))
+                theta = min(theta0, theta1)
+            else:
+                tan_theta0 = (shorter_slope - longer_slope) / (1 + shorter_slope * longer_slope)
+                tan_theta1 = tan_theta0 * -1
+
+                theta0 = np.abs(np.arctan(tan_theta0))
+                theta1 = np.abs(np.arctan(tan_theta1))
+
+                theta = min(theta0, theta1)
+
+            if directional:
+                dist_matrix[i, j] = np.sin(theta) * d_euclidean(l_longer[0], l_longer[-1])
+            else:
+                if 0 <= theta < (90 * np.pi / 180):
+                    dist_matrix[i, j] = np.sin(theta) * d_euclidean(l_longer[0], l_longer[-1])
+                elif (90 * np.pi / 180) <= theta <= np.pi:
+                    dist_matrix[i, j] = np.sin(theta)
+                else:
+                    raise ValueError("Theta is not in the range of 0 to 180 degrees.")
+            
+            dist_matrix[j, i] = dist_matrix[i, j]
+            
+    return dist_matrix
+
+def d_parallel_vectorized(vectors, line_lengths):
+    n = len(vectors)
+    dist_matrix = np.zeros((n, n))
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            l1, l2 = vectors[i], vectors[j]
+            l_shorter = l_longer = None
+            l1_len, l2_len = line_lengths[i], line_lengths[j]
+            if l1_len < l2_len:
+                l_shorter, l_longer = l1, l2
+            else:
+                l_shorter, l_longer = l2, l1
+
+            ps = get_point_projection_on_line_optimize(l_shorter[0], l_longer)
+            pe = get_point_projection_on_line_optimize(l_shorter[-1], l_longer)
+
+            parallel_1 = min(d_euclidean(l_longer[0], ps), d_euclidean(l_longer[-1], ps))
+            parallel_2 = min(d_euclidean(l_longer[0], pe), d_euclidean(l_longer[-1], pe))
+
+            dist_matrix[i, j] = min(parallel_1, parallel_2)
+
+            dist_matrix[j, i] = dist_matrix[i, j]
+        
+    return dist_matrix
+
+def distance_vector_4(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
+
+    # Contenedores para los resultados
+    results = {
+        'perpendicular': None,
+        'parallel': None,
+        'angular': None
+    }
+
+    line_lengths = [d_euclidean(vec[0], vec[-1]) for vec in partitions]    
+
+    # Definir las funciones que se ejecutarán en cada thread
+    def run_perpendicular():
+        inicio_p = time.time()
+        results['perpendicular'] = w_perpendicular * d_perpendicular_vectorized(partitions, line_lengths)
+        fin_p = time.time()
+        print("Tiempo perpendicular: ", fin_p - inicio_p)
+
+    def run_parallel():
+        inicio_pa = time.time()
+        results['parallel'] = w_parallel * d_parallel_vectorized(partitions, line_lengths)
+        fin_pa = time.time()
+        print("Tiempo paralelo: ", fin_pa - inicio_pa)
+
+    def run_angular():
+        inicio_a = time.time()
+        results['angular'] = w_angular * d_angular_vectorized(partitions, line_lengths, directional)
+        fin_a = time.time()
+        print("Tiempo angular: ", fin_a - inicio_a)
+
+    # Crear los threads
+    thread_perpendicular = threading.Thread(target=run_perpendicular)
+    thread_parallel = threading.Thread(target=run_parallel)
+    thread_angular = threading.Thread(target=run_angular)
+
+    # Iniciar los threads
+    thread_perpendicular.start()
+    thread_parallel.start()
+    thread_angular.start()
+
+    # Esperar a que todos los threads terminen
+    thread_perpendicular.join()
+    thread_parallel.join()
+    thread_angular.join()
+
+    # Sumar los resultados
+    return results['perpendicular'] + results['parallel'] + results['angular']
+
+def get_vectorice4_distance_matrix(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
+    partitions = np.asarray(partitions)  # Asegurar que partitions sea un array de NumPy
+    n_partitions = len(partitions)
+    dist_matrix = np.zeros((n_partitions, n_partitions))
+    
+    dist_matrix = distance_vector_4(partitions, directional, w_perpendicular, w_parallel, w_angular)
+
+    np.fill_diagonal(dist_matrix, 0)
+
+    if np.isnan(dist_matrix).any():
+        warnings.warn("La matriz de distancias contiene valores NaN")
+        np.nan_to_num(dist_matrix, copy=False, nan=9999999)
+
+    return dist_matrix
+
+# Particiones
+
+def partition2segments(partition):
+
+    if not isinstance(partition, np.ndarray):
+        raise TypeError("partition must be of type np.ndarray")
+    elif partition.shape[1] != 2:
+        raise ValueError("partition must be of shape (n, 2)")
+    
+    segments = []
+    for i in range(partition.shape[0]-1):
+        segments.append(np.array([[partition[i, 0], partition[i, 1]], [partition[i+1, 0], partition[i+1, 1]]]))
+
+    return segments
+
 def minimum_desription_length(start_idx, curr_idx, trajectory, w_angular=1, w_perpendicular=1, par=True, directional=True):
-    """
-        Calculate the minimum description length.
-    """
+    
     LH = LDH = 0
     for i in range(start_idx, curr_idx-1):
         ed = d_euclidean(trajectory[i], trajectory[i+1])
         LH += max(0, np.log2(ed, where=ed>0))
         if par:
             for j in range(start_idx, i-1):
-                # print()
-                # print(np.array([trajectory[start_idx], trajectory[i]]))
-                # print(np.array([trajectory[j], trajectory[j+1]]))
                 LDH += w_perpendicular * d_perpendicular(np.array([trajectory[start_idx], trajectory[i]]), np.array([trajectory[j], trajectory[j+1]]))
                 LDH += w_angular * d_angular(np.array([trajectory[start_idx], trajectory[i]]), np.array([trajectory[j], trajectory[j+1]]), directional=directional)
     if par:
         return LH + LDH
     return LH
 
-# Slope to angle in degrees
-def slope_to_angle(slope, degrees=True):
-    """
-        Convert slope to angle in degrees.
-    """
-    if not degrees:
-        return np.arctan(slope)
-    return np.arctan(slope) * 180 / np.pi
+def partition(trajectory, directional=True, progress_bar=False, w_perpendicular=1, w_angular=1):
+    
+    if not isinstance(trajectory, np.ndarray):
+        raise TypeError("La trayectoria debe ser un arreglo de NumPy")
+    elif trajectory.shape[1] != 2:
+        raise ValueError("La trayectoria debe tener la forma (n, 2)")
+    
+    cp_indices = [0]
 
-# Slope to rotation matrix
-def slope_to_rotation_matrix(slope):
-    """
-        Convert slope to rotation matrix.
-    """
-    return np.array([[1, slope], [-slope, 1]])
+    traj_len = trajectory.shape[0]
+    start_idx = 0  
+    
+    length = 1  
+    while start_idx + length < traj_len: 
+        if progress_bar:
+            print(f'\r{round(((start_idx + length) / traj_len) * 100, 2)}%', end='')
+        
+        curr_idx = start_idx + length 
 
-# Get cluster majority line orientation
+        cost_par = minimum_desription_length(start_idx, curr_idx, trajectory, w_angular=w_angular, w_perpendicular=w_perpendicular, directional=directional)
+        cost_nopar = minimum_desription_length(start_idx, curr_idx, trajectory, par=False, directional=directional)
+
+        if cost_par > cost_nopar: 
+            cp_indices.append(curr_idx-1)  
+            start_idx = curr_idx-1
+            length = 1
+        else:
+            length += 1 
+
+    cp_indices.append(len(trajectory) - 1)
+
+    return np.array([trajectory[i] for i in cp_indices])
+
+# Representacion de trayecorias
+
 def get_average_direction_slope(line_list):
-    """
-        Get the cluster majority line orientation.
-        Returns 1 if the lines are mostly vertical, 0 otherwise.
-    """
-    # Get the average slopes of all the lines
+
     slopes = []
     for line in line_list:
         slopes.append((line[-1, 1] - line[0, 1]) / (line[-1, 0] - line[0, 0]) if (line[-1, 0] - line[0, 0]) != 0 else 0)
     slopes = np.array(slopes)
 
-    # Get the average slope
     return np.mean(slopes)
 
-# Trajectory Smoothing
-def smooth_trajectory(trajectory, window_size=5):
-    """
-        Smooth a trajectory using a moving average filter.
-    """
-    # Ensure that the trajectory is a numpy array of shape (n, 2)
-    if not isinstance(trajectory, np.ndarray):
-        raise TypeError("Trajectory must be a numpy array")
-    elif trajectory.shape[1] != 2:
-        raise ValueError("Trajectory must be a numpy array of shape (n, 2)")
-
-    # Ensure that the window size is an odd integer
-    if not isinstance(window_size, int):
-        raise TypeError("Window size must be an integer")
-    elif window_size % 2 == 0:
-        raise ValueError("Window size must be an odd integer")
-
-    # Pad the trajectory with the first and last points
-    padded_trajectory = np.zeros((trajectory.shape[0] + (window_size - 1), 2))
-    padded_trajectory[window_size // 2:window_size // 2 + trajectory.shape[0]] = trajectory
-    padded_trajectory[:window_size // 2] = trajectory[0]
-    padded_trajectory[-window_size // 2:] = trajectory[-1]
-
-    # Apply the moving average filter
-    smoothed_trajectory = np.zeros(trajectory.shape)
-    for i in range(trajectory.shape[0]):
-        smoothed_trajectory[i] = np.mean(padded_trajectory[i:i + window_size], axis=0)
-
-    return smoothed_trajectory
-
-# Get Distance Matrix
-def get_distance_matrix(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1, progress_bar=False):
-    # Create Distance Matrix between all trajectories
-    n_partitions = len(partitions)
-    dist_matrix = np.zeros((n_partitions, n_partitions))
-    for i in range(n_partitions):
-        if progress_bar: print(f'Progress: {i+1}/{n_partitions}', end='\r')
-        for j in range(i+1):
-            dist_matrix[i,j] = dist_matrix[j,i] = distance(partitions[i], partitions[j], directional=directional, w_perpendicular=w_perpendicular, w_parallel=w_parallel, w_angular=w_angular)
-            print(f'Progress: {i+1}/{n_partitions}', end='\r')
-
-    # Main Diagonal
-    for i in range(n_partitions):
-        dist_matrix[i,i] = 0
-
-    # Check for nans and warn if any are found
-    if np.isnan(dist_matrix).any():
-        warnings.warn("Distance matrix contains NaN values")
-    
-        # Replace the nans with the maximum value
-        dist_matrix[np.isnan(dist_matrix)] = 9999999
-
-    return dist_matrix
-
-#############################################
-
-def partition(trajectory, directional=True, progress_bar=False, w_perpendicular=1, w_angular=1):
-    """
-        Partition a trajectory into segments.
-    """
-
-    # Ensure that the trajectory is a numpy array of shape (n, 2)
-    if not isinstance(trajectory, np.ndarray):
-        raise TypeError("Trajectory must be a numpy array")
-    elif trajectory.shape[1] != 2:
-        raise ValueError("Trajectory must be a numpy array of shape (n, 2)")
-
-    # Initialize the characteristic points, add the first point as a characteristic point
-    cp_indices = []
-    cp_indices.append(0)
-
-    traj_len = trajectory.shape[0]
-    start_idx = 0
-    
-    length = 1
-    while start_idx + length < traj_len:
-        if progress_bar:
-            print(f'\r{round(((start_idx + length) / traj_len) * 100, 2)}%', end='')
-        # print(f'Current Index: {start_idx + length}, Trajectory Length: {traj_len}')
-        curr_idx = start_idx + length
-        # print(start_idx, curr_idx)
-        # print(f"Current Index: {curr_idx}, Current point: {trajectory[curr_idx]}")
-        cost_par = minimum_desription_length(start_idx, curr_idx, trajectory, w_angular=w_angular, w_perpendicular=w_perpendicular, directional=directional)
-        cost_nopar = minimum_desription_length(start_idx, curr_idx, trajectory, par=False, directional=directional)
-        # print(f'Cost with partition: {cost_par}, Cost without partition: {cost_nopar}')
-        if cost_par > cost_nopar:
-            # print(f"Added characteristic point: {trajectory[curr_idx-1]} with index {curr_idx-1}")
-            cp_indices.append(curr_idx-1)
-            start_idx = curr_idx-1
-            length = 1
-        else:
-            length += 1
-    
-    # Add last point to characteristic points
-    cp_indices.append(len(trajectory) - 1)
-    # print(cp_indices)
-    
-    return np.array([trajectory[i] for i in cp_indices])
-
-# Get Representative Trajectory
 def get_representative_trajectory(lines, min_lines=3):
-    """
-        Get the sweeping line vector average.
-    """
-    # Get the average rotation matrix for all the lines
+    
     average_slope = get_average_direction_slope(lines)
     rotation_matrix = slope_to_rotation_matrix(average_slope)
 
-    # Rotate all lines such that they are parallel to the x-axis
     rotated_lines = []
     for line in lines:
         rotated_lines.append(np.matmul(line, rotation_matrix.T))
 
-    # Let starting_and_ending_points be the set of all starting and ending points of the lines
     starting_and_ending_points = []
     for line in rotated_lines:
         starting_and_ending_points.append(line[0])
         starting_and_ending_points.append(line[-1])
     starting_and_ending_points = np.array(starting_and_ending_points)
 
-    # Sort the starting and ending points by their x-coordinate
     starting_and_ending_points = starting_and_ending_points[starting_and_ending_points[:, 0].argsort()]
 
-    # Perform the sweeping line algorithm
     representative_points = []
     for p in starting_and_ending_points:
-        # Let num_p be the number of lines that contain the x-value of p
         num_p = 0
         for line in rotated_lines:
-            # Sort the line points by their x-coordinate
             point_sorted_line = line[line[:, 0].argsort()]
-            # print(line[0, 0], p[0], line[-1, 0])
             if point_sorted_line[0, 0] <= p[0] <= point_sorted_line[-1, 0]:
                 num_p += 1
 
-        # If num_p is greater than or equal to min_lines, then add p to representative_points
         if num_p >= min_lines:
-            # Compute the average y-value of all lines that contain the x-value of p
             y_avg = 0
             for line in rotated_lines:
                 point_sorted_line = line[line[:, 0].argsort()]
                 if point_sorted_line[0, 0] <= p[0] <= point_sorted_line[-1, 0]:
                     y_avg += (point_sorted_line[0, 1] + point_sorted_line[-1, 1]) / 2
-                    # print((point_sorted_line[0, 1] + point_sorted_line[-1, 1]) / 2)
-                    # y_avg += line[np.argmin(np.abs(line[:, 0] - p[0])), 1]
             y_avg /= num_p
-            # Add the p and its average y-value to representative_points
             representative_points.append(np.array([p[0], y_avg]))
 
-    # Early return if there are no representative points
     if len(representative_points) == 0:
-        warnings.warn("WARNING: No representative points were found.")
+        warnings.warn("ADVERTENCIA: No se encontraron puntos representativos.")
         return np.array([])
 
-    # Undo the rotation for the generated representative points
     representative_points = np.array(representative_points)
     representative_points = np.matmul(representative_points, np.linalg.inv(rotation_matrix).T)
-    
+
     return representative_points
 
+# Traclus
 
-def traclus(trajectories, max_eps=None, min_samples=10, directional=True, use_segments=True, clustering_algorithm=OPTICS, mdl_weights=[1,1,1], d_weights=[1,1,1], progress_bar=False):
+def traclus(trajectories, max_eps=None, min_samples=5, directional=True, use_segments=True, clustering_algorithm=OPTICS, mdl_weights=[1,1,1], d_weights=[1,1,1], progress_bar=False):
     """
         Trajectory Clustering Algorithm
     """
@@ -469,7 +437,7 @@ def traclus(trajectories, max_eps=None, min_samples=10, directional=True, use_se
         elif trajectory.shape[1] != 2:
             raise ValueError("Trajectories must be a list of numpy arrays of shape (n, 2)")
 
-    # Partition the trajectories
+    # Partition trajectories
     if progress_bar:
         print("Partitioning trajectories...")
     partitions = []
@@ -482,7 +450,7 @@ def traclus(trajectories, max_eps=None, min_samples=10, directional=True, use_se
     if progress_bar:
         print()
 
-    # Get the segments for each partition
+    # Convert partitions to segments
     segments = []
     if use_segments:
         if progress_bar:
@@ -496,7 +464,7 @@ def traclus(trajectories, max_eps=None, min_samples=10, directional=True, use_se
         segments = partitions
 
     # Get distance matrix
-    dist_matrix = get_distance_matrix(segments, directional=directional, w_perpendicular=d_weights[0], w_parallel=d_weights[1], w_angular=d_weights[2], progress_bar=progress_bar)
+    dist_matrix = get_vectorice4_distance_matrix(segments)
 
     # Group the partitions
     if progress_bar:
@@ -533,20 +501,25 @@ def create_gdf(data):
 
     return gdf
 
-def get_cluster_trajectories(trajectories, cmap='tab20'):
+def get_cluster_trajectories(trajectories, df):
     _, _, _, _, _, representative_trajectories = traclus(trajectories)
 
-    counter1 = 0
-    cluster_trayectories = []
     # Representacion de las trayectorias pero sin el primer elemento, este parece ser solo un conjunto basura
     representative_clusters = representative_trajectories[1:representative_trajectories.__len__()]
 
+    TRACLUS_map = plot_map_traclus(representative_clusters)
+    TRACLUS_map_df = plot_map_traclus_df(representative_clusters, df)
+
+    return TRACLUS_map, TRACLUS_map_df
+
+def plot_map_traclus(representative_clusters, cmap='tab20'):
     # Crear un GeoDataFrame
     gdf = create_gdf(representative_clusters)
 
     # Visualizar en un mapa
     fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
     gdf.plot(ax=ax, cmap=cmap, linewidth=2)
+    
 
     # Añadir mapa base
     ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=gdf.crs.to_string())
@@ -560,7 +533,6 @@ def get_cluster_trajectories(trajectories, cmap='tab20'):
     img_data = BytesIO()
     plt.savefig(img_data, format='png')
     img_data.seek(0)  # Mover el 'cursor' al principio del archivo en memoria
-    
     # Es importante cerrar la figura para liberar memoria
     plt.close(fig)
 
@@ -568,3 +540,35 @@ def get_cluster_trajectories(trajectories, cmap='tab20'):
     TRACLUS_map = base64.b64encode(img_data.read()).decode('utf-8')
 
     return TRACLUS_map
+
+def plot_map_traclus_df(representative_clusters, df, cmap='tab20'):
+    # Crear un GeoDataFrame
+    gdf2 = create_gdf(df)
+    gdf = create_gdf(representative_clusters)
+
+    # Visualizar en un mapa
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    gdf2.plot(ax=ax, color='blue', alpha=0.2, linewidth=0.5)
+    gdf.plot(ax=ax, cmap=cmap, linewidth=2)
+    
+
+    # Añadir mapa base
+    ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=gdf.crs.to_string())
+
+    # Añadir título y etiquetas
+    plt.title('Representación de Trayectorias TRACLUS con trayectorias originales')
+    plt.xlabel('Longitud')
+    plt.ylabel('Latitud')
+
+    # Crear un objeto BytesIO para guardar la imagen
+    img_data = BytesIO()
+    plt.savefig(img_data, format='png')
+    img_data.seek(0)  # Mover el 'cursor' al principio del archivo en memoria
+    plt.show()
+    # Es importante cerrar la figura para liberar memoria
+    plt.close(fig)
+
+    # Codificar la imagen generada en base64
+    TRACLUS_map_df = base64.b64encode(img_data.read()).decode('utf-8')
+
+    return TRACLUS_map_df

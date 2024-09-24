@@ -44,7 +44,7 @@ def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.0
     # Preparar las trayectorias para TRACLUS
     trayectorias = [np.array(polyline) for polyline in df['POLYLINE']]
     
-    return gdf, trayectorias
+    return gdf, trayectorias, df['POLYLINE']
 
 def filter_data_in_area(gdf, minx, miny, maxx, maxy):
     # Crear un polígono de área de interés

@@ -13,14 +13,14 @@ import matplotlib.pyplot as plt
 
 def provisional():
     global gdf
-    gdf, trayectorias = load_and_simplify_data("C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv", 100)
+    gdf, trayectorias, df = load_and_simplify_data("C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv", 100)
     html_map = map_ilustration(gdf, -8.689, 41.107, -8.560, 41.185)
     html_heatmap = map_heat(gdf, -8.689, 41.107, -8.560, 41.185)
-    TRACLUS_map = get_cluster_trajectories(trayectorias)
+    TRACLUS_map, TRACLUS_map_df = get_cluster_trajectories(trayectorias, df)
 
-    return html_map, html_heatmap, TRACLUS_map
+    return html_map, html_heatmap, TRACLUS_map, TRACLUS_map_df
 
-html_map, html_heatmap, TRACLUS_map = provisional()
+html_map, html_heatmap, TRACLUS_map, TRACLUS_map_df = provisional()
 
 def get_page_zero():
     return html.Div([
@@ -119,7 +119,7 @@ def get_clusters_map():
         dbc.Carousel(
             items=[
                 {"key": "1", "src": f"data:image/png;base64,{TRACLUS_map}"},
-                {"key": "2", "src": f"data:image/png;base64,{html_map}"}
+                {"key": "2", "src": f"data:image/png;base64,{TRACLUS_map_df}"}
             ],
             controls=True,
             indicators=True,
