@@ -2,6 +2,7 @@ train_data
 train.csv
 # auxilary_data
 *.png
+*.txt
 *.html
 *.jpg
 Prueba_algoritmos.ipynb
