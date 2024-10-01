@@ -9,6 +9,7 @@ import base64
 from io import BytesIO
 from pyproj import Transformer
 from shapely.geometry import LineString, box
+from TRACLUS_web import traclus as tr
 
 def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.01):
     # Cargar datos
@@ -176,6 +177,96 @@ def solicitar_coordenadas(gdf):
     maxx, maxy, minx, miny = max(x_coords_flat), max(y_coords_flat), min(x_coords_flat), min(y_coords_flat)
 
     return minx, miny, maxx, maxy 
+
+
+
+
+#Funciones para la pagina "Comparacion de algoritmos" (Pagina 2)
+#* Representación de resultados
+
+def create_gdf(data):
+    valid_geometries = [LineString(x) for x in data if len(x) > 1]
+    gdf = gpd.GeoDataFrame(geometry=valid_geometries, crs='EPSG:4326')
+
+    return gdf
+
+def get_cluster_trajectories(df, trajectories, max_eps=None, min_samples=5, min_cluster_size=None, cluster_selection_epsilon=None, n_clusters=2, affinity='rbf', n_neighbors=5, linkage='ward', threshold=None, directional=True, use_segments=True, clustering_algorithm=None):
+    _, _, _, _, _, representative_trajectories = tr(trajectories,  max_eps, min_samples, min_cluster_size, cluster_selection_epsilon, n_clusters, affinity, n_neighbors, linkage, threshold, directional, use_segments, clustering_algorithm)
+
+    # Representacion de las trayectorias pero sin el primer elemento, este parece ser solo un conjunto basura
+    representative_clusters = representative_trajectories[1:representative_trajectories.__len__()]
+    n_clusters = len(representative_clusters)
+
+    TRACLUS_map = plot_map_traclus(representative_clusters)
+    TRACLUS_map_df = plot_map_traclus_df(representative_clusters, df)
+
+    return TRACLUS_map, TRACLUS_map_df, n_clusters
+
+def plot_map_traclus(representative_clusters, cmap='tab20'):
+    # Crear un GeoDataFrame
+    gdf = create_gdf(representative_clusters)
+
+    # Visualizar en un mapa
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    gdf.plot(ax=ax, cmap=cmap, linewidth=2)
+    
+
+    # Añadir mapa base
+    ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=gdf.crs.to_string())
+
+    # Añadir título y etiquetas
+    plt.title('Representación de Trayectorias TRACLUS')
+    plt.xlabel('Longitud')
+    plt.ylabel('Latitud')
+
+    # Crear un objeto BytesIO para guardar la imagen
+    img_data = BytesIO()
+    plt.savefig(img_data, format='png')
+    img_data.seek(0)  # Mover el 'cursor' al principio del archivo en memoria
+    #plt.show()
+    # Es importante cerrar la figura para liberar memoria
+    plt.close(fig)
+
+    # Codificar la imagen generada en base64
+    TRACLUS_map = base64.b64encode(img_data.read()).decode('utf-8')
+
+    return TRACLUS_map
+
+def plot_map_traclus_df(representative_clusters, df, cmap='tab20'):
+    # Crear un GeoDataFrame
+    gdf2 = create_gdf(df)
+    gdf = create_gdf(representative_clusters)
+
+    # Visualizar en un mapa
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    gdf2.plot(ax=ax, color='blue', alpha=0.2, linewidth=0.5)
+    gdf.plot(ax=ax, cmap=cmap, linewidth=2)
+    
+
+    # Añadir mapa base
+    ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=gdf.crs.to_string())
+
+    # Añadir título y etiquetas
+    plt.title('Representación de Trayectorias TRACLUS con trayectorias originales')
+    plt.xlabel('Longitud')
+    plt.ylabel('Latitud')
+
+    # Crear un objeto BytesIO para guardar la imagen
+    img_data = BytesIO()
+    plt.savefig(img_data, format='png')
+    img_data.seek(0)  # Mover el 'cursor' al principio del archivo en memoria
+    #plt.show()
+    # Es importante cerrar la figura para liberar memoria
+    plt.close(fig)
+
+    # Codificar la imagen generada en base64
+    TRACLUS_map_df = base64.b64encode(img_data.read()).decode('utf-8')
+
+    return TRACLUS_map_df
+
+
+# Funciones para la pagina "Estadisticas" (Pagina 3)
+#* Tablas de datos
 
 def create_dataframe():
 

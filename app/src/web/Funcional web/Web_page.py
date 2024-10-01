@@ -5,22 +5,20 @@ import base64
 import io
 import pandas as pd
 import dash_table
-from Funtions import map_ilustration, map_heat, solicitar_coordenadas, load_and_simplify_data, create_dataframe
-from TRACLUS_web import get_cluster_trajectories
+from Funtions import create_dataframe, map_ilustration, map_heat
+from Data_loading import constructor
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-def provisional():
-    global gdf
-    gdf, trayectorias, df = load_and_simplify_data("C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv", 100)
-    html_map = map_ilustration(gdf, -8.689, 41.107, -8.560, 41.185)
-    html_heatmap = map_heat(gdf, -8.689, 41.107, -8.560, 41.185)
-    TRACLUS_map, TRACLUS_map_df = get_cluster_trajectories(trayectorias, df)
+# Provisional data
 
-    return html_map, html_heatmap, TRACLUS_map, TRACLUS_map_df
+data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
+nrows = 10
 
-html_map, html_heatmap, TRACLUS_map, TRACLUS_map_df = provisional()
+gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering = constructor(data, nrows)
+
+# Pagina 0
 
 def get_page_zero():
     return html.Div([
@@ -83,15 +81,19 @@ def get_map_image_as_html(html_map, html_heatmap):
 
 def get_home_page():
     items1 = [
-        dbc.DropdownMenuItem("Item 1", id="option-1-1"), 
-        dbc.DropdownMenuItem("Item 2", id="option-1-2"),
-        dbc.DropdownMenuItem("Item 3", id="option-1-3")
+        dbc.DropdownMenuItem("OPTICS", id="option-1-1"), 
+        dbc.DropdownMenuItem("HDBSCAN", id="option-1-2"),
+        dbc.DropdownMenuItem("DBSCAN", id="option-1-3"),
+        dbc.DropdownMenuItem("SpectralClustering", id="option-1-4"),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="option-1-5")
     ]
 
     items2 = [
-        dbc.DropdownMenuItem("Item 1", id="option-2-1"), 
-        dbc.DropdownMenuItem("Item 2", id="option-2-2"),
-        dbc.DropdownMenuItem("Item 3", id="option-2-3")
+        dbc.DropdownMenuItem("OPTICS", id="option-2-1"), 
+        dbc.DropdownMenuItem("HDBSCAN", id="option-2-2"),
+        dbc.DropdownMenuItem("DBSCAN", id="option-2-3"),
+        dbc.DropdownMenuItem("SpectralClustering", id="option-2-4"),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="option-2-5")
     ]
 
     return html.Div([
@@ -111,7 +113,7 @@ def get_home_page():
     ], className="grid-home-container")
 
 # Pagina comparacion
-def get_clusters_map():
+def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
     #! Debo cabiar los items que se introducion por mapas de seleciones del traclus
     # TRACLUS_map = get_cluster_trajectories(gdf)
 
@@ -228,15 +230,19 @@ def display_clusters_1(*args):
     ctx = dash.callback_context
 
     if not ctx.triggered:
-        return get_clusters_map() # "Seleccione un elemento para el mapa 1."
+        return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS) # "Seleccione un elemento para el mapa 1."
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if button_id == 'item-1-1':
-            return get_clusters_map()
+            return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
         elif button_id == 'item-1-2':
-            return get_clusters_map()
+            return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
         elif button_id == 'item-1-3':
-            return get_clusters_map()
+            return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
+        elif button_id == 'item-1-4':
+            return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+        elif button_id == 'item-1-5':
+            return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
         
 @app.callback(
     Output('map-clusters-2', 'children'),
@@ -249,15 +255,19 @@ def display_clusters_2(*args):
     ctx = dash.callback_context
 
     if not ctx.triggered:
-        return get_clusters_map() # "Seleccione un elemento para el mapa 2."
+        return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS) # "Seleccione un elemento para el mapa 2."
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if button_id == 'item-2-1':
-            return get_clusters_map()
+            return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
         elif button_id == 'item-2-2':
-            return get_clusters_map()
+            return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
         elif button_id == 'item-2-3':
-            return get_clusters_map()
+            return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
+        elif button_id == 'item-2-4':
+            return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+        elif button_id == 'item-2-5':
+            return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
 
 @app.callback(
     Output('map-container', 'children'),

@@ -12,6 +12,7 @@ import contextily as ctx
 from shapely.geometry import LineString
 import base64
 from io import BytesIO
+from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
 
 #* Optimizacion provisional y forma original
 
@@ -420,9 +421,61 @@ def get_representative_trajectory(lines, min_lines=3):
 
     return representative_points
 
+#* Clustering de las trayectorias con los diversoso algoritmos
+
+def clustering(segments, dist_matrix, max_eps, min_samples, min_cluster_size, cluster_selection_epsilon, n_clusters, affinity, n_neighbors, linkage, threshold, clustering_algorithm, progress_bar):
+    
+    clusters = []
+    clustering_model = None
+
+    # Para OPTICS
+    if clustering_algorithm == OPTICS:
+        params = {'min_samples': min_samples}
+        if max_eps is not None:
+            params['max_eps'] = max_eps
+        clustering_model = OPTICS(**params)
+
+    # Para DBSCAN
+    elif clustering_algorithm == DBSCAN:
+        params = {'eps': max_eps if max_eps is not None else 0.5, 'min_samples': min_samples}
+        clustering_model = DBSCAN(**params)
+
+    # Para HDBSCAN
+    elif clustering_algorithm == HDBSCAN:
+        params = {'min_samples': min_samples}
+        if min_cluster_size is not None:
+            params['min_cluster_size'] = min_cluster_size
+        if cluster_selection_epsilon is not None:
+            params['cluster_selection_epsilon'] = cluster_selection_epsilon
+        clustering_model = HDBSCAN(**params)
+
+    # Para SpectralClustering
+    elif clustering_algorithm == SpectralClustering:
+        params = {'n_clusters': n_clusters, 'affinity': affinity, 'n_neighbors': n_neighbors}
+        clustering_model = SpectralClustering(**params)
+
+    # Para AgglomerativeClustering
+    elif clustering_algorithm == AgglomerativeClustering:
+        params = {'n_clusters': n_clusters, 'linkage': linkage}
+        clustering_model = AgglomerativeClustering(**params)
+
+    elif clustering_algorithm == Birch:
+        params = {'n_clusters': n_clusters, 'threshold': threshold}
+        clustering_model = Birch(**params)
+
+    # Asegurar que el modelo se ha creado antes de continuar
+    if clustering_model is not None:
+        cluster_assignments = clustering_model.fit_predict(dist_matrix)
+        clusters = [[segments[i] for i in np.where(cluster_assignments == c)[0]] for c in np.unique(cluster_assignments)]
+    else:
+        raise ValueError("No se proporcionó un algoritmo de clustering válido o no se pudo crear el modelo.")
+
+    return clusters, cluster_assignments
+
+
 # Traclus
 
-def traclus(trajectories, max_eps=None, min_samples=5, directional=True, use_segments=True, clustering_algorithm=OPTICS, mdl_weights=[1,1,1], d_weights=[1,1,1], progress_bar=False):
+def traclus(trajectories, max_eps=None, min_samples=10, min_cluster_size=None, cluster_selection_epsilon=None, n_clusters=2, affinity='rbf', n_neighbors=5, linkage='ward', threshold=None, directional=True, use_segments=True, clustering_algorithm=OPTICS, mdl_weights=[1,1,1], d_weights=[1,1,1], progress_bar=False):
     """
         Trajectory Clustering Algorithm
     """
@@ -464,12 +517,16 @@ def traclus(trajectories, max_eps=None, min_samples=5, directional=True, use_seg
         segments = partitions
 
     # Get distance matrix
-    dist_matrix = get_vectorice4_distance_matrix(segments)
+    dist_matrix = get_vectorice4_distance_matrix(segments, directional=directional, w_perpendicular=d_weights[0], w_parallel=d_weights[1], w_angular=d_weights[2])
 
     # Group the partitions
     if progress_bar:
         print("Grouping partitions...")
-    clusters = []
+
+    # Clustering
+    clusters, cluster_assignments = clustering(segments, dist_matrix, max_eps, min_samples, min_cluster_size, cluster_selection_epsilon, n_clusters, affinity, n_neighbors, linkage, threshold, clustering_algorithm, progress_bar)
+
+    """ clusters = []
     clustering_model = None
     if max_eps is not None:
         clustering_model = clustering_algorithm(max_eps=max_eps, min_samples=min_samples)
@@ -477,7 +534,7 @@ def traclus(trajectories, max_eps=None, min_samples=5, directional=True, use_seg
         clustering_model = clustering_algorithm(min_samples=min_samples)
     cluster_assignments = clustering_model.fit_predict(dist_matrix)
     for c in range(min(cluster_assignments), max(cluster_assignments) + 1):
-        clusters.append([segments[i] for i in range(len(segments)) if cluster_assignments[i] == c])
+        clusters.append([segments[i] for i in range(len(segments)) if cluster_assignments[i] == c]) """
 
     if progress_bar:
         print()
@@ -492,83 +549,3 @@ def traclus(trajectories, max_eps=None, min_samples=5, directional=True, use_seg
         print()
 
     return partitions, segments, dist_matrix, clusters, cluster_assignments, representative_trajectories
-
-#* Representación de resultados
-
-def create_gdf(data):
-    valid_geometries = [LineString(x) for x in data if len(x) > 1]
-    gdf = gpd.GeoDataFrame(geometry=valid_geometries, crs='EPSG:4326')
-
-    return gdf
-
-def get_cluster_trajectories(trajectories, df):
-    _, _, _, _, _, representative_trajectories = traclus(trajectories)
-
-    # Representacion de las trayectorias pero sin el primer elemento, este parece ser solo un conjunto basura
-    representative_clusters = representative_trajectories[1:representative_trajectories.__len__()]
-
-    TRACLUS_map = plot_map_traclus(representative_clusters)
-    TRACLUS_map_df = plot_map_traclus_df(representative_clusters, df)
-
-    return TRACLUS_map, TRACLUS_map_df
-
-def plot_map_traclus(representative_clusters, cmap='tab20'):
-    # Crear un GeoDataFrame
-    gdf = create_gdf(representative_clusters)
-
-    # Visualizar en un mapa
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
-    gdf.plot(ax=ax, cmap=cmap, linewidth=2)
-    
-
-    # Añadir mapa base
-    ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=gdf.crs.to_string())
-
-    # Añadir título y etiquetas
-    plt.title('Representación de Trayectorias TRACLUS')
-    plt.xlabel('Longitud')
-    plt.ylabel('Latitud')
-
-    # Crear un objeto BytesIO para guardar la imagen
-    img_data = BytesIO()
-    plt.savefig(img_data, format='png')
-    img_data.seek(0)  # Mover el 'cursor' al principio del archivo en memoria
-    # Es importante cerrar la figura para liberar memoria
-    plt.close(fig)
-
-    # Codificar la imagen generada en base64
-    TRACLUS_map = base64.b64encode(img_data.read()).decode('utf-8')
-
-    return TRACLUS_map
-
-def plot_map_traclus_df(representative_clusters, df, cmap='tab20'):
-    # Crear un GeoDataFrame
-    gdf2 = create_gdf(df)
-    gdf = create_gdf(representative_clusters)
-
-    # Visualizar en un mapa
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
-    gdf2.plot(ax=ax, color='blue', alpha=0.2, linewidth=0.5)
-    gdf.plot(ax=ax, cmap=cmap, linewidth=2)
-    
-
-    # Añadir mapa base
-    ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=gdf.crs.to_string())
-
-    # Añadir título y etiquetas
-    plt.title('Representación de Trayectorias TRACLUS con trayectorias originales')
-    plt.xlabel('Longitud')
-    plt.ylabel('Latitud')
-
-    # Crear un objeto BytesIO para guardar la imagen
-    img_data = BytesIO()
-    plt.savefig(img_data, format='png')
-    img_data.seek(0)  # Mover el 'cursor' al principio del archivo en memoria
-    plt.show()
-    # Es importante cerrar la figura para liberar memoria
-    plt.close(fig)
-
-    # Codificar la imagen generada en base64
-    TRACLUS_map_df = base64.b64encode(img_data.read()).decode('utf-8')
-
-    return TRACLUS_map_df
