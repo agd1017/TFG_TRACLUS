@@ -5,18 +5,11 @@ import base64
 import io
 import pandas as pd
 import dash_table
-from Funtions import create_dataframe, map_ilustration, map_heat
+from Funtions import create_dataframe, map_ilustration, map_heat, solicitar_coordenadas
 from Data_loading import constructor
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
-# Provisional data
-
-data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
-nrows = 10
-
-gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering = constructor(data, nrows)
 
 # Pagina 0
 
@@ -81,19 +74,15 @@ def get_map_image_as_html(html_map, html_heatmap):
 
 def get_home_page():
     items1 = [
-        dbc.DropdownMenuItem("OPTICS", id="option-1-1"), 
-        dbc.DropdownMenuItem("HDBSCAN", id="option-1-2"),
-        dbc.DropdownMenuItem("DBSCAN", id="option-1-3"),
-        dbc.DropdownMenuItem("SpectralClustering", id="option-1-4"),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="option-1-5")
+        dbc.DropdownMenuItem("Item 1", id="option-1-1"), 
+        dbc.DropdownMenuItem("Item 2", id="option-1-2"),
+        dbc.DropdownMenuItem("Item 3", id="option-1-3")
     ]
 
     items2 = [
-        dbc.DropdownMenuItem("OPTICS", id="option-2-1"), 
-        dbc.DropdownMenuItem("HDBSCAN", id="option-2-2"),
-        dbc.DropdownMenuItem("DBSCAN", id="option-2-3"),
-        dbc.DropdownMenuItem("SpectralClustering", id="option-2-4"),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="option-2-5")
+        dbc.DropdownMenuItem("Item 1", id="option-2-1"), 
+        dbc.DropdownMenuItem("Item 2", id="option-2-2"),
+        dbc.DropdownMenuItem("Item 3", id="option-2-3")
     ]
 
     return html.Div([
@@ -114,8 +103,6 @@ def get_home_page():
 
 # Pagina comparacion
 def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
-    #! Debo cabiar los items que se introducion por mapas de seleciones del traclus
-    # TRACLUS_map = get_cluster_trajectories(gdf)
 
     return html.Div([
         dbc.Carousel(
@@ -132,15 +119,19 @@ def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
 
 def get_comparation_page():
     items1 = [
-        dbc.DropdownMenuItem("Item 1", id="item-1-1"), 
-        dbc.DropdownMenuItem("Item 2", id="item-1-2"),
-        dbc.DropdownMenuItem("Item 3", id="item-1-3")
+        dbc.DropdownMenuItem("OPTICS", id="item-1-1"), 
+        dbc.DropdownMenuItem("HDBSCAN", id="item-1-2"),
+        dbc.DropdownMenuItem("DBSCAN", id="item-1-3"),
+        dbc.DropdownMenuItem("SpectralClustering", id="item-1-4"),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-1-5")
     ]
 
     items2 = [
-        dbc.DropdownMenuItem("Item 1", id="item-2-1"), 
-        dbc.DropdownMenuItem("Item 2", id="item-2-2"),
-        dbc.DropdownMenuItem("Item 3", id="item-2-3")
+        dbc.DropdownMenuItem("OPTICS", id="item-2-1"), 
+        dbc.DropdownMenuItem("HDBSCAN", id="item-2-2"),
+        dbc.DropdownMenuItem("DBSCAN", id="item-2-3"),
+        dbc.DropdownMenuItem("SpectralClustering", id="item-2-4"),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-2-5")
     ]
 
     return html.Div([
@@ -224,7 +215,9 @@ def display_page(pathname):
     Output('map-clusters-1', 'children'),
     [Input('item-1-1', 'n_clicks'),
     Input('item-1-2', 'n_clicks'),
-    Input('item-1-3', 'n_clicks')]
+    Input('item-1-3', 'n_clicks'),
+    Input('item-1-4', 'n_clicks'),
+    Input('item-1-5', 'n_clicks')]
 )
 def display_clusters_1(*args):
     ctx = dash.callback_context
@@ -248,7 +241,9 @@ def display_clusters_1(*args):
     Output('map-clusters-2', 'children'),
     [Input('item-2-1', 'n_clicks'),
     Input('item-2-2', 'n_clicks'),
-    Input('item-2-3', 'n_clicks')]
+    Input('item-2-3', 'n_clicks'),
+    Input('item-2-4', 'n_clicks'),
+    Input('item-2-5', 'n_clicks')]
 )
 
 def display_clusters_2(*args):
@@ -265,7 +260,7 @@ def display_clusters_2(*args):
         elif button_id == 'item-2-3':
             return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
         elif button_id == 'item-2-4':
-            return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+            return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering,)
         elif button_id == 'item-2-5':
             return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
 
@@ -358,11 +353,14 @@ def update_output(n_clicks, n_clicks1, nrows, contents):
 
 def update_output_predeter(n_clicks):
     if n_clicks > 0:
-        nrows = 50000
-        filename = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
-        gdf = load_and_simplify_data(filename, nrows)
+        data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
+        nrows = 10
+        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering
+
+        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering = constructor (data, nrows)
+                
         return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
-                html.Div([f'{nrows} filas cargadas desde {filename}']))
+                html.Div([f'{nrows} filas cargadas desde {data}']))
 
 # Callback para capturar la entrada y mostrarla
 @app.callback(
