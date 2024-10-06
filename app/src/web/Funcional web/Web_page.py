@@ -1,17 +1,15 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import Input, Output, html, dcc, State
-import base64
-import io
-import pandas as pd
 import dash_table
-from Funtions import create_dataframe, map_ilustration, map_heat, solicitar_coordenadas
+from Funtions import map_ilustration, map_heat, solicitar_coordenadas
 from Data_loading import constructor
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+import requests
+import io
 
-# Pagina 0
+# Pagina Carga de datos
 
 def get_page_zero():
     return html.Div([
@@ -20,29 +18,29 @@ def get_page_zero():
         ], className='box title'),
         html.Div([
             html.Div([
-                html.H2("Archivo que se va a analizar:"),
-                dcc.Upload(
-                    id='upload-data',
-                    children=html.Div(['Arrastra o selecciona un archivo']),
-                    className='file-upload',
-                    accept='.csv'
+                html.H2("Introduce el enlace del archivo que se va a analizar:"),
+                dcc.Input(
+                    id='input-url',
+                    type='text',
+                    placeholder='Introduce el enlace del archivo .csv',
+                    className='url-input'
                 ),
             ], className='box inputfile'),
             html.Div([
                 html.H2("Número de trayectorias que se van a usar:"),
                 dcc.Input(
-                    id='nrows-input', 
-                    type='number', 
-                    placeholder='Número de filas', 
+                    id='nrows-input',
+                    type='number',
+                    placeholder='Número de filas',
                     value='',
                     className='number-input'
                 )
             ], className='box inputnumber'),
             html.Div([
-                dbc.Button('Configuración selecionada', id='confirm-button', n_clicks=0)
+                dbc.Button('Procesar enlace', id='process-url-button', n_clicks=0)
             ], className='box buttonsconfirm'),
             html.Div([
-                dbc.Button('Configuración predeterminada', id='default-config-button', n_clicks=0)   
+                dbc.Button('Configuración predeterminada', id='default-config-button', n_clicks=0)
             ], className='box buttonsdefault'),
         ], className='grid-data-container'),
         html.Div([
@@ -52,10 +50,12 @@ def get_page_zero():
             dbc.Spinner(children=[
                 html.Div(id='predeterminate-data', className='box output')
             ])
-        ], className='box output')
+        ], className='box output'),
+        dcc.Store(id='data-store')
     ], className='gid-zero-container')
 
-# Pagina home
+# Pagina mapa
+
 def get_map_image_as_html(html_map, html_heatmap):
     return html.Div([
             html.Div([
@@ -101,7 +101,8 @@ def get_home_page():
         ], className="box maps")
     ], className="grid-home-container")
 
-# Pagina comparacion
+# Pagina comparacion TRACLUS
+
 def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
 
     return html.Div([
@@ -153,6 +154,8 @@ def get_comparation_page():
         ], className="box map2")      
     ], className="grid-compratator-container")
 
+# Pagina tablas
+
 def get_table(tabla):
     # Convertir los valores que no son serializables a formato string
     if 'geometry' in tabla.columns:
@@ -192,34 +195,9 @@ def get_estadistic_page():
             ], className="box map1") 
         ])
     ])
-""" html.H1("Tabla Interactiva en Dash", className="text-center my-3"),
-                html.Div([
-                    dbc.DropdownMenu(
-                        item_table, label="Algoritmo de la tabla", color="primary"
-                    )
-                ], className="box menu1"),
-                # dbc.Button("Actualizar Datos", id="refresh-button", className="mb-3"),
-                dcc.Store(id='stored-data'),  # Almacenamiento en el lado del cliente
-                html.Div([
-                    dbc.Spinner(children=[html.Div(id='table-container')])  
-                ], className="box map1") 
-                dbc.Row(
-                    dbc.Col(
-                        dash_table.DataTable(
-                            id='table',
-                            columns=[{"name": i, "id": i} for i in create_dataframe().columns],
-                            filter_action='native',
-                            sort_action='native',
-                            page_action='native',
-                            page_size=10,
-                            style_table={'overflowX': 'auto'},
-                        ), width=12
-                    )
-                )
-            ], fluid=True) 
-        ]) """
-    
+
 # Creación de la aplicación Dash
+
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
 
 app.server.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024  # 5 GB en bytes
@@ -417,27 +395,37 @@ def update_output_predeter(n_clicks):
 
         return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
             html.Div([f'{nrows} filas cargadas desde {data}']))
-        
-
 
 @app.callback(
-    Output('output-container', 'children'),
-    Input('confirm-button', 'n_clicks'),
-    State('upload-data', 'contents'),
-    State('nrows-input', 'value')
+    [Output('output-container', 'children'),
+    Output('data-store', 'data')],
+    Input('process-url-button', 'n_clicks'),
+    State('input-url', 'value'),
+    State('nrows-input', 'value'),
+    prevent_initial_call=True
 )
-def update_output(n_clicks, contents, nrows):
-    if n_clicks > 0 and contents is not None:
-        try:
-            global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering
 
-            gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering = constructor (contents, int(nrows))
-                    
-            return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
-                html.Div([f'{nrows} filas cargadas desde NOMBREDELARCHIVO']))
-        except Exception as e:
-            print(e)
-            return html.Div("No se ha introducido los datos correctamente.")
+def process_csv_from_url(n_clicks, url, nrows):
+    if n_clicks > 0 and url is not None:
+        
+        result = constructor(url, nrows)
+
+        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+
+        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result   
+
+        return (html.Div(['Archivo cargado y procesado con configuración peronalizada.']),
+            html.Div([f'{nrows} filas cargadas desde {url}']))
 
 """ def update_output(n_clicks, contents, nrows, filename):
 
@@ -481,19 +469,6 @@ def update_output(n_clicks, contents, nrows):
                 return 'Hubo un error al procesar el archivo.'
         return 'No se ha subido ningún archivo.'
     #return 'No hay datos para mostrar.' """
-
-""" @app.callback(
-    Output('stored-data', 'data'),
-    Input('refresh-button', 'n_clicks'),
-    State('stored-data', 'data'),
-    prevent_initial_call=True
-)
-def update_stored_data(n_clicks, data):
-    if n_clicks is None or n_clicks == 0:
-        # Esto evita que la función se ejecute en la carga inicial
-        raise dash.exceptions.PreventUpdate
-    df = create_dataframe()  # Obtener los datos actualizados
-    return df.to_dict('records') """
 
 @app.callback(
     Output('table-container', 'children'),
