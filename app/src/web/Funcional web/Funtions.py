@@ -10,11 +10,58 @@ from io import BytesIO
 from pyproj import Transformer
 from shapely.geometry import LineString, box
 from TRACLUS_web import traclus as tr
+import io
+import os
 
-def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.01):
-    # Cargar datos
-    df = pd.read_csv(filename, nrows=rows, sep=",", low_memory=False)
+def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.01, chunksize=10000):
+    try:
+        """ df_list = []
+        chunk_iter = pd.read_csv(filename, sep=",", chunksize=chunksize, nrows=rows, low_memory=False)
+        for chunk in chunk_iter:
+            df_list.append(chunk)
+        df = pd.concat(df_list) """
+        # Cargar datos
+        df = pd.read_csv(filename, nrows=rows, sep=",", low_memory=False)
+
+        # Filtrar y crear LineString para cada polilínea
+        def create_line(x):
+            points = json.loads(x)
+            if len(points) > 1:
+                return LineString(points)
+            return None
+
+        df['geometry'] = df['POLYLINE'].apply(create_line)
+        df = df[df['geometry'].notnull()]  # Eliminar filas con geometrías nulas
+        gdf = gpd.GeoDataFrame(df, geometry='geometry')
+
+        # Simplificar las geometrías
+        gdf['geometry'] = gdf['geometry'].simplify(tolerance)
+
+        # Convertir las polilíneas de JSON a listas de coordenadas
+        df['POLYLINE'] = df['POLYLINE'].apply(lambda x: json.loads(x) if pd.notnull(x) else None)
+        df = df[df['POLYLINE'].apply(lambda x: x is not None and len(x) > 0)]  # Filtrar polilíneas nulas o vacías
+
+        # Preparar trayectorias para TRACLUS
+        trayectorias = [np.array(polyline) for polyline in df['POLYLINE']]
+
+        return gdf, trayectorias, df
     
+    except Exception as e:
+        print(f"Error cargando y simplificando datos: {e}")
+        raise e
+
+""" #! Carga de datos pureba provisional
+def load_and_simplify_data_df(input_data, rows, tolerance=0.001, umbral_distancia=0.01):
+    # Verifica si se ha pasado un filename o contenido de archivo
+    if isinstance(input_data, str):
+        # Si es un filename, se carga directamente desde el sistema
+        df = pd.read_csv(input_data, nrows=rows, sep=",", low_memory=False)
+    else:
+        # Si es contenido de archivo, decodifica y carga desde base64
+        content_type, content_string = input_data.split(',')
+        decoded = base64.b64decode(content_string)
+        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), nrows=rows, sep=",", low_memory=False)
+
     # Filtrar y crear LineString para cada polilínea
     def create_line(x):
         points = json.loads(x)
@@ -30,9 +77,6 @@ def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.0
     # Convertir a Geopandas DataFrame
     gdf = gpd.GeoDataFrame(df, geometry='geometry')
     
-
-    #! ARREGLO PROVISIONAL 
-
     # Simplificar las geometrías
     gdf['geometry'] = gdf['geometry'].simplify(tolerance)
 
@@ -45,7 +89,7 @@ def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.0
     # Preparar las trayectorias para TRACLUS
     trayectorias = [np.array(polyline) for polyline in df['POLYLINE']]
     
-    return gdf, trayectorias, df['POLYLINE']
+    return gdf, trayectorias, df['POLYLINE'] """
 
 def filter_data_in_area(gdf, minx, miny, maxx, maxy):
     # Crear un polígono de área de interés
@@ -191,16 +235,17 @@ def create_gdf(data):
     return gdf
 
 def get_cluster_trajectories(df, trajectories, max_eps=None, min_samples=5, min_cluster_size=None, cluster_selection_epsilon=None, n_clusters=2, affinity='rbf', n_neighbors=5, linkage='ward', threshold=None, directional=True, use_segments=True, clustering_algorithm=None):
-    _, _, _, _, _, representative_trajectories = tr(trajectories,  max_eps, min_samples, min_cluster_size, cluster_selection_epsilon, n_clusters, affinity, n_neighbors, linkage, threshold, directional, use_segments, clustering_algorithm)
+    _, segments, _, _, cluster_assignments, representative_trajectories = tr(trajectories,  max_eps, min_samples, min_cluster_size, cluster_selection_epsilon, n_clusters, affinity, n_neighbors, linkage, threshold, directional, use_segments, clustering_algorithm)
 
     # Representacion de las trayectorias pero sin el primer elemento, este parece ser solo un conjunto basura
     representative_clusters = representative_trajectories[1:representative_trajectories.__len__()]
     n_clusters = len(representative_clusters)
 
     TRACLUS_map = plot_map_traclus(representative_clusters)
-    TRACLUS_map_df = plot_map_traclus_df(representative_clusters, df)
+    TRACLUS_map_df = plot_map_traclus_df(representative_clusters, df['POLYLINE'])
+    tabla_relacional = relational_table(df, segments, cluster_assignments)
 
-    return TRACLUS_map, TRACLUS_map_df, n_clusters
+    return TRACLUS_map, TRACLUS_map_df, tabla_relacional, n_clusters
 
 def plot_map_traclus(representative_clusters, cmap='tab20'):
     # Crear un GeoDataFrame
@@ -277,3 +322,40 @@ def create_dataframe():
         'Columna 3': [5, 6, 7, 8],
         'Columna 4': ['E', 'F', 'G', 'H']
     })
+
+
+def relational_table(df, segments, cluster_assignments):
+    # Temporary list to store data before creating GeoDataFrame
+    gdf_stc_data = []
+    index = 0
+
+    for segment, cluster_id in zip(segments, cluster_assignments):
+        if isinstance(segment, np.ndarray):
+            line = LineString(segment)
+            tray_id_found = False
+            
+            for i, polyline in enumerate(df['POLYLINE'][index:len(df['POLYLINE'])]):
+                # Check if the polyline has 2 or more points
+                if i > 0:
+                    index += 1
+
+                if len(polyline) >= 2:
+                    tray_line = LineString(polyline)
+                    
+                    if tray_line.intersects(line):
+                        tray_id = index
+                        tray_id_found = True
+                        break  # Exit the loop once a matching tray_line is found
+                else:
+                    continue  # Skip this polyline as it cannot form a valid LineString
+
+            if not tray_id_found:
+                tray_id = -1  # Indicator for 'not found'
+
+            # Append valid data to the list
+            gdf_stc_data.append({'geometry': line, 'cluster_id': cluster_id, 'tray_id': tray_id})
+
+    # Create the GeoDataFrame from the collected data
+    gdf_stc = gpd.GeoDataFrame(gdf_stc_data, columns=['geometry', 'cluster_id', 'tray_id'])
+
+    return gdf_stc

@@ -153,29 +153,72 @@ def get_comparation_page():
         ], className="box map2")      
     ], className="grid-compratator-container")
 
+def get_table(tabla):
+    # Convertir los valores que no son serializables a formato string
+    if 'geometry' in tabla.columns:
+        tabla['geometry'] = tabla['geometry'].apply(lambda geom: str(geom))
+
+    return dash_table.DataTable(
+        id='table',
+        columns=[{"name": i, "id": i} for i in tabla.columns],
+        data=tabla.to_dict('records'),
+        filter_action='native',
+        sort_action='native',
+        page_action='native',
+        page_size=10,
+        style_table={'overflowX': 'auto'},
+    )
+
 def get_estadistic_page():
+    item_table = [
+        dbc.DropdownMenuItem("OPTICS", id="table-1"), 
+        dbc.DropdownMenuItem("HDBSCAN", id="table-2"),
+        dbc.DropdownMenuItem("DBSCAN", id="table-3"),
+        dbc.DropdownMenuItem("SpectralClustering", id="table-4"),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5")
+    ]
 
     return html.Div([
         dbc.Container([
             html.H1("Tabla Interactiva en Dash", className="text-center my-3"),
-            dbc.Button("Actualizar Datos", id="refresh-button", className="mb-3"),
-            dcc.Store(id='stored-data'),  # Almacenamiento en el lado del cliente
-            dbc.Row(
-                dbc.Col(
-                    dash_table.DataTable(
-                        id='table',
-                        columns=[{"name": i, "id": i} for i in create_dataframe().columns],
-                        filter_action='native',
-                        sort_action='native',
-                        page_action='native',
-                        page_size=10,
-                        style_table={'overflowX': 'auto'},
-                    ), width=12
+            html.Div([
+                dbc.DropdownMenu(
+                    item_table, label="Algoritmo de la tabla", color="primary"
                 )
-            )
-        ], fluid=True)  
+            ], className="box menu1"),
+            dcc.Store(id='stored-data'),  # Almacenamiento en el lado del cliente
+            html.Div([
+                dbc.Spinner(children=[html.Div(id='table-container')])  
+            ], className="box map1") 
+        ])
     ])
-
+""" html.H1("Tabla Interactiva en Dash", className="text-center my-3"),
+                html.Div([
+                    dbc.DropdownMenu(
+                        item_table, label="Algoritmo de la tabla", color="primary"
+                    )
+                ], className="box menu1"),
+                # dbc.Button("Actualizar Datos", id="refresh-button", className="mb-3"),
+                dcc.Store(id='stored-data'),  # Almacenamiento en el lado del cliente
+                html.Div([
+                    dbc.Spinner(children=[html.Div(id='table-container')])  
+                ], className="box map1") 
+                dbc.Row(
+                    dbc.Col(
+                        dash_table.DataTable(
+                            id='table',
+                            columns=[{"name": i, "id": i} for i in create_dataframe().columns],
+                            filter_action='native',
+                            sort_action='native',
+                            page_action='native',
+                            page_size=10,
+                            style_table={'overflowX': 'auto'},
+                        ), width=12
+                    )
+                )
+            ], fluid=True) 
+        ]) """
+    
 # Creación de la aplicación Dash
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
 
@@ -355,24 +398,65 @@ def update_output_predeter(n_clicks):
     if n_clicks > 0:
         data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
         nrows = 10
-        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering
 
-        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering = constructor (data, nrows)
-                
+        result = constructor(data, nrows)
+
+        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+
+        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result
+
         return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
-                html.Div([f'{nrows} filas cargadas desde {data}']))
+            html.Div([f'{nrows} filas cargadas desde {data}']))
+        
 
-# Callback para capturar la entrada y mostrarla
+
 @app.callback(
     Output('output-container', 'children'),
-    [Input('confirm-button', 'n_clicks')],
-    [State('nrows-input', 'value'),
-    State('upload-data', 'contents')],
-    prevent_initial_call=True
+    Input('confirm-button', 'n_clicks'),
+    State('upload-data', 'contents'),
+    State('nrows-input', 'value')
 )
+def update_output(n_clicks, contents, nrows):
+    if n_clicks > 0 and contents is not None:
+        try:
+            global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering
 
-def update_output(n_clicks, nrows, contents):
+            gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering = constructor (contents, int(nrows))
+                    
+            return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
+                html.Div([f'{nrows} filas cargadas desde NOMBREDELARCHIVO']))
+        except Exception as e:
+            print(e)
+            return html.Div("No se ha introducido los datos correctamente.")
+
+""" def update_output(n_clicks, contents, nrows, filename):
+
+
     if n_clicks > 0:
+        
+        try:
+            global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering
+
+            gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering = constructor (filename, nrows)
+                    
+            return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
+                html.Div([f'{nrows} filas cargadas desde NOMBREDELARCHIVO']))
+        except Exception as e:
+            print(e)
+            return 'No se ha introducido los datos correctamente.'
+
+
+
         if contents is not None:
             content_type, content_string = contents.split(',')
             decoded = base64.b64decode(content_string)
@@ -396,9 +480,9 @@ def update_output(n_clicks, nrows, contents):
                 print(e)
                 return 'Hubo un error al procesar el archivo.'
         return 'No se ha subido ningún archivo.'
-    return 'No hay datos para mostrar.'
+    #return 'No hay datos para mostrar.' """
 
-@app.callback(
+""" @app.callback(
     Output('stored-data', 'data'),
     Input('refresh-button', 'n_clicks'),
     State('stored-data', 'data'),
@@ -409,19 +493,36 @@ def update_stored_data(n_clicks, data):
         # Esto evita que la función se ejecute en la carga inicial
         raise dash.exceptions.PreventUpdate
     df = create_dataframe()  # Obtener los datos actualizados
-    return df.to_dict('records')
+    return df.to_dict('records') """
 
 @app.callback(
-    Output('table', 'data'),
-    Input('stored-data', 'data'),
-    prevent_initial_call=True  # Esto evita que la tabla se llene dos veces en la carga inicial
+    Output('table-container', 'children'),
+    [Input('table-1', 'n_clicks'),
+    Input('table-2', 'n_clicks'),
+    Input('table-3', 'n_clicks'),
+    Input('table-4', 'n_clicks'),
+    Input('table-5', 'n_clicks')],
+    prevent_initial_call=True
 )
-def update_table(data):
-    if data is None:
-        # Carga inicial de datos
-        return create_dataframe().to_dict('records')
-    return data
 
+def update_table(*args):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        return get_table(tabla_OPTICS) # "Seleccione un elemento para el mapa 2."
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        if button_id == 'table-1':
+            return get_table(tabla_OPTICS)
+        elif button_id == 'table-2':
+            return get_table(tabla_HDBSCAN)
+        elif button_id == 'table-3':
+            return get_table(tabla_DBSCAN)
+        elif button_id == 'table-4':
+            return get_table(tabla_SpectralClustering)
+        elif button_id == 'table-5':
+            return get_table(tabla_AgglomerativeClustering)
+        
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8050)
     # http://127.0.0.1:8050/
