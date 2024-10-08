@@ -146,9 +146,9 @@ def map_ilustration(gdf, minx, miny, maxx, maxy):
     plt.close(fig)
 
     # Codificar la imagen generada en base64
-    encoded_string = base64.b64encode(img_data.read()).decode('utf-8')
+    # encoded_string = base64.b64encode(img_data.read()).decode('utf-8')
 
-    return encoded_string
+    return img_data
 
 def map_heat(gdf, minx, miny, maxx, maxy, bin_count=300, posicion_x=0, posicion_y=0, zoom=2):  
     # Obtener las coordenadas x e y de las geometrías 
@@ -199,9 +199,9 @@ def map_heat(gdf, minx, miny, maxx, maxy, bin_count=300, posicion_x=0, posicion_
     plt.close(fig)
 
     # Codificar la imagen generada en base64
-    encoded_string = base64.b64encode(img_data.read()).decode('utf-8')
+    #encoded_string = base64.b64encode(img_data.read()).decode('utf-8')
 
-    return encoded_string
+    return img_data
 
 # Ahora mismo funciona para obtener las coordenadas maximas y minimas de un GeoDataFrame
 def solicitar_coordenadas(gdf):
@@ -273,9 +273,9 @@ def plot_map_traclus(representative_clusters, cmap='tab20'):
     plt.close(fig)
 
     # Codificar la imagen generada en base64
-    TRACLUS_map = base64.b64encode(img_data.read()).decode('utf-8')
+    #TRACLUS_map = base64.b64encode(img_data.read()).decode('utf-8')
 
-    return TRACLUS_map
+    return img_data
 
 def plot_map_traclus_df(representative_clusters, df, cmap='tab20'):
     # Crear un GeoDataFrame
@@ -305,9 +305,9 @@ def plot_map_traclus_df(representative_clusters, df, cmap='tab20'):
     plt.close(fig)
 
     # Codificar la imagen generada en base64
-    TRACLUS_map_df = base64.b64encode(img_data.read()).decode('utf-8')
+    #TRACLUS_map_df = base64.b64encode(img_data.read()).decode('utf-8')
 
-    return TRACLUS_map_df
+    return img_data
 
 
 # Funciones para la pagina "Estadisticas" (Pagina 3)

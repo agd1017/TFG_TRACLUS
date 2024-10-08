@@ -6,8 +6,8 @@ from Funtions import map_ilustration, map_heat, solicitar_coordenadas
 from Data_loading import constructor
 import matplotlib
 matplotlib.use('Agg')
-import requests
-import io
+import base64
+import zipfile
 
 # Pagina Carga de datos
 
@@ -55,8 +55,15 @@ def get_page_zero():
     ], className='gid-zero-container')
 
 # Pagina mapa
+def bytes_to_base64(image_bytes):
+    image_bytes.seek(0)  # Asegúrate de que el puntero esté al principio
+    return base64.b64encode(image_bytes.read()).decode('utf-8')
 
 def get_map_image_as_html(html_map, html_heatmap):
+
+    html_map = bytes_to_base64(html_map)
+    html_heatmap = bytes_to_base64(html_heatmap)
+
     return html.Div([
             html.Div([
                 html.Img(
@@ -103,7 +110,11 @@ def get_home_page():
 
 # Pagina comparacion TRACLUS
 
+# Ejemplo de uso para mostrar las imágenes en el carousel
 def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
+    # Convertir las imágenes a base64 para mostrarlas en el navegador
+    TRACLUS_map = bytes_to_base64(TRACLUS_map)
+    TRACLUS_map_df = bytes_to_base64(TRACLUS_map_df)
 
     return html.Div([
         dbc.Carousel(
@@ -192,7 +203,7 @@ def get_estadistic_page():
             dcc.Store(id='stored-data'),  # Almacenamiento en el lado del cliente
             html.Div([
                 dbc.Spinner(children=[html.Div(id='table-container')])  
-            ], className="box map1") 
+            ], className="box map1")          
         ])
     ])
 
@@ -210,7 +221,12 @@ app.layout = html.Div([
             dbc.NavItem(dbc.NavLink("TRACLUS", href="/", className="navbar-text-title")),
             dbc.NavItem(dbc.NavLink("Mapa de trayectorias", href="/home", className="navbar-text")),
             dbc.NavItem(dbc.NavLink("Comparacion de algoritmos", href="/comparacion", className="navbar-text")),
-            dbc.NavItem(dbc.NavLink("Estadísticas", href="/estadisticas", className="navbar-text"))  
+            dbc.NavItem(dbc.NavLink("Estadísticas", href="/estadisticas", className="navbar-text")),  
+            # Botón de descarga de datos
+            dbc.NavItem([
+                dbc.Button("Descargar Datos", id="btn-download-txt", className="navbar-text"),
+                dcc.Download(id="download-text")
+            ])
         ]),
         color="success",
         className="header-navbar"
@@ -318,6 +334,68 @@ def update_map(*args):
         
     return [map_image]
 
+@app.callback(
+    Output('predeterminate-data', 'children'),
+    [Input('default-config-button', 'n_clicks')],
+    prevent_initial_call=True
+)
+
+def update_output_predeter(n_clicks):
+    if n_clicks > 0:
+        data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
+        nrows = 10
+
+        result = constructor(data, nrows)
+
+        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+
+        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result
+
+        return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
+            html.Div([f'{nrows} filas cargadas desde {data}']))
+
+@app.callback(
+    [Output('output-container', 'children'),
+    Output('data-store', 'data')],
+    Input('process-url-button', 'n_clicks'),
+    State('input-url', 'value'),
+    State('nrows-input', 'value'),
+    prevent_initial_call=True
+)
+
+def process_csv_from_url(n_clicks, url, nrows):
+    if n_clicks > 0 and url is not None:
+                
+        result = constructor(url, nrows)
+
+        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+
+        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result   
+
+        return (html.Div(['Archivo cargado y procesado con configuración peronalizada.']),
+            html.Div([f'{nrows} filas cargadas desde {url}']))
+    
+
 """ @app.callback(
     [Output('output-container', 'children')],
     [Input('confirm-button', 'n_clicks'), 
@@ -365,67 +443,6 @@ def update_output(n_clicks, n_clicks1, nrows, contents):
         gdf = load_and_simplify_data(filename, nrows)
         return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
                 html.Div([f'{nrows} filas cargadas desde {filename}'])) """
-
-@app.callback(
-    Output('predeterminate-data', 'children'),
-    [Input('default-config-button', 'n_clicks')],
-    prevent_initial_call=True
-)
-
-def update_output_predeter(n_clicks):
-    if n_clicks > 0:
-        data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
-        nrows = 10
-
-        result = constructor(data, nrows)
-
-        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
-
-        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result
-
-        return (html.Div(['Archivo cargado y procesado con configuración predeterminada.']),
-            html.Div([f'{nrows} filas cargadas desde {data}']))
-
-@app.callback(
-    [Output('output-container', 'children'),
-    Output('data-store', 'data')],
-    Input('process-url-button', 'n_clicks'),
-    State('input-url', 'value'),
-    State('nrows-input', 'value'),
-    prevent_initial_call=True
-)
-
-def process_csv_from_url(n_clicks, url, nrows):
-    if n_clicks > 0 and url is not None:
-        
-        result = constructor(url, nrows)
-
-        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
-
-        gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result   
-
-        return (html.Div(['Archivo cargado y procesado con configuración peronalizada.']),
-            html.Div([f'{nrows} filas cargadas desde {url}']))
 
 """ def update_output(n_clicks, contents, nrows, filename):
 
@@ -497,6 +514,48 @@ def update_table(*args):
             return get_table(tabla_SpectralClustering)
         elif button_id == 'table-5':
             return get_table(tabla_AgglomerativeClustering)
+        
+#* Descargar datos en formato ZIP
+
+@app.callback(
+    Output("download-text", "data"),
+    Input("btn-download-txt", "n_clicks"),
+    prevent_initial_call=True,
+)
+
+def func(n_clicks):
+    zip_file_name = "table.zip"
+    with zipfile.ZipFile(zip_file_name, mode="w") as zf:
+        # Crear archivos TXT en memoria y agregarlos al ZIP
+        txt_files = {
+            "tabla_OPTICS.txt": tabla_OPTICS.to_csv(index=False, sep='\t'),
+            "tabla_HDBSCAN.txt": tabla_HDBSCAN.to_csv(index=False, sep='\t'),
+            "tabla_DBSCAN.txt": tabla_DBSCAN.to_csv(index=False, sep='\t'),
+            "tabla_SpectralClustering.txt": tabla_SpectralClustering.to_csv(index=False, sep='\t'),
+            "tabla_AgglomerativeClustering.txt": tabla_AgglomerativeClustering.to_csv(index=False, sep='\t'),
+        }
+        
+        for filename, txt_content in txt_files.items():
+            zf.writestr(filename, txt_content)
+
+        ## Agregar imágenes PNG al ZIP
+        images = {
+            "map.png": html_map,
+            "heatmap.png": html_heatmap,
+            "OPTICS.png": TRACLUS_map_OPTICS,
+            "HDBSCAN.png": TRACLUS_map_HDBSCAN,
+            "DBSCAN.png": TRACLUS_map_DBSCAN,
+            "SpectralClustering.png": TRACLUS_map_SpectralClustering,
+            "AgglomerativeClustering.png": TRACLUS_map_AgglomerativeClustering,
+        }
+        
+        for img_name, img_buf in images.items():
+            img_buf.seek(0)  # Asegúrate de que el puntero esté al inicio del buffer
+            zf.writestr(img_name, img_buf.getvalue())  # Agregar la imagen al ZIP
+        
+    return dcc.send_file(zip_file_name)
+
+
         
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8050)
