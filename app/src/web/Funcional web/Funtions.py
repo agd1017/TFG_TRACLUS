@@ -133,7 +133,7 @@ def map_ilustration(gdf, minx, miny, maxx, maxy):
     ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron)
 
     # Añadir título y etiquetas
-    plt.title('Mapa de Trayectorias de Taxis con Mapa de Fondo')
+    plt.title('Mapa de Trayectorias con Mapa de Fondo')
     plt.xlabel('Longitud')
     plt.ylabel('Latitud')
 
@@ -186,7 +186,7 @@ def map_heat(gdf, minx, miny, maxx, maxy, bin_count=300, posicion_x=0, posicion_
 
     # Añadir barra de color, títulos y etiquetas usando el objeto mappable
     plt.colorbar(mappable, label='Densidad')
-    plt.title('Mapa de Calor de Trayectorias de Taxis con Mapa de Fondo')
+    plt.title('Mapa de Calor de Trayectorias con Mapa de Fondo')
     plt.xlabel('Longitud')
     plt.ylabel('Latitud')
 
@@ -312,17 +312,6 @@ def plot_map_traclus_df(representative_clusters, df, cmap='tab20'):
 
 # Funciones para la pagina "Estadisticas" (Pagina 3)
 #* Tablas de datos
-
-def create_dataframe():
-
-    # Esta función podría ser más compleja y cargar o generar los datos
-    return pd.DataFrame({
-        'Columna 1': [1, 2, 3, 4],
-        'Columna 2': ['A', 'B', 'C', 'D'],
-        'Columna 3': [5, 6, 7, 8],
-        'Columna 4': ['E', 'F', 'G', 'H']
-    })
-
 
 def relational_table(df, segments, cluster_assignments):
     # Temporary list to store data before creating GeoDataFrame

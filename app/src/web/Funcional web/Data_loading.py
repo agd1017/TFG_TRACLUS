@@ -1,6 +1,5 @@
 from Funtions import *
 from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
-
 # Constructor
 
 def constructor (data, nrows):
@@ -8,11 +7,14 @@ def constructor (data, nrows):
         # Carga de datos
         gdf, tray, df = load_and_simplify_data(data, nrows)
 
+        # minx, miny, maxx, maxy = -8.689, 41.107, -8.560, 41.185
+        minx, miny, maxx, maxy = solicitar_coordenadas(gdf)
+
         # Carga mapa ilustrado (cordenadas provisionales, puede que se añadan carga con difernetes cordenadas a la vez)
-        html_map = map_ilustration(gdf, -8.689, 41.107, -8.560, 41.185)
+        html_map = map_ilustration(gdf, minx, miny, maxx, maxy)
 
         # Carga mapa de calor
-        html_heatmap = map_heat(gdf, -8.689, 41.107, -8.560, 41.185)
+        html_heatmap = map_heat(gdf, minx, miny, maxx, maxy)
 
         # Carga de representaciones de trayectorias traclus
         # Algortmo OPTICS

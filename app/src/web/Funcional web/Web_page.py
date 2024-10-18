@@ -23,7 +23,7 @@ def get_page_zero():
                     id='input-url',
                     type='text',
                     placeholder='Introduce el enlace del archivo .csv',
-                    className='url-input'
+                    className='file-upload'
                 ),
             ], className='box inputfile'),
             html.Div([
@@ -37,7 +37,7 @@ def get_page_zero():
                 )
             ], className='box inputnumber'),
             html.Div([
-                dbc.Button('Procesar enlace', id='process-url-button', n_clicks=0)
+                dbc.Button('Comenzar procesamiento', id='process-url-button', n_clicks=0)
             ], className='box buttonsconfirm'),
             html.Div([
                 dbc.Button('Configuración predeterminada', id='default-config-button', n_clicks=0)
@@ -51,7 +51,9 @@ def get_page_zero():
                 html.Div(id='predeterminate-data', className='box output')
             ])
         ], className='box output'),
-        dcc.Store(id='data-store')
+        html.Div([
+            dcc.Store(id='data-store')
+        ], className='box data-store')        
     ], className='gid-zero-container')
 
 # Pagina mapa
@@ -211,7 +213,7 @@ def get_estadistic_page():
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
 
-app.server.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024  # 5 GB en bytes
+# app.server.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024  # 5 GB en bytes
 
 # Definición del layout principal de la aplicación utilizando componentes de Dash
 app.layout = html.Div([
@@ -343,7 +345,7 @@ def update_map(*args):
 def update_output_predeter(n_clicks):
     if n_clicks > 0:
         data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
-        nrows = 10
+        nrows = 5
 
         result = constructor(data, nrows)
 
@@ -374,8 +376,13 @@ def update_output_predeter(n_clicks):
 )
 
 def process_csv_from_url(n_clicks, url, nrows):
-    if n_clicks > 0 and url is not None:
-                
+    if n_clicks > 0:
+        
+        if not url:
+            return "No se ha introducido ningún enlace.", None
+        if not nrows:
+            return "No se ha introducido el número de filas.", None
+
         result = constructor(url, nrows)
 
         global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
@@ -392,9 +399,8 @@ def process_csv_from_url(n_clicks, url, nrows):
         TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
         tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result   
 
-        return (html.Div(['Archivo cargado y procesado con configuración peronalizada.']),
+        return (html.Div(['Archivo cargado y procesado con configuración personalizada.']),
             html.Div([f'{nrows} filas cargadas desde {url}']))
-    
 
 """ @app.callback(
     [Output('output-container', 'children')],
