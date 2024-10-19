@@ -1,6 +1,6 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, html, dcc, State
+from dash import *
 import dash_table
 from Funtions import map_ilustration, map_heat, solicitar_coordenadas
 from Data_loading import constructor
