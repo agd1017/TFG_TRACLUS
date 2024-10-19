@@ -166,8 +166,8 @@ body {
     display: grid;
     padding: 0 1%;
     margin: 0.7% 0;
-    grid-template-areas: 'selector row-label dropdown input';  /* Cuatro áreas: selector, row-label, dropdown, input */
-    grid-template-columns: 20% 20% 40% 20%;  /* Cuatro columnas: selector, row-label, dropdown, input */
+    grid-template-areas: 'selector row-label dropdown1 dropdown2 input1 input2';  /* Cuatro áreas: selector, row-label, dropdown, input */
+    grid-template-columns: 5% 8% auto auto auto;  /* Cuatro columnas: selector, row-label, dropdown, input */
 }
 
 /* Estilo para el selector */
