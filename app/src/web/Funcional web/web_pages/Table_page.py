@@ -21,13 +21,13 @@ def get_table(tabla):
         style_table={'overflowX': 'auto'},
     )
 
-def get_page_tables():
+def get_page_tables(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON):
     item_table = [
-        dbc.DropdownMenuItem("OPTICS", id="table-1"), 
-        dbc.DropdownMenuItem("HDBSCAN", id="table-2"),
-        dbc.DropdownMenuItem("DBSCAN", id="table-3"),
-        dbc.DropdownMenuItem("SpectralClustering", id="table-4"),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5")
+        dbc.DropdownMenuItem("OPTICS", id="table-1", disabled=not OPTICS_ON), 
+        dbc.DropdownMenuItem("HDBSCAN", id="table-2", disabled=not HDBSCAN_ON),
+        dbc.DropdownMenuItem("DBSCAN", id="table-3", disabled=not DBSCAN_ON),
+        dbc.DropdownMenuItem("SpectralClustering", id="table-4", disabled=not Spect_ON),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5", disabled=not Aggl_ON)
     ]
 
     return html.Div([

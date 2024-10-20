@@ -423,45 +423,44 @@ def get_representative_trajectory(lines, min_lines=3):
 
 #* Clustering de las trayectorias con los diversoso algoritmos
 
-def clustering(segments, dist_matrix, max_eps, min_samples, min_cluster_size, cluster_selection_epsilon, n_clusters, affinity, n_neighbors, linkage, threshold, clustering_algorithm, progress_bar):
+def clustering(segments, dist_matrix, clustering_algorithm, 
+                OPTICS_min_samples, OPTICS_max_eps, OPTICS_metric, OPTICS_algorithm,
+                DBSCAN_min_samples, DBSCAN_eps, DBSCAN_metric, DBSCAN_algorithm,
+                HDBSCAN_min_samples, HDBSCAN_metric, HDBSCAN_algorithm,
+                Spect_n_clusters, Spect_affinity, Spect_assign_labels,
+                Aggl_n_clusters, Aggl_linkage, Aggl_metric):
     
     clusters = []
     clustering_model = None
 
     # Para OPTICS
     if clustering_algorithm == OPTICS:
-        params = {'min_samples': min_samples}
-        if max_eps is not None:
-            params['max_eps'] = max_eps
+        params = {'min_samples': OPTICS_min_samples, 'max_eps': OPTICS_max_eps, 'metric': OPTICS_metric, 'algorithm': OPTICS_algorithm}
         clustering_model = OPTICS(**params)
 
     # Para DBSCAN
     elif clustering_algorithm == DBSCAN:
-        params = {'eps': max_eps if max_eps is not None else 0.5, 'min_samples': min_samples}
+        params = {'min_samples': DBSCAN_min_samples, 'eps': DBSCAN_eps, 'metric': DBSCAN_metric, 'algorithm': DBSCAN_algorithm}
         clustering_model = DBSCAN(**params)
 
     # Para HDBSCAN
     elif clustering_algorithm == HDBSCAN:
-        params = {'min_samples': min_samples}
-        if min_cluster_size is not None:
-            params['min_cluster_size'] = min_cluster_size
-        if cluster_selection_epsilon is not None:
-            params['cluster_selection_epsilon'] = cluster_selection_epsilon
+        params = {'min_samples': HDBSCAN_min_samples, 'metric': HDBSCAN_metric, 'algorithm': HDBSCAN_algorithm}
         clustering_model = HDBSCAN(**params)
 
     # Para SpectralClustering
     elif clustering_algorithm == SpectralClustering:
-        params = {'n_clusters': n_clusters, 'affinity': affinity, 'n_neighbors': n_neighbors}
+        params = {'n_clusters': Spect_n_clusters, 'affinity': Spect_affinity, 'assign_labels': Spect_assign_labels}
         clustering_model = SpectralClustering(**params)
 
     # Para AgglomerativeClustering
     elif clustering_algorithm == AgglomerativeClustering:
-        params = {'n_clusters': n_clusters, 'linkage': linkage}
+        params = {'n_clusters': Aggl_n_clusters, 'linkage': Aggl_linkage, 'metric': Aggl_metric}
         clustering_model = AgglomerativeClustering(**params)
 
-    elif clustering_algorithm == Birch:
+    """ elif clustering_algorithm == Birch:
         params = {'n_clusters': n_clusters, 'threshold': threshold}
-        clustering_model = Birch(**params)
+        clustering_model = Birch(**params) """
 
     # Asegurar que el modelo se ha creado antes de continuar
     if clustering_model is not None:
@@ -475,7 +474,11 @@ def clustering(segments, dist_matrix, max_eps, min_samples, min_cluster_size, cl
 
 # Traclus
 
-def traclus(trajectories, max_eps=None, min_samples=10, min_cluster_size=None, cluster_selection_epsilon=None, n_clusters=2, affinity='rbf', n_neighbors=5, linkage='ward', threshold=None, directional=True, use_segments=True, clustering_algorithm=OPTICS, mdl_weights=[1,1,1], d_weights=[1,1,1], progress_bar=False):
+def traclus(trajectories, directional=True, use_segments=True, clustering_algorithm=OPTICS, mdl_weights=[1,1,1], d_weights=[1,1,1], 
+            OPTICS_min_samples=None, OPTICS_max_eps=None, OPTICS_metric=None, OPTICS_algorithm=None, DBSCAN_min_samples=None, 
+            DBSCAN_eps=None, DBSCAN_metric=None, DBSCAN_algorithm=None, HDBSCAN_min_samples=None, 
+            HDBSCAN_metric=None, HDBSCAN_algorithm=None, Spect_n_clusters=None, Spect_affinity=None, Spect_assign_labels=None,
+            Aggl_n_clusters=None, Aggl_linkage=None, Aggl_metric=None):
     """
         Trajectory Clustering Algorithm
     """
@@ -491,27 +494,27 @@ def traclus(trajectories, max_eps=None, min_samples=10, min_cluster_size=None, c
             raise ValueError("Trajectories must be a list of numpy arrays of shape (n, 2)")
 
     # Partition trajectories
-    if progress_bar:
-        print("Partitioning trajectories...")
+    """ if progress_bar:
+        print("Partitioning trajectories...") """
     partitions = []
     i = 0
     for trajectory in trajectories:
-        if progress_bar:
+        """ if progress_bar:
             print(f"\rTrajectory {i + 1}/{len(trajectories)}", end='')
-            i += 1
+            i += 1 """
         partitions.append(partition(trajectory, directional=directional, progress_bar=False, w_perpendicular=mdl_weights[0], w_angular=mdl_weights[2]))
-    if progress_bar:
-        print()
+    """ if progress_bar:
+        print() """
 
     # Convert partitions to segments
     segments = []
     if use_segments:
-        if progress_bar:
-            print("Converting partitioned trajectories to segments...")
+        """ if progress_bar:
+            print("Converting partitioned trajectories to segments...") """
         i = 0
         for parts in partitions:
-            if progress_bar:
-                print(f"\rPartition {i + 1}/{len(parts)}", end='')
+            """ if progress_bar:
+                print(f"\rPartition {i + 1}/{len(parts)}", end='') """
             segments += partition2segments(parts)
     else:
         segments = partitions
@@ -519,12 +522,17 @@ def traclus(trajectories, max_eps=None, min_samples=10, min_cluster_size=None, c
     # Get distance matrix
     dist_matrix = get_vectorice4_distance_matrix(segments, directional=directional, w_perpendicular=d_weights[0], w_parallel=d_weights[1], w_angular=d_weights[2])
 
-    # Group the partitions
+    """ # Group the partitions
     if progress_bar:
-        print("Grouping partitions...")
+        print("Grouping partitions...") """
 
     # Clustering
-    clusters, cluster_assignments = clustering(segments, dist_matrix, max_eps, min_samples, min_cluster_size, cluster_selection_epsilon, n_clusters, affinity, n_neighbors, linkage, threshold, clustering_algorithm, progress_bar)
+    clusters, cluster_assignments = clustering(segments, dist_matrix, clustering_algorithm, 
+                                                OPTICS_min_samples, OPTICS_max_eps, OPTICS_metric, OPTICS_algorithm,
+                                                DBSCAN_min_samples, DBSCAN_eps, DBSCAN_metric, DBSCAN_algorithm,
+                                                HDBSCAN_min_samples, HDBSCAN_metric, HDBSCAN_algorithm,
+                                                Spect_n_clusters, Spect_affinity, Spect_assign_labels,
+                                                Aggl_n_clusters, Aggl_linkage, Aggl_metric)
 
     """ clusters = []
     clustering_model = None
@@ -536,16 +544,16 @@ def traclus(trajectories, max_eps=None, min_samples=10, min_cluster_size=None, c
     for c in range(min(cluster_assignments), max(cluster_assignments) + 1):
         clusters.append([segments[i] for i in range(len(segments)) if cluster_assignments[i] == c]) """
 
-    if progress_bar:
-        print()
+    """ if progress_bar:
+        print() """
 
     # Get the representative trajectories
-    if progress_bar:
-        print("Getting representative trajectories...")
+    """ if progress_bar:
+        print("Getting representative trajectories...") """
     representative_trajectories = []
     for cluster in clusters:
         representative_trajectories.append(get_representative_trajectory(cluster))
-    if progress_bar:
-        print()
+    """ if progress_bar:
+        print() """
 
     return partitions, segments, dist_matrix, clusters, cluster_assignments, representative_trajectories

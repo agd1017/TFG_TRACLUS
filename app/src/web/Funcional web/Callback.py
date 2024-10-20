@@ -16,6 +16,8 @@ from Data_loading import constructor
 # Definición de la aplicación Dash
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
 
+app.server.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024  # 5 GB en bytes
+
 # Definición del layout principal de la aplicación utilizando componentes de Dash
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -65,9 +67,9 @@ def display_page(pathname):
     elif pathname == '/map-page':
         return get_page_map()
     elif pathname == '/TRACLUS-map':
-        return get_page_mapTRACLUS()
+        return get_page_mapTRACLUS(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON)
     elif pathname == '/estadisticas':
-        return get_page_tables()
+        return get_page_tables(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON)
     else:
         return get_page_select()
 
@@ -91,11 +93,81 @@ def navigate_to_page(n_clicks_previous, n_clicks_new):
 @app.callback(
     Output('url', 'pathname', allow_duplicate=True),
     Input('execute-button', 'n_clicks'),
+    [State('selector-OPTICS', 'value'),
+    State('dropdown-OPTICS-metric', 'value'),
+    State('dropdown-OPTICS-algorithm', 'value'),
+    State('input-OPTICS-eps', 'value'),
+    State('input-OPTICS-sample', 'value'),
+    State('selector-DBSCAN', 'value'),
+    State('dropdown-DBSCAN-metric', 'value'),
+    State('dropdown-DBSCAN-algorithm', 'value'),
+    State('input-DBSCAN-eps', 'value'),
+    State('input-DBSCAN-sample', 'value'),
+    State('selector-HDBSCAN', 'value'),
+    State('dropdown-HDBSCAN-metric', 'value'),
+    State('dropdown-HDBSCAN-algorithm', 'value'),
+    State('input-HDBSCAN-sample', 'value'),
+    State('selector-AgglomerativeClustering', 'value'),
+    State('dropdown-AgglomerativeClustering-metric', 'value'),
+    State('dropdown-AgglomerativeClustering-linkage', 'value'),
+    State('input-AgglomerativeClustering-n_clusters', 'value'),
+    State('selector-SpectralClustering', 'value'),
+    State('dropdown-SpectralClustering-affinity', 'value'),
+    State('dropdown-SpectralClustering-assign_labels', 'value'),
+    State('input-SpectralClustering-n_clusters', 'value')],
     prevent_initial_call=True
 )
-def navigate_to_page_dataupdate(n_clicks_data):
+def navigate_to_page_dataupdate(n_clicks_data, checkOptics, OPTICS_metric_value, OPTICS_algorithm_value, OPTICS_eps_value, OPTICS_sample_value, checkDBSCAN, 
+                                DBSCAN_metric_value, DBSCAN_algorithm_value, DBSCAN_eps_value, DBSCAN_sample_value, checkHDBSCAN, HDBSCAN_metric_value, 
+                                HDBSCAN_algorithm_value, HDBSCAN_sample_value, checkAgglomerativeClustering, Aggl_metric_value, Aggl_linkage_value, 
+                                Aggl_n_clusters_value, checkSpectralClustering, Spect_affinity_value, Spect_assign_labels_value, Spect_n_clusters_value):
     if n_clicks_data is not None and n_clicks_data > 0:
-        return '/data-update'
+        global OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON 
+        OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON  = False, False, False, False, False
+        
+        global OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample
+        OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample = None, None, None, None
+        global DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample
+        DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample = None, None, None, None
+        global HDBSCAN_metric, HDBSCAN_algorithm, HDBSCAN_sample
+        HDBSCAN_metric, HDBSCAN_algorithm, HDBSCAN_sample = None, None, None
+        global Aggl_metric, Aggl_linkage, Aggl_n_clusters
+        Aggl_metric, Aggl_linkage, Aggl_n_clusters = None, None, None
+        global Spect_affinity, Spect_assign_labels, Spect_n_clusters
+        Spect_affinity, Spect_assign_labels, Spect_n_clusters = None, None, None
+
+        if checkOptics and OPTICS_metric_value and OPTICS_algorithm_value and OPTICS_eps_value and OPTICS_sample_value:
+            OPTICS_ON = True
+            OPTICS_metric = OPTICS_metric_value
+            OPTICS_algorithm = OPTICS_algorithm_value
+            OPTICS_eps = OPTICS_eps_value
+            OPTICS_sample = OPTICS_sample_value
+        if checkDBSCAN and DBSCAN_metric_value and DBSCAN_algorithm_value and DBSCAN_eps_value and DBSCAN_sample_value:
+            DBSCAN_ON = True
+            DBSCAN_metric = DBSCAN_metric_value
+            DBSCAN_algorithm = DBSCAN_algorithm_value
+            DBSCAN_eps = DBSCAN_eps_value
+            DBSCAN_sample = DBSCAN_sample_value
+        if checkHDBSCAN and HDBSCAN_metric_value and HDBSCAN_algorithm_value and HDBSCAN_sample_value:
+            HDBSCAN_ON = True
+            HDBSCAN_metric = HDBSCAN_metric_value
+            HDBSCAN_algorithm = HDBSCAN_algorithm_value
+            HDBSCAN_sample = HDBSCAN_sample_value
+        if checkAgglomerativeClustering and Aggl_metric_value and Aggl_linkage_value and Aggl_n_clusters_value:
+            Aggl_ON = True
+            Aggl_metric = Aggl_metric_value
+            Aggl_linkage = Aggl_linkage_value
+            Aggl_n_clusters = Aggl_n_clusters_value
+        if checkSpectralClustering and Spect_affinity_value and Spect_assign_labels_value and Spect_n_clusters_value:
+            Spect_ON = True
+            Spect_affinity = Spect_affinity_value
+            Spect_assign_labels = Spect_assign_labels_value
+            Spect_n_clusters = Spect_n_clusters_value
+
+        #print(f"{OPTICS_metric_value}, {OPTICS_algorithm_value}, {OPTICS_eps_value}, {OPTICS_sample_value}")
+
+        if OPTICS_ON or DBSCAN_ON or HDBSCAN_ON or Aggl_ON or Spect_ON:
+            return '/data-update'
     return '/new-experiment'
 
 # Callbacks for disable/enable selectors
@@ -155,7 +227,7 @@ def toggle_rowS_controls(selector_value_S):
 
 @app.callback(
     Output('url', 'pathname', allow_duplicate=True),
-    Output('output-container', 'data', allow_duplicate=True),
+    Output('output-container', 'children', allow_duplicate=True),
     Input('default-config-button', 'n_clicks'),
     prevent_initial_call=True
 )
@@ -165,25 +237,35 @@ def upload_output_predeter(n_clicks_upload):
         data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
         nrows = 5
 
-        result = constructor(data, nrows)
+        result = constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, DBSCAN_ON, 
+                            DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample, HDBSCAN_ON, HDBSCAN_metric, 
+                            HDBSCAN_algorithm, HDBSCAN_sample, Aggl_ON, Aggl_metric, Aggl_linkage, 
+                            Aggl_n_clusters, Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters)
 
         global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
         TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
         TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
         TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
         TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message
 
         gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
         TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
         TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
         TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
         TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result
+        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message = result
 
-        return '/map-page', {}
+        # Manejar el mensaje de error
+        if error_message:
+            return dash.no_update, html.Div([error_message])
 
-@app.callback(
+        return '/map-page', html.Div(['Procesamiento exitoso.'])
+
+    # Si no se ha hecho clic en el botón, no realizar cambios
+    return dash.no_update, dash.no_update
+
+""" @app.callback(
     Output('url', 'pathname', allow_duplicate=True),
     Output('output-container', 'data', allow_duplicate=True),
     Input('process-url-button', 'n_clicks'),
@@ -195,7 +277,7 @@ def upload_output_predeter(n_clicks_upload):
 def process_csv_from_url(n_clicks_upload, url, nrows):
     if n_clicks_upload is not None and n_clicks_upload > 0:
         
-        """  if not url:
+        if not url:
             return "No se ha introducido ningún enlace.", None
         if not nrows:
             return "No se ha introducido el número de filas.", None
@@ -215,8 +297,8 @@ def process_csv_from_url(n_clicks_upload, url, nrows):
         TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
         TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
         tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result   
-        """
-        return '/map-page', {}
+        
+        return '/map-page', {} """
 
 # Callbacks for map page
     
@@ -254,6 +336,7 @@ def update_map(*args):
     return [map_image]
 
 # Callbacks for TRACLUS map page
+
 
 @app.callback(
     Output('map-clusters-1', 'children'),

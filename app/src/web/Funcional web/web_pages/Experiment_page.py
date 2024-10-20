@@ -14,30 +14,30 @@ def expirement_row_OPTICS():
         ),
         html.Div(f'OPTICS', className='row-label'),
         # Dropdown metric
-        dbc.DropdownMenu(
-            label=f'Seleccionar metric',
-            id=f'dropdown-OPTICS-metric',
-            children=[
-                dbc.DropdownMenuItem(f'euclidean', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'l1', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'l2', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'manhattan', id=f'opcion_4'),
-                dbc.DropdownMenuItem(f'cosine', id=f'opcion_5'),
-                dbc.DropdownMenuItem(f'cityblock', id=f'opcion_6')
+        dcc.Dropdown(
+            id='dropdown-OPTICS-metric',
+            options=[
+                {'label': 'euclidean', 'value': 'euclidean'},
+                {'label': 'l1', 'value': 'l1'},
+                {'label': 'l2', 'value': 'l2'},
+                {'label': 'manhattan', 'value': 'manhattan'},
+                {'label': 'cosine', 'value': 'cosine'},
+                {'label': 'cityblock', 'value': 'cityblock'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar metric',
+            className='custom-dropdown'
         ),
         # Dropdown algorithm
-        dbc.DropdownMenu(
-            label=f'Seleccionar algorithm',
-            id=f'dropdown-OPTICS-algorithm',
-            children=[
-                dbc.DropdownMenuItem(f'auto', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'ball_tree', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'kd_tree', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'brute', id=f'opcion_4')
+        dcc.Dropdown(
+            id='dropdown-OPTICS-algorithm',
+            options=[
+                {'label': 'auto', 'value': 'auto'},
+                {'label': 'ball_tree', 'value': 'ball_tree'},
+                {'label': 'kd_tree', 'value': 'kd_tree'},
+                {'label': 'brute', 'value': 'brute'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar algorithm',
+            className='custom-dropdown'
         ),
         # Input numérico Max_eps
         dcc.Input(
@@ -68,30 +68,30 @@ def expirement_row_DBSCAN():
         ),
         html.Div(f'DBSCAN', className='row-label'),
         # Dropdown metric
-        dbc.DropdownMenu(
-            label=f'Seleccionar metric',
-            id=f'dropdown-DBSCAN-metric',
-            children=[
-                dbc.DropdownMenuItem(f'euclidean', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'l1', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'l2', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'manhattan', id=f'opcion_4'),
-                dbc.DropdownMenuItem(f'cosine', id=f'opcion_5'),
-                dbc.DropdownMenuItem(f'cityblock', id=f'opcion_6')
+        dcc.Dropdown(
+            id='dropdown-DBSCAN-metric',
+            options=[
+                {'label': 'euclidean', 'value': 'euclidean'},
+                {'label': 'l1', 'value': 'l1'},
+                {'label': 'l2', 'value': 'l2'},
+                {'label': 'manhattan', 'value': 'manhattan'},
+                {'label': 'cosine', 'value': 'cosine'},
+                {'label': 'cityblock', 'value': 'cityblock'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar metric',
+            className='custom-dropdown'
         ),
         # Dropdown algorithm
-        dbc.DropdownMenu(
-            label=f'Seleccionar algorithm',
-            id=f'dropdown-DBSCAN-algorithm',
-            children=[
-                dbc.DropdownMenuItem(f'auto', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'ball_tree', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'kd_tree', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'brute', id=f'opcion_4')
+        dcc.Dropdown(
+            id='dropdown-DBSCAN-algorithm',
+            options=[
+                {'label': 'auto', 'value': 'auto'},
+                {'label': 'ball_tree', 'value': 'ball_tree'},
+                {'label': 'kd_tree', 'value': 'kd_tree'},
+                {'label': 'brute', 'value': 'brute'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar algorithm',
+            className='custom-dropdown'
         ),
         # Input numérico Eps
         dcc.Input(
@@ -122,30 +122,30 @@ def expirement_row_HDBSCAN():
         ),
         html.Div(f'HDBSCAN', className='row-label'),
         # Dropdown metric
-        dbc.DropdownMenu(
-            label=f'Seleccionar metric',
-            id=f'dropdown-HDBSCAN-metric',
-            children=[
-                dbc.DropdownMenuItem(f'euclidean', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'l1', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'l2', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'manhattan', id=f'opcion_4'),
-                dbc.DropdownMenuItem(f'cosine', id=f'opcion_5'),
-                dbc.DropdownMenuItem(f'cityblock', id=f'opcion_6')
+        dcc.Dropdown(
+            id='dropdown-HDBSCAN-metric',
+            options=[
+                {'label': 'euclidean', 'value': 'euclidean'},
+                {'label': 'l1', 'value': 'l1'},
+                {'label': 'l2', 'value': 'l2'},
+                {'label': 'manhattan', 'value': 'manhattan'},
+                {'label': 'cosine', 'value': 'cosine'},
+                {'label': 'cityblock', 'value': 'cityblock'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar metric',
+            className='custom-dropdown'
         ),
         # Dropdown algorithm
-        dbc.DropdownMenu(
-            label=f'Seleccionar algorithm',
-            id=f'dropdown-HDBSCAN-algorithm',
-            children=[
-                dbc.DropdownMenuItem(f'auto', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'ball_tree', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'kd_tree', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'brute', id=f'opcion_4')
+        dcc.Dropdown(
+            id='dropdown-HDBSCAN-algorithm',
+            options=[
+                {'label': 'auto', 'value': 'auto'},
+                {'label': 'ball_tree', 'value': 'ball_tree'},
+                {'label': 'kd_tree', 'value': 'kd_tree'},
+                {'label': 'brute', 'value': 'brute'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar algorithm',
+            className='custom-dropdown'
         ),
         # Input numérico Min_samples
         dcc.Input(
@@ -168,30 +168,30 @@ def expirement_row_AgglomerativeClustering():
         ),
         html.Div(f'AgglomerativeClustering', className='row-label'),
         # Dropdown metric
-        dbc.DropdownMenu(
-            label=f'Seleccionar metric',
-            id=f'dropdown-AgglomerativeClustering-metric',
-            children=[
-                dbc.DropdownMenuItem(f'euclidean', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'l1', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'l2', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'manhattan', id=f'opcion_4'),
-                dbc.DropdownMenuItem(f'cosine', id=f'opcion_5'),
-                dbc.DropdownMenuItem(f'cityblock', id=f'opcion_6')
+        dcc.Dropdown(
+            id='dropdown-AgglomerativeClustering-metric',
+            options=[
+                {'label': 'euclidean', 'value': 'euclidean'},
+                {'label': 'l1', 'value': 'l1'},
+                {'label': 'l2', 'value': 'l2'},
+                {'label': 'manhattan', 'value': 'manhattan'},
+                {'label': 'cosine', 'value': 'cosine'},
+                {'label': 'cityblock', 'value': 'cityblock'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar metric',
+            className='custom-dropdown'
         ),
         # Dropdown linkage
-        dbc.DropdownMenu(
-            label=f'Seleccionar linkage',
-            id=f'dropdown-AgglomerativeClustering-linkage',
-            children=[
-                dbc.DropdownMenuItem(f'ward', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'complete', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'average', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'single', id=f'opcion_4')
+        dcc.Dropdown(
+            id='dropdown-AgglomerativeClustering-linkage',
+            options=[
+                {'label': 'ward', 'value': 'ward'},
+                {'label': 'complete', 'value': 'complete'},
+                {'label': 'average', 'value': 'average'},
+                {'label': 'single', 'value': 'single'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar linkage',
+            className='custom-dropdown'
         ),
         # Input numérico n_clusters
         dcc.Input(
@@ -214,27 +214,27 @@ def expirement_row_SpectralClustering():
         ),
         html.Div(f'SpectralClustering', className='row-label'),
         # Dropdown affinity
-        dbc.DropdownMenu(
-            label=f'Seleccionar affinity',
-            id=f'dropdown-SpectralClustering-affinity',
-            children=[
-                dbc.DropdownMenuItem(f'nearest_neighbors', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'rbf', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'precomputed', id=f'opcion_3'),
-                dbc.DropdownMenuItem(f'precomputed_nearest_neighbors', id=f'opcion_4')
+        dcc.Dropdown(
+            id='dropdown-SpectralClustering-affinity',
+            options=[
+                {'label': 'nearest_neighbors', 'value': 'nearest_neighbors'},
+                {'label': 'rbf', 'value': 'rbf'},
+                {'label': 'precomputed', 'value': 'precomputed'},
+                {'label': 'precomputed_nearest_neighbors', 'value': 'precomputed_nearest_neighbors'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar affinity',
+            className='custom-dropdown'
         ),
         # Dropdown assign_labels
-        dbc.DropdownMenu(
-            label=f'Seleccionar assign_labels',
-            id=f'dropdown-SpectralClustering-assign_labels',
-            children=[
-                dbc.DropdownMenuItem(f'kmeans', id=f'opcion_1'),
-                dbc.DropdownMenuItem(f'discretize', id=f'opcion_2'),
-                dbc.DropdownMenuItem(f'cluster_qr', id=f'opcion_3')
+        dcc.Dropdown(
+            id='dropdown-SpectralClustering-assign_labels',
+            options=[
+                {'label': 'kmeans', 'value': 'kmeans'},
+                {'label': 'discretize', 'value': 'discretize'},
+                {'label': 'cluster_qr', 'value': 'cluster_qr'}
             ],
-            className='dropdown'
+            placeholder='Seleccionar assign_labels',
+            className='custom-dropdown'
         ),
         # Input numérico n_clusters
         dcc.Input(
@@ -272,3 +272,5 @@ def get_page_experiment():
             dbc.Button('Ejecutar funciones', id='execute-button', color='primary', className='execute-button')
         ], className='button-container'),
     ], className='gid-experiment-container')
+
+

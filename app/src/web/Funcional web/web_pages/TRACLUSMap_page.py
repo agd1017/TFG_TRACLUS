@@ -28,21 +28,21 @@ def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
         )
     ], className="container-map")
 
-def get_page_mapTRACLUS():
+def get_page_mapTRACLUS(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON):
     items1 = [
-        dbc.DropdownMenuItem("OPTICS", id="item-1-1"), 
-        dbc.DropdownMenuItem("HDBSCAN", id="item-1-2"),
-        dbc.DropdownMenuItem("DBSCAN", id="item-1-3"),
-        dbc.DropdownMenuItem("SpectralClustering", id="item-1-4"),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-1-5")
+        dbc.DropdownMenuItem("OPTICS", id="item-1-1", disabled=not OPTICS_ON), 
+        dbc.DropdownMenuItem("HDBSCAN", id="item-1-2", disabled=not HDBSCAN_ON),
+        dbc.DropdownMenuItem("DBSCAN", id="item-1-3", disabled=not DBSCAN_ON),
+        dbc.DropdownMenuItem("SpectralClustering", id="item-1-4", disabled=not Spect_ON),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-1-5", disabled=not Aggl_ON)
     ]
 
     items2 = [
-        dbc.DropdownMenuItem("OPTICS", id="item-2-1"), 
-        dbc.DropdownMenuItem("HDBSCAN", id="item-2-2"),
-        dbc.DropdownMenuItem("DBSCAN", id="item-2-3"),
-        dbc.DropdownMenuItem("SpectralClustering", id="item-2-4"),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-2-5")
+        dbc.DropdownMenuItem("OPTICS", id="item-2-1", disabled=not OPTICS_ON), 
+        dbc.DropdownMenuItem("HDBSCAN", id="item-2-2", disabled=not HDBSCAN_ON),
+        dbc.DropdownMenuItem("DBSCAN", id="item-2-3", disabled=not DBSCAN_ON),
+        dbc.DropdownMenuItem("SpectralClustering", id="item-2-4", disabled=not Spect_ON),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-2-5",disabled=not Aggl_ON)
     ]
 
     return html.Div([
