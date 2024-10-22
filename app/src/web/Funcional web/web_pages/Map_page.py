@@ -6,8 +6,13 @@ import base64
 
 # Pagina mapa
 def bytes_to_base64(image_bytes):
-    image_bytes.seek(0)  # Asegúrate de que el puntero esté al principio
-    return base64.b64encode(image_bytes.read()).decode('utf-8')
+    if isinstance(image_bytes, bytes):
+        return base64.b64encode(image_bytes).decode('utf-8')  # Convierte bytes a base64
+    elif hasattr(image_bytes, 'getvalue'):
+        image_bytes.seek(0)
+        return base64.b64encode(image_bytes.getvalue()).decode('utf-8')  # Para BytesIO
+    else:
+        raise ValueError("Expected bytes or BytesIO object")
 
 def get_map_image_as_html(html_map, html_heatmap):
 

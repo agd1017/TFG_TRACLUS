@@ -75,18 +75,112 @@ def display_page(pathname):
 
 # Callbacks for select page
 
+def read_html_file(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except UnicodeDecodeError:
+        with open(file_path, 'rb') as f:
+            return f.read()  # Devuelve como bytes
+        
+def convert_to_dataframe(file_path):
+    # Lee el archivo CSV y lo convierte a un DataFrame
+    return pd.read_csv(file_path)
+
 @app.callback(
     Output('url', 'pathname', allow_duplicate=True),
-    [Input('previous-exp-button', 'n_clicks'),
-    Input('new-exp-button', 'n_clicks')],
+    Input('new-exp-button', 'n_clicks'),
     prevent_initial_call=True
 )
-def navigate_to_page(n_clicks_previous, n_clicks_new):
-    if n_clicks_previous > 0:
-        return '/previous-experiments'
-    elif n_clicks_new > 0:
+def navigate_to_page( n_clicks_new):
+    if n_clicks_new > 0:
         return '/new-experiment'
     return '/'
+
+def load_data(files, folder_name):
+    global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
+    TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
+    TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
+    TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
+    TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
+    tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+    global OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON 
+
+    # Reiniciar las variables globales
+    OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON  = False, False, False, False, False
+    gdf = tray = html_map = html_heatmap = TRACLUS_map_OPTICS = None
+    TRACLUS_map_df_OPTICS = TRACLUS_map_HDBSCAN = TRACLUS_map_df_HDBSCAN = None
+    TRACLUS_map_DBSCAN = TRACLUS_map_df_DBSCAN = TRACLUS_map_SpectralClustering = None
+    TRACLUS_map_df_SpectralClustering = TRACLUS_map_AgglomerativeClustering = None
+    TRACLUS_map_df_AgglomerativeClustering = tabla_OPTICS = tabla_HDBSCAN = None
+    tabla_DBSCAN = tabla_SpectralClustering = tabla_AgglomerativeClustering = None
+
+    for file in files:
+            file_path = os.path.join(EXPERIMENTS_DIR, folder_name, file)
+
+            if file == "resultado_gdf.geojson":
+                gdf = gpd.read_file(file_path)
+            elif file == "html_map.html":
+                html_map = read_html_file(file_path)
+            elif file == "html_heatmap.html":
+                html_heatmap = read_html_file(file_path)
+            elif file == "TRACLUS_map_OPTICS.html":
+                OPTICS_ON = True
+                TRACLUS_map_OPTICS = read_html_file(file_path)
+            elif file == "TRACLUS_map_df_OPTICS.html":
+                TRACLUS_map_df_OPTICS = read_html_file(file_path)
+            elif file == "TRACLUS_map_HDBSCAN.html":
+                HDBSCAN_ON = True
+                TRACLUS_map_HDBSCAN = read_html_file(file_path)
+            elif file == "TRACLUS_map_df_HDBSCAN.html":
+                TRACLUS_map_df_HDBSCAN = read_html_file(file_path)
+            elif file == "TRACLUS_map_DBSCAN.html":
+                DBSCAN_ON = True
+                TRACLUS_map_DBSCAN = read_html_file(file_path)
+            elif file == "TRACLUS_map_df_DBSCAN.html":
+                TRACLUS_map_df_DBSCAN = read_html_file(file_path)
+            elif file == "TRACLUS_map_SpectralClustering.html":
+                Spect_ON = True
+                TRACLUS_map_SpectralClustering = read_html_file(file_path)
+            elif file == "TRACLUS_map_df_SpectralClustering.html":
+                TRACLUS_map_df_SpectralClustering = read_html_file(file_path)
+            elif file == "TRACLUS_map_AgglomerativeClustering.html":
+                Aggl_ON = True
+                TRACLUS_map_AgglomerativeClustering = read_html_file(file_path)
+            elif file == "TRACLUS_map_df_AgglomerativeClustering.html":
+                TRACLUS_map_df_AgglomerativeClustering = read_html_file(file_path)
+            elif file == "tabla_OPTICS.csv":
+                tabla_OPTICS = convert_to_dataframe(file_path)
+            elif file == "tabla_HDBSCAN.csv":
+                tabla_HDBSCAN = convert_to_dataframe(file_path)
+            elif file == "tabla_DBSCAN.csv":
+                tabla_DBSCAN = convert_to_dataframe(file_path)
+            elif file == "tabla_SpectralClustering.csv":
+                tabla_SpectralClustering = convert_to_dataframe(file_path)
+            elif file == "tabla_AgglomerativeClustering.csv":
+                tabla_AgglomerativeClustering = convert_to_dataframe(file_path)
+
+@app.callback(
+    Output('url', 'pathname', allow_duplicate=True),
+    Output('file-list-container', 'children'),
+    [Input('experiment-dropdown', 'value'),
+    Input('previous-exp-button', 'n_clicks')],
+    prevent_initial_call=True
+)
+def display_files_in_selected_folder(folder_name, n_clicks_previous):
+    if n_clicks_previous > 0:
+        if folder_name is None:
+            return dash.no_update, html.Div(["Selecciona una carpeta para ver los archivos."])
+
+        # Obtener los archivos dentro de la carpeta seleccionada
+        files = list_files_in_folder(folder_name)
+        
+        load_data(files, folder_name)
+
+        if OPTICS_ON or DBSCAN_ON or HDBSCAN_ON or Aggl_ON or Spect_ON:
+            return '/map-page', {}
+    
+    return dash.no_update, dash.no_update
 
 # Callbacks for experiment page
 
@@ -225,15 +319,97 @@ def toggle_rowS_controls(selector_value_S):
 
 # Callbacks for data upload page
 
+def save_html_or_binary(file_path, content):
+    # Si el contenido es un flujo de bytes (_io.BytesIO), lo guardamos como binario
+    if isinstance(content, bytes):
+        with open(file_path, 'wb') as f:
+            f.write(content)
+    elif hasattr(content, 'getvalue'):  # Si es un objeto BytesIO
+        with open(file_path, 'wb') as f:
+            f.write(content.getvalue())
+    else:
+        # Si es una cadena de texto, lo guardamos como texto
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+def save_data(folder_name):
+    # Crear la carpeta en la ubicación deseada
+    folder_path = os.path.join("C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/saved_results", folder_name)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    # Guardar los datos en la carpeta creada:
+    # 1. Guardar gdf como archivo GeoJSON
+    if gdf is not None:
+        gdf.to_file(os.path.join(folder_path, "resultado_gdf.geojson"), driver='GeoJSON')
+
+    # 2. Guardar los mapas HTML, si existen
+    save_html_or_binary(os.path.join(folder_path, "html_map.html"), html_map if html_map is not None else "")
+    save_html_or_binary(os.path.join(folder_path, "html_heatmap.html"), html_heatmap if html_heatmap is not None else "")
+
+    # 3. Guardar cada uno de los mapas de TRACLUS en formato HTML si no son None
+    if TRACLUS_map_OPTICS is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_OPTICS.html"), TRACLUS_map_OPTICS)
+
+    if TRACLUS_map_HDBSCAN is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_HDBSCAN.html"), TRACLUS_map_HDBSCAN)
+
+    if TRACLUS_map_DBSCAN is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_DBSCAN.html"), TRACLUS_map_DBSCAN)
+
+    if TRACLUS_map_SpectralClustering is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_SpectralClustering.html"), TRACLUS_map_SpectralClustering)
+
+    if TRACLUS_map_AgglomerativeClustering is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_AgglomerativeClustering.html"), TRACLUS_map_AgglomerativeClustering)
+
+    # 4. Guardar los mapas con DataFrames en archivos HTML si no son None
+    if TRACLUS_map_df_OPTICS is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_OPTICS.html"), TRACLUS_map_df_OPTICS)
+
+    if TRACLUS_map_df_HDBSCAN is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_HDBSCAN.html"), TRACLUS_map_df_HDBSCAN)
+
+    if TRACLUS_map_df_DBSCAN is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_DBSCAN.html"), TRACLUS_map_df_DBSCAN)
+
+    if TRACLUS_map_df_SpectralClustering is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_SpectralClustering.html"), TRACLUS_map_df_SpectralClustering)
+
+    if TRACLUS_map_df_AgglomerativeClustering is not None:
+        save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_AgglomerativeClustering.html"), TRACLUS_map_df_AgglomerativeClustering)
+
+    # 5. Guardar las tablas generadas por cada algoritmo en CSV si no son None
+    if tabla_OPTICS is not None:
+        tabla_OPTICS.to_csv(os.path.join(folder_path, "tabla_OPTICS.csv"), index=False)
+
+    if tabla_HDBSCAN is not None:
+        tabla_HDBSCAN.to_csv(os.path.join(folder_path, "tabla_HDBSCAN.csv"), index=False)
+
+    if tabla_DBSCAN is not None:
+        tabla_DBSCAN.to_csv(os.path.join(folder_path, "tabla_DBSCAN.csv"), index=False)
+
+    if tabla_SpectralClustering is not None:
+        tabla_SpectralClustering.to_csv(os.path.join(folder_path, "tabla_SpectralClustering.csv"), index=False)
+
+    if tabla_AgglomerativeClustering is not None:
+        tabla_AgglomerativeClustering.to_csv(os.path.join(folder_path, "tabla_AgglomerativeClustering.csv"), index=False)
+
 @app.callback(
     Output('url', 'pathname', allow_duplicate=True),
     Output('output-container', 'children', allow_duplicate=True),
     Input('default-config-button', 'n_clicks'),
+    # Input('folder-name-input', 'value'), 
     prevent_initial_call=True
 )
 
 def upload_output_predeter(n_clicks_upload):
     if n_clicks_upload is not None and n_clicks_upload > 0:
+
+        folder_name = "Experimento_1"
+        if not folder_name:
+            return dash.no_update, html.Div(["Por favor, introduce un nombre para la carpeta."])
+
         data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
         nrows = 5
 
@@ -259,6 +435,9 @@ def upload_output_predeter(n_clicks_upload):
         # Manejar el mensaje de error
         if error_message:
             return dash.no_update, html.Div([error_message])
+        
+        # Guardar los resultados en una carpeta
+        save_data(folder_name)
 
         return '/map-page', html.Div(['Procesamiento exitoso.'])
 
@@ -460,30 +639,6 @@ def func(n_clicks):
             zf.writestr(img_name, img_buf.getvalue())  # Agregar la imagen al ZIP
         
     return dcc.send_file(zip_file_name)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8050)

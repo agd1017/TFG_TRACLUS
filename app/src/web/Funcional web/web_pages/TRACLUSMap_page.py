@@ -4,11 +4,15 @@ import matplotlib
 matplotlib.use('Agg')
 import base64
 
-# Pagina comparacion TRACLUS
 def bytes_to_base64(image_bytes):
-    image_bytes.seek(0)  # Asegúrate de que el puntero esté al principio
-    return base64.b64encode(image_bytes.read()).decode('utf-8')
-
+    if isinstance(image_bytes, bytes):
+        return base64.b64encode(image_bytes).decode('utf-8')  # Convierte bytes a base64
+    elif hasattr(image_bytes, 'getvalue'):
+        image_bytes.seek(0)
+        return base64.b64encode(image_bytes.getvalue()).decode('utf-8')  # Para BytesIO
+    else:
+        raise ValueError("Expected bytes or BytesIO object")
+    
 # Ejemplo de uso para mostrar las imágenes en el carousel
 def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
     # Convertir las imágenes a base64 para mostrarlas en el navegador
