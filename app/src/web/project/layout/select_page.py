@@ -2,24 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import *
 import matplotlib
 matplotlib.use('Agg')
-import os
+from utils import list_experiment_folders
 
 # Pagina Experimento
-
-EXPERIMENTS_DIR = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/saved_results"
-
-def list_experiment_folders():
-    """Devuelve una lista con las carpetas dentro del directorio de resultados."""
-    folders = [f for f in os.listdir(EXPERIMENTS_DIR) if os.path.isdir(os.path.join(EXPERIMENTS_DIR, f))]
-    return folders
-
-def list_files_in_folder(folder_name):
-    """Devuelve una lista de archivos dentro de la carpeta seleccionada."""
-    folder_path = os.path.join(EXPERIMENTS_DIR, folder_name)
-    files = os.listdir(folder_path)
-    return files
-
-
 
 def get_page_select():
     return html.Div([

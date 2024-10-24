@@ -1,0 +1,1 @@
+UPLOAD_FOLDER = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/saved_results"

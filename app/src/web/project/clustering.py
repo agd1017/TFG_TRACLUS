@@ -1,6 +1,31 @@
-from Funtions import *
+from TRACLUS import traclus as tr
 from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
-# Constructor
+from data_processing import load_and_simplify_data, relational_table
+from mapping import map_ilustration, map_heat, plot_map_traclus, plot_map_traclus_df, solicitar_coordenadas
+
+def get_cluster_trajectories(df, trajectories, directional=True, use_segments=True, clustering_algorithm=None, 
+                            OPTICS_metric=None, OPTICS_algorithm=None, OPTICS_eps=None, OPTICS_sample=None, 
+                            DBSCAN_metric=None, DBSCAN_algorithm=None, DBSCAN_eps=None, DBSCAN_sample=None, 
+                            HDBSCAN_metric=None, HDBSCAN_algorithm=None, HDBSCAN_sample=None, 
+                            Aggl_metric=None, Aggl_linkage=None, Aggl_n_clusters=None, 
+                            Spect_affinity=None, Spect_assign_labels=None, Spect_n_clusters=None):
+    
+    result = tr(trajectories=trajectories, directional=directional, use_segments=use_segments, clustering_algorithm=clustering_algorithm, 
+                OPTICS_min_samples=OPTICS_sample, OPTICS_max_eps=OPTICS_eps, OPTICS_metric=OPTICS_metric, OPTICS_algorithm=OPTICS_algorithm, 
+                DBSCAN_min_samples=DBSCAN_sample, DBSCAN_eps=DBSCAN_eps, DBSCAN_metric=DBSCAN_metric, DBSCAN_algorithm=DBSCAN_algorithm, 
+                HDBSCAN_min_samples=HDBSCAN_sample, HDBSCAN_metric=HDBSCAN_metric, HDBSCAN_algorithm=HDBSCAN_algorithm, 
+                Spect_n_clusters=Spect_n_clusters, Spect_affinity=Spect_affinity, Spect_assign_labels=Spect_assign_labels,
+                Aggl_n_clusters=Aggl_n_clusters, Aggl_linkage=Aggl_linkage, Aggl_metric=Aggl_metric)
+    
+    _, segments, _, _, cluster_assignments, representative_trajectories = result
+    # Representacion de las trayectorias pero sin el primer elemento, este parece ser solo un conjunto basura
+    representative_clusters = representative_trajectories[1:representative_trajectories.__len__()]
+
+    TRACLUS_map = plot_map_traclus(representative_clusters)
+    TRACLUS_map_df = plot_map_traclus_df(representative_clusters, df['POLYLINE'])
+    tabla_relacional = relational_table(df, segments, cluster_assignments)
+
+    return TRACLUS_map, TRACLUS_map_df, tabla_relacional
 
 def constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, 
                 DBSCAN_ON, DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample, 

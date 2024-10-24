@@ -3,7 +3,7 @@ from dash import *
 import matplotlib
 matplotlib.use('Agg')
 
-def expirement_row_OPTICS():
+def experiment_row_OPTICS():
     return html.Div([
         # Selector
         dcc.Checklist(
@@ -57,7 +57,7 @@ def expirement_row_OPTICS():
         )
     ], className='grid-row-container')
 
-def expirement_row_DBSCAN():
+def experiment_row_DBSCAN():
     return html.Div([
         # Selector
         dcc.Checklist(
@@ -111,7 +111,7 @@ def expirement_row_DBSCAN():
         )
     ], className='grid-row-container')
 
-def expirement_row_HDBSCAN():
+def experiment_row_HDBSCAN():
     return html.Div([
         # Selector
         dcc.Checklist(
@@ -157,7 +157,7 @@ def expirement_row_HDBSCAN():
         )
     ], className='grid-row-container')
 
-def expirement_row_AgglomerativeClustering():
+def experiment_row_Aggl():
     return html.Div([
         # Selector
         dcc.Checklist(
@@ -203,7 +203,7 @@ def expirement_row_AgglomerativeClustering():
         )
     ], className='grid-row-container')
 
-def expirement_row_SpectralClustering():
+def experiment_row_Spect():
     return html.Div([
         # Selector
         dcc.Checklist(
@@ -255,15 +255,15 @@ def get_page_experiment():
         # Contenedor con grid
         html.Div([
             html.Hr(),
-            expirement_row_OPTICS(),
+            experiment_row_OPTICS(),
             html.Hr(),
-            expirement_row_DBSCAN(),
+            experiment_row_DBSCAN(),
             html.Hr(),
-            expirement_row_HDBSCAN(),
+            experiment_row_HDBSCAN(),
             html.Hr(),
-            expirement_row_AgglomerativeClustering(),
+            experiment_row_Aggl(),
             html.Hr(),
-            expirement_row_SpectralClustering(),
+            experiment_row_Spect(),
             html.Hr()
         ], className='grid-selecetors-container'),
 

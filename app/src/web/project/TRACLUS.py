@@ -1,17 +1,9 @@
-import pandas as pd
-import json 
 import numpy as np
 from sklearn.cluster import OPTICS
 import warnings
 import time
 import threading
-import geopandas as gpd 
 import numpy as np
-import matplotlib.pyplot as plt
-import contextily as ctx
-from shapely.geometry import LineString
-import base64
-from io import BytesIO
 from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
 
 #* Optimizacion provisional y forma original

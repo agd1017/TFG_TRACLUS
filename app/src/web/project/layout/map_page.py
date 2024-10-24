@@ -2,17 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import *
 import matplotlib
 matplotlib.use('Agg')
-import base64
+from utils import bytes_to_base64
 
 # Pagina mapa
-def bytes_to_base64(image_bytes):
-    if isinstance(image_bytes, bytes):
-        return base64.b64encode(image_bytes).decode('utf-8')  # Convierte bytes a base64
-    elif hasattr(image_bytes, 'getvalue'):
-        image_bytes.seek(0)
-        return base64.b64encode(image_bytes.getvalue()).decode('utf-8')  # Para BytesIO
-    else:
-        raise ValueError("Expected bytes or BytesIO object")
 
 def get_map_image_as_html(html_map, html_heatmap):
 
