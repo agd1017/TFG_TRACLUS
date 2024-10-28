@@ -1,83 +1,94 @@
 \capitulo{3}{Conceptos teóricos}
 
-En aquellos proyectos que necesiten para su comprensión y desarrollo de unos conceptos teóricos de una determinada materia o de un determinado dominio de conocimiento, debe existir un apartado que sintetice dichos conceptos.
+En este apartado se presentan los conceptos teóricos fundamentales que permiten comprender el marco conceptual en el que se desarrolla este trabajo. Estos conceptos proporcionan el contexto necesario para el análisis y desarrollo del estudio realizado.
 
-Algunos conceptos teóricos de \LaTeX{} \footnote{Créditos a los proyectos de Álvaro López Cantero: Configurador de Presupuestos y Roberto Izquierdo Amo: PLQuiz}.
+La discusión se centrará en los principios relacionados con el algoritmo TRACLUS, dado que este ha sido el enfoque principal del estudio y representa la mayor complejidad en su implementación y análisis.
 
-\section{Secciones}
+\section{TRACLUS}
 
-Las secciones se incluyen con el comando section.
+TRACLUS es un algoritmo de agrupación (\textit{clustering}) especializado en datos de trayectorias, diseñado para identificar patrones comunes de movimiento en conjuntos de datos de trayectorias, como rutas de vehículos, movimientos de animales o trayectorias de fenómenos meteorológicos. A diferencia de los algoritmos tradicionales de \textit{clustering} que agrupan puntos individuales, TRACLUS se enfoca en el agrupamiento de trayectorias completas, descomponiendo cada trayectoria en segmentos y detectando patrones comunes en subtrayectorias específicas. Este enfoque es útil en estudios donde los objetos presentan secuencias de movimiento en el espacio y el tiempo, permitiendo identificar similitudes parciales dentro de grandes volúmenes de datos.
 
-\subsection{Subsecciones}
+\subsection*{Principios y Funcionamiento de TRACLUS}
 
-Además de secciones tenemos subsecciones.
-
-\subsubsection{Subsubsecciones}
-
-Y subsecciones. 
-
-
-\section{Referencias}
-
-Las referencias se incluyen en el texto usando cite~\cite{wiki:latex}. Para citar webs, artículos o libros~\cite{koza92}, si se desean citar más de uno en el mismo lugar~\cite{bortolot2005, koza92}.
-
-
-\section{Imágenes}
-
-Se pueden incluir imágenes con los comandos standard de \LaTeX, pero esta plantilla dispone de comandos propios como por ejemplo el siguiente:
-
-\imagen{escudoInfor}{Autómata para una expresión vacía}{.5}
-
-
-
-\section{Listas de items}
-
-Existen tres posibilidades:
-
-\begin{itemize}
-	\item primer item.
-	\item segundo item.
-\end{itemize}
+El funcionamiento de TRACLUS se basa en dos etapas principales: la segmentación de trayectorias y la agrupación de segmentos de trayectorias. Ambas etapas están diseñadas para abordar la naturaleza secuencial y direccional de las trayectorias, empleando un enfoque basado en densidad que permite una identificación precisa de subtrayectorias similares.
 
 \begin{enumerate}
-	\item primer item.
-	\item segundo item.
+    \item \textbf{Segmentación de Trayectorias}: La primera etapa de TRACLUS es dividir cada trayectoria en segmentos de línea más cortos en función de cambios direccionales o puntos de inflexión. Estos puntos característicos dividen la trayectoria en subtrayectorias que pueden ser más fácilmente comparables. Este paso es crucial porque permite detectar patrones comunes en segmentos específicos, en lugar de requerir una coincidencia exacta en toda la trayectoria.
+
+    \item \textbf{Agrupación Basada en Densidad de Segmentos}: En lugar de agrupar puntos aislados, TRACLUS agrupa segmentos que se encuentran en regiones densas del espacio de trayectoria mediante una adaptación del algoritmo DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}). Esta agrupación basada en densidad identifica áreas de alta concentración de segmentos similares que constituyen patrones de movimiento comunes. Los clusters se forman en áreas de alta densidad de segmentos, separadas por regiones de baja densidad, permitiendo agrupar segmentos que comparten características similares, incluso si otras partes de la trayectoria son diferentes.
 \end{enumerate}
 
-\begin{description}
-	\item[Primer item] más información sobre el primer item.
-	\item[Segundo item] más información sobre el segundo item.
-\end{description}
-	
+\subsection*{Métrica de Similitud en TRACLUS}
+TRACLUS emplea una métrica de distancia específica para medir la similitud entre segmentos individuales en lugar de comparar la trayectoria completa. Esto contrasta con métricas como DTW (\textit{Dynamic Time Warping}) o LCSS (\textit{Longest Common Subsequence}), que calculan la similitud entre series temporales completas. En cambio, TRACLUS se enfoca en la dirección y la longitud de cada segmento, permitiendo detectar subtrayectorias similares en conjuntos de datos con trayectorias complejas.
+
+\subsection*{Ventajas de TRACLUS en el Análisis de Trayectorias}
+El algoritmo TRACLUS ofrece varias ventajas que lo hacen adecuado para el análisis de datos de trayectoria:
+
 \begin{itemize}
-\item 
+    \item \textbf{Identificación de Subtrayectorias Similares}: TRACLUS no se limita a identificar patrones en trayectorias completas, sino que permite detectar similitudes en segmentos específicos. Esta capacidad es esencial en contextos donde solo algunas secciones de las trayectorias son comparables, mientras que otras presentan variaciones.
+    
+    \item \textbf{Adaptación a Escalas y Densidades Variables}: Gracias a su enfoque basado en densidad, TRACLUS es menos sensible a las variaciones en la escala y la densidad de los datos, lo que facilita su aplicación en contextos heterogéneos, como en estudios de tráfico o movimientos de fauna en diferentes ecosistemas.
+    
+    \item \textbf{Selección Automática de Parámetros}: Mediante el uso de heurísticas para definir automáticamente los valores de parámetros clave (como el radio de vecindad $\epsilon$ y el número mínimo de puntos vecinos), TRACLUS reduce la necesidad de ajustes manuales, lo cual incrementa su precisión y simplifica su aplicación en distintos conjuntos de datos.
 \end{itemize}
 
-\section{Tablas}
+\subsection*{Aplicaciones de TRACLUS en la Investigación}
+TRACLUS se puede aplicar en múltiples campos de investigación, donde el análisis de patrones de movimiento es fundamental:
 
-Igualmente se pueden usar los comandos específicos de \LaTeX o bien usar alguno de los comandos de la plantilla.
+\begin{itemize}
+    \item \textbf{Biología y Ecología}: Para analizar trayectorias de animales, identificando patrones de comportamiento, rutas migratorias o territorios de caza.
+    
+    \item \textbf{Meteorología}: Para el estudio de trayectorias de fenómenos climáticos como huracanes, permitiendo identificar patrones comunes en ciertos eventos.
+    
+    \item \textbf{Gestión del Tráfico y Transporte}: En el análisis de rutas vehiculares, detectando patrones de congestión, flujo de tráfico y rutas populares.
+\end{itemize}
 
-\tablaSmall{Herramientas y tecnologías utilizadas en cada parte del proyecto}{l c c c c}{herramientasportipodeuso}
-{ \multicolumn{1}{l}{Herramientas} & App AngularJS & API REST & BD & Memoria \\}{ 
-HTML5 & X & & &\\
-CSS3 & X & & &\\
-BOOTSTRAP & X & & &\\
-JavaScript & X & & &\\
-AngularJS & X & & &\\
-Bower & X & & &\\
-PHP & & X & &\\
-Karma + Jasmine & X & & &\\
-Slim framework & & X & &\\
-Idiorm & & X & &\\
-Composer & & X & &\\
-JSON & X & X & &\\
-PhpStorm & X & X & &\\
-MySQL & & & X &\\
-PhpMyAdmin & & & X &\\
-Git + BitBucket & X & X & X & X\\
-Mik\TeX{} & & & & X\\
-\TeX{}Maker & & & & X\\
-Astah & & & & X\\
-Balsamiq Mockups & X & & &\\
-VersionOne & X & X & X & X\\
-} 
+\section{Clustering}
+
+El \textbf{clustering} o agrupamiento es una técnica de aprendizaje no supervisado utilizada para organizar datos en grupos o "clusters" basados en características similares. Cada \textit{cluster} está compuesto por elementos más similares entre sí que a elementos de otros \textit{clusters}. Esta técnica es esencial en análisis exploratorio, permitiendo descubrir estructuras subyacentes en grandes volúmenes de datos y encontrar patrones, sin necesidad de tener etiquetas o categorías predefinidas.
+
+En el contexto de análisis de datos, el clustering se aplica en múltiples áreas como la segmentación de clientes, detección de patrones de comportamiento, agrupación de imágenes y análisis de redes sociales. Entre los métodos de clustering más utilizados en la práctica se incluyen algoritmos basados en densidad y en conectividad, que proporcionan flexibilidad y adaptabilidad para manejar datos complejos y de alta dimensionalidad.
+
+\subsection*{Algoritmos de Clustering en scikit-learn}
+
+A continuación, se presenta una descripción de los algoritmos de clustering más relevantes y ampliamente utilizados en la biblioteca \texttt{scikit-learn} de Python:
+
+\subsubsection*{1. DBSCAN (Density-Based Spatial Clustering of Applications with Noise)}
+
+DBSCAN es un algoritmo basado en densidad que agrupa puntos que están en áreas de alta densidad y considera como ruido aquellos que se encuentran en áreas de baja densidad. Los clusters se forman alrededor de puntos densamente conectados y son identificados por dos parámetros: el radio de vecindad (\(\epsilon\)) y el número mínimo de puntos necesarios (\textit{minPts}) para formar un cluster. DBSCAN es especialmente útil para datos con formas irregulares y ruido, ya que ignora puntos aislados que no pertenecen a ninguna agrupación significativa.
+
+\subsubsection*{2. OPTICS (Ordering Points To Identify the Clustering Structure)}
+
+OPTICS es una extensión de DBSCAN que aborda el problema de la sensibilidad a la elección de \(\epsilon\). En lugar de identificar clusters individuales directamente, OPTICS produce una ordenación de los puntos que muestra su estructura de densidad subyacente. Esto permite descubrir clusters a múltiples escalas y niveles de densidad, haciendo posible una mayor flexibilidad en la agrupación de datos.
+
+\subsubsection*{3. HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise)}
+
+HDBSCAN es una variante jerárquica de DBSCAN que forma clusters de densidad utilizando una estructura jerárquica en lugar de depender de un valor fijo de \(\epsilon\). A diferencia de DBSCAN y OPTICS, HDBSCAN construye una jerarquía de clusters que permite identificar agrupaciones en diferentes niveles de densidad sin requerir parámetros estrictos. Este algoritmo es particularmente útil cuando la densidad de los clusters varía significativamente.
+
+\subsubsection*{4. Spectral Clustering}
+
+Spectral Clustering es un algoritmo de agrupación basado en teoría de grafos y técnicas de álgebra lineal. Utiliza los valores propios de una matriz de similitud de los datos para realizar la agrupación. Este enfoque es particularmente adecuado para datos que presentan estructuras de clusters no lineales o formas complejas. Spectral Clustering convierte el problema de agrupación en uno de corte de grafos, dividiendo el conjunto de datos en \textit{k} clusters minimizando la similitud entre los clusters.
+
+\subsubsection*{5. Agglomerative Clustering}
+
+El \textbf{Agglomerative Clustering} es una técnica jerárquica de clustering donde cada punto comienza como su propio cluster, y los clusters se fusionan iterativamente en función de una métrica de distancia (como la distancia euclidiana, de Manhattan, o de enlace promedio) hasta que se alcanza el número deseado de clusters o se completa la jerarquía. Este método es particularmente útil cuando se requiere una representación visual de los clusters en forma de dendrograma.
+
+\subsection*{Comparación de los Algoritmos de Clustering}
+
+Los algoritmos de clustering mencionados se diferencian principalmente en su enfoque de agrupación (por densidad, jerárquico o basado en similitud), su sensibilidad a la elección de parámetros y su capacidad para manejar clusters de diferentes formas y densidades. A continuación, se presenta una tabla comparativa de los algoritmos:
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Algoritmo} & \textbf{Tipo de Clustering} & \textbf{Ventaja Principal} & \textbf{Limitación Principal} \\
+\hline
+DBSCAN & Densidad & Maneja ruido y clusters de formas arbitrarias & Sensible a la elección de \(\epsilon\) y \textit{minPts} \\
+OPTICS & Densidad & Detecta clusters a diferentes niveles de densidad & Complejo de interpretar \\
+HDBSCAN & Jerárquico basado en densidad & Sin parámetros estrictos & Computacionalmente costoso \\
+Spectral Clustering & Basado en grafos & Captura estructuras complejas & Requiere especificar \textit{k} \\
+Agglomerative Clustering & Jerárquico & Ofrece dendrograma jerárquico & Alta complejidad para datos grandes \\
+\hline
+\end{tabular}
+\end{table}
+

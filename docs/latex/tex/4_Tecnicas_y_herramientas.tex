@@ -1,6 +1,65 @@
 \capitulo{4}{Técnicas y herramientas}
 
-Esta parte de la memoria tiene como objetivo presentar las técnicas metodológicas y las herramientas de desarrollo que se han utilizado para llevar a cabo el proyecto. Si se han estudiado diferentes alternativas de metodologías, herramientas, bibliotecas se puede hacer un resumen de los aspectos más destacados de cada alternativa, incluyendo comparativas entre las distintas opciones y una justificación de las elecciones realizadas. 
-No se pretende que este apartado se convierta en un capítulo de un libro dedicado a cada una de las alternativas, sino comentar los aspectos más destacados de cada opción, con un repaso somero a los fundamentos esenciales y referencias bibliográficas para que el lector pueda ampliar su conocimiento sobre el tema.
+En esta sección se presentan las técnicas metodológicas y las herramientas de desarrollo que se han utilizado para llevar a cabo el proyecto. Se han considerado diferentes alternativas de metodologías y herramientas, y se ofrece un resumen de los aspectos más destacados de cada opción, junto con una justificación de las elecciones realizadas.
+
+\section{GitHub}
+GitHub es una plataforma de desarrollo colaborativo basada en la web que utiliza el sistema de control de versiones Git. Es ampliamente utilizado en la comunidad de desarrollo de software por varias razones:
+
+\begin{itemize}
+    \item \textbf{Control de versiones:} GitHub facilita el seguimiento de cambios en el código, lo que permite a los desarrolladores revertir a versiones anteriores si es necesario. Esto es esencial para la gestión de errores y la mejora continua del software.
+    \item \textbf{Integración continua:} GitHub se puede integrar con diversas herramientas de automatización, como GitHub Actions, que facilitan la construcción, prueba y despliegue automático del código, mejorando la eficiencia del flujo de trabajo.
+    \item \textbf{Documentación y seguimiento de issues:} Proporciona herramientas para documentar el código y gestionar tareas o problemas a través de un sistema de “issues”, lo que facilita la organización y planificación del desarrollo.
+\end{itemize}
+
+\section{Texmaker}
+Texmaker es un editor de texto multiplataforma para la creación de documentos en \LaTeX. Es una herramienta esencial para la redacción académica y técnica, y ha sido fundamental en la redacción de este trabajo por las siguientes razones:
+
+\begin{itemize}
+    \item \textbf{Interfaz amigable:} Proporciona un entorno intuitivo y fácil de usar que facilita la edición de documentos en \LaTeX, incluso para aquellos que son nuevos en el sistema.
+    \item \textbf{Compilación rápida:} Permite compilar documentos \LaTeX rápidamente con un solo clic, lo que agiliza el proceso de revisión y mejora la productividad.
+    \item \textbf{Herramientas integradas:} Incluye herramientas para la gestión de bibliografías, la inserción de gráficos y tablas, así como un visor PDF integrado que facilita la revisión del documento final.
+    \item \textbf{Plantillas y ejemplos:} Ofrece diversas plantillas y ejemplos que ayudan a los usuarios a comenzar rápidamente con sus documentos, promoviendo buenas prácticas en la redacción científica.
+\end{itemize}
+
+\section{CSS}
+Cascading Style Sheets (CSS) es un lenguaje utilizado para describir la presentación de documentos HTML y XML. En este proyecto, CSS se ha utilizado para mejorar la estética y la usabilidad de la interfaz de la aplicación desarrollada en Python con Dash. Las razones para su elección incluyen:
+
+\begin{itemize}
+    \item \textbf{Separación de contenido y estilo:} CSS permite mantener el contenido HTML separado de su presentación, lo que facilita el mantenimiento del código y la implementación de cambios en el diseño sin afectar el contenido.
+    \item \textbf{Responsividad:} Facilita el diseño responsivo, asegurando que la aplicación se vea bien en diferentes dispositivos y tamaños de pantalla. Esto es crucial para mejorar la accesibilidad y la experiencia del usuario.
+    \item \textbf{Personalización:} Proporciona flexibilidad para personalizar la apariencia de la aplicación de manera sencilla, permitiendo la creación de un diseño atractivo y funcional que se alinee con los objetivos del proyecto.
+    \item \textbf{Compatibilidad:} CSS es compatible con todos los navegadores modernos, lo que asegura que el diseño se mantenga consistente en diferentes plataformas.
+\end{itemize}
+
+\section{Python}
+Python es un lenguaje de programación versátil y fácil de aprender, ampliamente utilizado en el desarrollo de aplicaciones web, análisis de datos y machine learning. En este proyecto, se han utilizado varias bibliotecas de Python que han enriquecido el desarrollo y la funcionalidad de la aplicación:
+
+\begin{itemize}
+    \item \textbf{scikit-learn:} Una biblioteca para machine learning que ofrece herramientas eficientes para el análisis predictivo y la implementación de algoritmos de clustering, como DBSCAN y OPTICS. Su diseño optimizado permite realizar análisis complejos de manera rápida y sencilla.
+ 
+    \item \textbf{Pandas:} Una biblioteca de análisis de datos que proporciona estructuras de datos y herramientas de manipulación para trabajar con datos tabulares. Permite la limpieza y transformación de datos, lo que es esencial para preparar los datos antes del análisis.
+    \item \textbf{GeoPandas:} Extiende las capacidades de Pandas para trabajar con datos geoespaciales, permitiendo realizar análisis y visualizaciones de datos geográficos de forma eficiente. Esto es crucial para proyectos que requieren análisis de datos basados en ubicación.
+    \item \textbf{Matplotlib:} Una biblioteca para crear visualizaciones estáticas, animadas e interactivas en Python. Es esencial para la representación gráfica de los resultados del análisis, facilitando la comunicación de hallazgos a través de gráficos claros y efectivos.
+    \item \textbf{NumPy:} Una biblioteca fundamental para realizar cálculos numéricos en Python, que proporciona soporte para matrices y funciones matemáticas. NumPy es la base sobre la cual se construyen muchas otras bibliotecas de ciencia de datos y machine learning.
+    \item \textbf{Shapely:} Utilizada para manipular y analizar geometrías en Python, es crucial en la gestión de datos geoespaciales, permitiendo realizar operaciones geométricas como intersecciones y uniones de formas.
+    \item \textbf{JSON:} Una biblioteca que permite trabajar con datos en formato JSON, facilitando la interacción con APIs y el manejo de configuraciones. Esto es importante para integrar servicios externos en la aplicación.
+    \item \textbf{Zipfile:} Utilizada para crear y leer archivos ZIP, facilitando la gestión de datos comprimidos y mejorando la eficiencia en la transferencia de datos.
+    \item \textbf{Contextily:} Permite añadir mapas de fondo a las visualizaciones geográficas, mejorando la contextualización de los datos y ayudando a los usuarios a interpretar la información espacial.
+    \item \textbf{io:} Proporciona funciones para manejar flujos de entrada y salida, útil en la manipulación de datos en memoria, permitiendo una gestión eficiente de archivos y datos temporales.
+    \item \textbf{pyproj:} Una biblioteca para realizar transformaciones de coordenadas, crucial para el trabajo con datos geográficos y la interoperabilidad entre diferentes sistemas de referencia espacial.
+    \item \textbf{Time y threading:} Utilizadas para gestionar la temporización y la ejecución de múltiples hilos de ejecución en la aplicación, lo que mejora la eficiencia y la capacidad de respuesta de la aplicación en tareas concurrentes.
+    \item \textbf{Base64:} Facilita la codificación y decodificación de datos en formato Base64, útil para la transferencia de datos binarios, como imágenes o archivos, en formatos que requieren representación textual.
+    \item \textbf{Dash:} 
+    Dash es un marco de trabajo desarrollado por Plotly que permite la creación de aplicaciones web analíticas e interactivas utilizando Python. Es especialmente popular en la comunidad de ciencia de datos y visualización debido a sus características y beneficios:
+    \begin{itemize}
+        \item \textbf{Interactividad:} Dash permite crear aplicaciones que responden a las interacciones del usuario, como clics, desplazamientos y entradas de datos. Esto es crucial para el análisis de datos en tiempo real y la visualización interactiva.
+        \item \textbf{Integración con Plotly:} Las visualizaciones de Dash se basan en la biblioteca Plotly, que permite crear gráficos complejos y visualizaciones de alta calidad con facilidad. Esto enriquece la presentación de datos y facilita la comunicación de resultados.
+        \item \textbf{Composición de componentes:} Dash permite combinar diferentes componentes (gráficos, tablas, controles de entrada) en una sola interfaz, lo que facilita la creación de aplicaciones integrales que ofrecen una experiencia de usuario fluida.
+        \item \textbf{Despliegue sencillo:} Las aplicaciones construidas con Dash se pueden desplegar fácilmente en servidores web, lo que permite compartir los resultados del análisis con un público más amplio sin requerir instalación adicional por parte del usuario final.
+        \item \textbf{Flexibilidad:} Al estar basado en Python, los desarrolladores pueden aprovechar la amplia gama de bibliotecas disponibles para manipular datos, realizar análisis y crear visualizaciones personalizadas, lo que proporciona gran flexibilidad en el desarrollo de aplicaciones.
+    \end{itemize}
+\end{itemize}
+
+Estas herramientas y bibliotecas han sido elegidas por su capacidad para facilitar el desarrollo, mejorar la eficiencia del trabajo y proporcionar funcionalidades que son fundamentales para el éxito del proyecto. Cada una de ellas contribuye a un enfoque integral que permite abordar las necesidades del análisis de datos y la creación de aplicaciones web interactivas.
 
 
