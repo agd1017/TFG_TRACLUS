@@ -154,7 +154,7 @@ def register_upload_callbacks(app):
 
     @app.callback(
         Output('url', 'pathname', allow_duplicate=True),
-        Output('file-list-container', 'children'),
+        #Output('file-list-container', 'children'),
         [Input('experiment-dropdown', 'value'),
         Input('previous-exp-button', 'n_clicks')],
         prevent_initial_call=True
@@ -162,7 +162,7 @@ def register_upload_callbacks(app):
     def display_files_in_selected_folder(folder_name, n_clicks_previous):
         if n_clicks_previous > 0:
             if folder_name is None:
-                return dash.no_update, html.Div(["Selecciona una carpeta para ver los archivos."])
+                return dash.no_update #, html.Div(["Selecciona una carpeta para ver los archivos."])
 
             # Obtener los archivos dentro de la carpeta seleccionada
             files = list_files_in_folder(folder_name)
@@ -170,9 +170,9 @@ def register_upload_callbacks(app):
             load_data(files, folder_name)
 
             if OPTICS_ON or DBSCAN_ON or HDBSCAN_ON or Aggl_ON or Spect_ON:
-                return '/map-page', {}
+                return '/map-page' #, {}
         
-        return dash.no_update, dash.no_update
+        return dash.no_update #, dash.no_update
 
     # Callbacks for experiment page
 
@@ -378,16 +378,14 @@ def register_upload_callbacks(app):
         Output('url', 'pathname', allow_duplicate=True),
         Output('output-container', 'children', allow_duplicate=True),
         Input('default-config-button', 'n_clicks'),
-        # Input('folder-name-input', 'value'), 
+        Input('input-name', 'value'), 
         prevent_initial_call=True
     )
 
-    def upload_output_predeter(n_clicks_upload):
+    def upload_output_predeter(n_clicks_upload, folder_name):
         if n_clicks_upload is not None and n_clicks_upload > 0:
-
-            folder_name = "Experimento_1"
             if not folder_name:
-                return dash.no_update, html.Div(["Por favor, introduce un nombre para la carpeta."])
+                return dash.no_update, html.Div(["Por favor, introduce un nombre para el experimento."])
 
             data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
             nrows = 5
@@ -423,40 +421,55 @@ def register_upload_callbacks(app):
         # Si no se ha hecho clic en el botón, no realizar cambios
         return dash.no_update, dash.no_update
 
-    """ @app.callback(
+    @app.callback(
         Output('url', 'pathname', allow_duplicate=True),
         Output('output-container', 'data', allow_duplicate=True),
         Input('process-url-button', 'n_clicks'),
         State('input-url', 'value'),
         State('nrows-input', 'value'),
+        Input('input-name', 'value'), 
         prevent_initial_call=True
     )
 
-    def process_csv_from_url(n_clicks_upload, url, nrows):
+    def process_csv_from_url(n_clicks_upload, url, nrows, folder_name):
         if n_clicks_upload is not None and n_clicks_upload > 0:
-            
+            if not folder_name:
+                return dash.no_update, html.Div(["Por favor, introduce un nombre para el experimento."])
             if not url:
-                return "No se ha introducido ningún enlace.", None
+                return dash.no_update, html.Div(["No se ha introducido ningún enlace."])
             if not nrows:
-                return "No se ha introducido el número de filas.", None
-
-            result = constructor(url, nrows)
+                return dash.no_update, html.Div(["No se ha introducido el número de filas."])
+            
+            result = constructor(url, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, DBSCAN_ON, 
+                                DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample, HDBSCAN_ON, HDBSCAN_metric, 
+                                HDBSCAN_algorithm, HDBSCAN_sample, Aggl_ON, Aggl_metric, Aggl_linkage, 
+                                Aggl_n_clusters, Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters)
 
             global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
             TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
             TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
             TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
             TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message
 
             gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
             TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
             TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
             TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
             TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering = result   
+            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message = result
+
+            # Manejar el mensaje de error
+            if error_message:
+                return dash.no_update, html.Div([error_message])
             
-            return '/map-page', {} """
+            # Guardar los resultados en una carpeta
+            save_data(folder_name)
+
+            return '/map-page', html.Div(['Procesamiento exitoso.'])
+
+        # Si no se ha hecho clic en el botón, no realizar cambios
+        return dash.no_update, dash.no_update
 
     # Callbacks for map page
         
@@ -507,7 +520,16 @@ def register_upload_callbacks(app):
         ctx = callback_context
 
         if not ctx.triggered:
-            return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS) # "Seleccione un elemento para el mapa 1."
+            if OPTICS_ON:
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
+            elif HDBSCAN_ON:
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+            elif DBSCAN_ON:
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
+            elif Spect_ON:
+                return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+            elif Aggl_ON:
+                return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             if button_id == 'item-1-1':
@@ -534,7 +556,16 @@ def register_upload_callbacks(app):
         ctx = callback_context
 
         if not ctx.triggered:
-            return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS) # "Seleccione un elemento para el mapa 2."
+            if OPTICS_ON:
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
+            elif HDBSCAN_ON:
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+            elif DBSCAN_ON:
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
+            elif Spect_ON:
+                return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+            elif Aggl_ON:
+                return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             if button_id == 'item-2-1':

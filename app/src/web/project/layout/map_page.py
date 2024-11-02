@@ -53,4 +53,4 @@ def get_page_map():
         html.Div([
             dbc.Spinner(children=[html.Div(id='map-container')])
         ], className="box maps")
-    ], className="grid-home-container")
+    ], className="grid-map-container")

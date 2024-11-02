@@ -12,7 +12,16 @@ def get_page_dataUpdate():
         ], className='box title'),
         html.Div([
             html.Div([
-                html.H2("Introduce el enlace del archivo que se va a analizar:"),
+                html.H3("Introduce el nombre del experimento:"),
+                dcc.Input(
+                    id='input-name',
+                    type='text',
+                    placeholder='Nombre del experimento',
+                    className='name-input'
+                ),
+            ], className='box inputtext'),
+            html.Div([
+                html.H3("Introduce el enlace del archivo que se va a analizar:"),
                 dcc.Input(
                     id='input-url',
                     type='text',
@@ -21,7 +30,7 @@ def get_page_dataUpdate():
                 ),
             ], className='box inputfile'),
             html.Div([
-                html.H2("Número de trayectorias que se van a usar:"),
+                html.H3("Número de trayectorias que se van a usar:"),
                 dcc.Input(
                     id='nrows-input',
                     type='number',
@@ -45,4 +54,4 @@ def get_page_dataUpdate():
         html.Div([
             dcc.Store(id='data-store')
         ], className='box data-store')        
-    ], className='gid-zero-container')
+    ], className='gid-dataupdate-container')

@@ -251,7 +251,7 @@ def get_page_experiment():
         # Título
         html.Div([
             html.H1("Configuración del experimento"),
-        ], className='title'),
+        ], className='experiment-title'),
         # Contenedor con grid
         html.Div([
             html.Hr(),

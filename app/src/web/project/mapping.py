@@ -108,7 +108,7 @@ def map_heat(gdf, minx, miny, maxx, maxy, bin_count=300, posicion_x=0, posicion_
     return img_data
 
 # Ahora mismo funciona para obtener las coordenadas maximas y minimas de un GeoDataFrame
-def solicitar_coordenadas(gdf):
+def get_coordinates(gdf):
 
     x_coords_flat, y_coords_flat = list_coordinates(gdf)
 

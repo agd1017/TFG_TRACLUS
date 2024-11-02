@@ -234,7 +234,7 @@ def d_parallel_vectorized(vectors, line_lengths):
         
     return dist_matrix
 
-def distance_vector_4(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
+def distance_vector(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
 
     # Contenedores para los resultados
     results = {
@@ -282,12 +282,12 @@ def distance_vector_4(partitions, directional=True, w_perpendicular=1, w_paralle
     # Sumar los resultados
     return results['perpendicular'] + results['parallel'] + results['angular']
 
-def get_vectorice4_distance_matrix(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
+def get_vectorice_distance_matrix(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
     partitions = np.asarray(partitions)  # Asegurar que partitions sea un array de NumPy
     n_partitions = len(partitions)
     dist_matrix = np.zeros((n_partitions, n_partitions))
     
-    dist_matrix = distance_vector_4(partitions, directional, w_perpendicular, w_parallel, w_angular)
+    dist_matrix = distance_vector(partitions, directional, w_perpendicular, w_parallel, w_angular)
 
     np.fill_diagonal(dist_matrix, 0)
 
@@ -512,7 +512,7 @@ def traclus(trajectories, directional=True, use_segments=True, clustering_algori
         segments = partitions
 
     # Get distance matrix
-    dist_matrix = get_vectorice4_distance_matrix(segments, directional=directional, w_perpendicular=d_weights[0], w_parallel=d_weights[1], w_angular=d_weights[2])
+    dist_matrix = get_vectorice_distance_matrix(segments, directional=directional, w_perpendicular=d_weights[0], w_parallel=d_weights[1], w_angular=d_weights[2])
 
     """ # Group the partitions
     if progress_bar:

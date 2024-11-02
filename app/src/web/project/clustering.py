@@ -1,7 +1,7 @@
 from TRACLUS import traclus as tr
 from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
 from data_processing import load_and_simplify_data, relational_table
-from mapping import map_ilustration, map_heat, plot_map_traclus, plot_map_traclus_df, solicitar_coordenadas
+from mapping import map_ilustration, map_heat, plot_map_traclus, plot_map_traclus_df, get_coordinates
 
 def get_cluster_trajectories(df, trajectories, directional=True, use_segments=True, clustering_algorithm=None, 
                             OPTICS_metric=None, OPTICS_algorithm=None, OPTICS_eps=None, OPTICS_sample=None, 
@@ -34,7 +34,7 @@ def constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_
                 Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters):
     # Carga de datos
     gdf, tray, df = load_and_simplify_data(data, nrows) 
-    minx, miny, maxx, maxy = solicitar_coordenadas(gdf)
+    minx, miny, maxx, maxy = get_coordinates(gdf)
     html_map = map_ilustration(gdf, minx, miny, maxx, maxy)
     html_heatmap = map_heat(gdf, minx, miny, maxx, maxy)
 

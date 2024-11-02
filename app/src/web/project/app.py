@@ -11,7 +11,7 @@ app.server.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024  # 5 GB en byte
 # Definición del layout principal de la aplicación utilizando componentes de Dash
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='navbar-container'),
+    html.Div(id='navbar-container', className="navbar-container"),
     html.Div(id='page-content', className="page-content")  
 ], className="grid-main-container")
 
