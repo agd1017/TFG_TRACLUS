@@ -44,42 +44,37 @@ def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.0
 # Funciones para la pagina "Estadisticas" (Pagina 3)
 #* Tablas de datos
 
-def relational_table(df, segments, cluster_assignments):
-    # Temporary list to store data before creating GeoDataFrame
+def relational_table(df, segments, cluster_assignments, representative_trajectories):
+    # Lista temporal para almacenar datos antes de crear el GeoDataFrame
     gdf_stc_data = []
-    index = 0
 
     for segment, cluster_id in zip(segments, cluster_assignments):
         if isinstance(segment, np.ndarray):
             line = LineString(segment)
             tray_id_found = False
-            
-            for i, polyline in enumerate(df['POLYLINE'][index:len(df['POLYLINE'])]):
-                # Check if the polyline has 2 or more points
-                if i > 0:
-                    index += 1
+            tray_id = -1  # Indicador de 'no encontrado'
 
-                if len(polyline) >= 2:
-                    tray_line = LineString(polyline)
-                    
-                    if tray_line.intersects(line):
-                        tray_id = index
-                        tray_id_found = True
-                        break  # Exit the loop once a matching tray_line is found
-                else:
-                    continue  # Skip this polyline as it cannot form a valid LineString
+            # Buscamos la trayectoria representativa correspondiente al clúster
+            for rep_id, rep_trajectory in enumerate(representative_trajectories):
+                rep_line = LineString(rep_trajectory)
 
-            if not tray_id_found:
-                tray_id = -1  # Indicator for 'not found'
+                if rep_line.intersects(line):
+                    tray_id = rep_id  # `tray_id` es el índice de la trayectoria representativa
+                    tray_id_found = True
+                    break
 
-            # Append valid data to the list
-            gdf_stc_data.append({'geometry': line, 'cluster_id': cluster_id, 'tray_id': tray_id})
+            # Añadimos los datos a la lista, incluyendo tray_id
+            gdf_stc_data.append({
+                'line_index': df.index[0],  # Agregar el índice de la línea del df
+                'geometry': line,
+                'cluster_id': cluster_id,
+                'tray_id': tray_id
+            })
 
-    # Create the GeoDataFrame from the collected data
-    gdf_stc = gpd.GeoDataFrame(gdf_stc_data, columns=['geometry', 'cluster_id', 'tray_id'])
+    # Crear el GeoDataFrame a partir de los datos recopilados
+    gdf_stc = gpd.GeoDataFrame(gdf_stc_data, columns=['line_index', 'geometry', 'cluster_id', 'tray_id'])
 
     return gdf_stc
-
 
 """ #! Carga de datos pureba provisional
 def load_and_simplify_data_df(input_data, rows, tolerance=0.001, umbral_distancia=0.01):

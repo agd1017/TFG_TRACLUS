@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import *
 import matplotlib
 matplotlib.use('Agg')
-from utils import bytes_to_base64
+from utils.data_utils import bytes_to_base64
     
 # Ejemplo de uso para mostrar las imágenes en el carousel
 def get_clusters_map(TRACLUS_map, TRACLUS_map_df):

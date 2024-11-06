@@ -1,10 +1,11 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc
-from callbacks import register_upload_callbacks
+from controllers.callbacks import register_upload_callbacks
 
 # Definición de la aplicación Dash
-app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.FLATLY])
+app = dash.Dash(__name__, suppress_callback_exceptions=True, assets_folder='./views/assets', 
+                external_stylesheets=[dbc.themes.FLATLY])
 
 app.server.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024  # 5 GB en bytes
 

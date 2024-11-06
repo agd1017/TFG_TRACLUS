@@ -5,17 +5,20 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib
 matplotlib.use('Agg')
-from config import UPLOAD_FOLDER
-from utils import save_html_or_binary, list_files_in_folder
-from layout.experiment_page import get_page_experiment
-from layout.select_page import get_page_select
-from layout.dataupload_page import get_page_dataUpdate
-from layout.map_page import get_page_map, get_map_image_as_html
-from layout.TRACLUSmap_page import get_page_mapTRACLUS, get_clusters_map
-from layout.table_page import get_page_tables, get_table
-from clustering import constructor
 import zipfile
 import os
+import io
+
+from utils.config import UPLOAD_FOLDER, TRAIN_DATA
+from utils.data_utils import list_files_in_folder, save_html_or_binary
+from views.layout.dataupload_page import get_page_dataUpdate
+from views.layout.experiment_page import get_page_experiment
+from views.layout.map_page import get_page_map, get_map_image_as_html
+from views.layout.select_page import get_page_select
+from views.layout.TRACLUSmap_page import get_page_mapTRACLUS, get_clusters_map
+from views.layout.table_page import get_page_tables, get_table
+from controllers.clustering import constructor
+
 
 # Callbacks
 def register_upload_callbacks(app):
@@ -387,7 +390,7 @@ def register_upload_callbacks(app):
             if not folder_name:
                 return dash.no_update, html.Div(["Por favor, introduce un nombre para el experimento."])
 
-            data = "C:/Users/Álvaro/Documents/GitHub/TFG/TFG_TRACLUS/app/train_data/taxis_trajectory/train.csv"
+            data = TRAIN_DATA
             nrows = 5
 
             result = constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, DBSCAN_ON, 
@@ -595,7 +598,16 @@ def register_upload_callbacks(app):
         ctx = callback_context
 
         if not ctx.triggered:
-            return get_table(tabla_OPTICS) # "Seleccione un elemento para el mapa 2."
+            if OPTICS_ON:
+                return get_table(tabla_OPTICS)
+            elif HDBSCAN_ON:
+                return get_table(tabla_HDBSCAN)
+            elif DBSCAN_ON:
+                return get_table(tabla_DBSCAN)
+            elif Spect_ON:
+                return get_table(tabla_SpectralClustering)
+            elif Aggl_ON:
+                return get_table(tabla_AgglomerativeClustering)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             if button_id == 'table-1':
@@ -616,35 +628,55 @@ def register_upload_callbacks(app):
         Input("btn-download-txt", "n_clicks"),
         prevent_initial_call=True,
     )
-
     def func(n_clicks):
-        zip_file_name = "table.zip"
-        with zipfile.ZipFile(zip_file_name, mode="w") as zf:
-            # Crear archivos TXT en memoria y agregarlos al ZIP
-            txt_files = {
-                "tabla_OPTICS.txt": tabla_OPTICS.to_csv(index=False, sep='\t'),
-                "tabla_HDBSCAN.txt": tabla_HDBSCAN.to_csv(index=False, sep='\t'),
-                "tabla_DBSCAN.txt": tabla_DBSCAN.to_csv(index=False, sep='\t'),
-                "tabla_SpectralClustering.txt": tabla_SpectralClustering.to_csv(index=False, sep='\t'),
-                "tabla_AgglomerativeClustering.txt": tabla_AgglomerativeClustering.to_csv(index=False, sep='\t'),
+        # Crear un archivo ZIP en memoria
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, mode="w") as zf:
+            # Diccionarios para archivos de texto e imágenes
+            images = {
+                "map.png": html_map,
+                "heatmap.png": html_heatmap
             }
-            
+            txt_files = {}
+
+            # Crear archivos TXT en memoria y agregarlos al ZIP según las condiciones
+            if OPTICS_ON:
+                txt_files["tabla_OPTICS.txt"] = tabla_OPTICS.to_csv(index=False, sep='\t')
+                images["TRACLUS_map_OPTICS.png"] = TRACLUS_map_OPTICS
+                images["TRACLUS_map_df_OPTICS.png"] = TRACLUS_map_df_OPTICS
+            if HDBSCAN_ON:
+                txt_files["tabla_HDBSCAN.txt"] = tabla_HDBSCAN.to_csv(index=False, sep='\t')
+                images["TRACLUS_map_HDBSCAN.png"] = TRACLUS_map_HDBSCAN
+                images["TRACLUS_map_df_HDBSCAN.png"] = TRACLUS_map_df_HDBSCAN
+            if DBSCAN_ON:
+                txt_files["tabla_DBSCAN.txt"] = tabla_DBSCAN.to_csv(index=False, sep='\t')
+                images["TRACLUS_map_DBSCAN.png"] = TRACLUS_map_DBSCAN
+                images["TRACLUS_map_df_DBSCAN.png"] = TRACLUS_map_df_DBSCAN
+            if Spect_ON:
+                txt_files["tabla_SpectralClustering.txt"] = tabla_SpectralClustering.to_csv(index=False, sep='\t')
+                images["TRACLUS_map_SpectralClustering.png"] = TRACLUS_map_SpectralClustering
+                images["TRACLUS_map_df_SpectralClustering.png"] = TRACLUS_map_df_SpectralClustering
+            if Aggl_ON:
+                txt_files["tabla_AgglomerativeClustering.txt"] = tabla_AgglomerativeClustering.to_csv(index=False, sep='\t')
+                images["TRACLUS_map_AgglomerativeClustering.png"] = TRACLUS_map_AgglomerativeClustering
+                images["TRACLUS_map_df_AgglomerativeClustering.png"] = TRACLUS_map_df_AgglomerativeClustering
+
+            # Agregar los archivos TXT al ZIP
             for filename, txt_content in txt_files.items():
                 zf.writestr(filename, txt_content)
 
-            # Agregar imágenes PNG al ZIP
-            images = {
-                "map.png": html_map,
-                "heatmap.png": html_heatmap,
-                "OPTICS.png": TRACLUS_map_OPTICS,
-                "HDBSCAN.png": TRACLUS_map_HDBSCAN,
-                "DBSCAN.png": TRACLUS_map_DBSCAN,
-                "SpectralClustering.png": TRACLUS_map_SpectralClustering,
-                "AgglomerativeClustering.png": TRACLUS_map_AgglomerativeClustering,
-            }
-            
-            for img_name, img_buf in images.items():
-                img_buf.seek(0)  # Asegúrate de que el puntero esté al inicio del buffer
-                zf.writestr(img_name, img_buf.getvalue())  # Agregar la imagen al ZIP
-            
-        return dcc.send_file(zip_file_name)
+            # Asegurarse de que cada imagen es un objeto BytesIO y agregar al ZIP
+            for img_name, img_data in images.items():
+                if not isinstance(img_data, io.BytesIO):  # Verificar si la imagen no es ya un BytesIO
+                    img_buffer = io.BytesIO(img_data)     # Convertir a BytesIO si es necesario
+                else:
+                    img_buffer = img_data
+                img_buffer.seek(0)  # Asegurarse de que el puntero esté al inicio del buffer
+                zf.writestr(img_name, img_buffer.read())  # Agregar la imagen al ZIP
+
+        # Coloca el puntero al inicio para leer el contenido
+        zip_buffer.seek(0)
+
+        # Enviar el archivo ZIP para descarga en el navegador
+        return dcc.send_bytes(zip_buffer.getvalue(), "table.zip")

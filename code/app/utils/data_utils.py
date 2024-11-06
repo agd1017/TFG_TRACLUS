@@ -1,6 +1,6 @@
 import base64
 import os
-from config import UPLOAD_FOLDER
+from utils.config import UPLOAD_FOLDER
 
 def list_experiment_folders():
     """Devuelve una lista con las carpetas dentro del directorio de resultados."""

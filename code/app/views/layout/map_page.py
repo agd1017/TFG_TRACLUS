@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import *
 import matplotlib
 matplotlib.use('Agg')
-from utils import bytes_to_base64
+from utils.data_utils import bytes_to_base64
 
 # Pagina mapa
 

@@ -4,7 +4,6 @@ import matplotlib
 matplotlib.use('Agg')
 
 # Pagina tablas
-
 def get_table(tabla):
     # Convertir los valores que no son serializables a formato string
     if 'geometry' in tabla.columns:

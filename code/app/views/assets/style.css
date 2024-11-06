@@ -195,12 +195,31 @@ body {
 
 /* Estilo para cada fila (selector, dropdown, input) */
 .grid-row-container {
+    grid-area: row1, row2;
     display: grid;
     padding: 0 1%;
     margin: 0.7% 0;
     grid-template-areas: 'selector row-label dropdown1 dropdown2 input1 input2';  /* Cuatro áreas: selector, row-label, dropdown, input */
     grid-template-columns: 5% 13% auto auto auto;  /* Cuatro columnas: selector, row-label, dropdown, input */
 }
+
+/* .grid-row-container {
+    grid-area: row3, row4, row5;
+    display: grid;
+    padding: 0 1%;
+    margin: 0.7% 0;
+    grid-template-areas: 'selector row-label dropdown1.3 dropdown2.3 input1.3';  /* Cuatro áreas: selector, row-label, dropdown, input */
+    /*grid-template-columns: 5% 13% auto auto; */ /*Cuatro columnas: selector, row-label, dropdown, input 
+}
+
+.custom-dropdown{
+    grid-area: dropdown1, dropdown2;
+}
+
+.custom-dropdown{
+    grid-area: dropdown1.3, dropdown2.3;
+    width: 50%;
+} */
 
 /* Estilo para el selector */
 .selector {
