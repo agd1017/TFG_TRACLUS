@@ -20,5 +20,5 @@ app.layout = html.Div([
 register_upload_callbacks(app)
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='127.0.0.1', port=8050)
-    # http://127.0.0.1:8050/
+    app.run_server(debug=True)
+    # http://127.0.0.1:8050/ , host='127.0.0.1', port=8050
