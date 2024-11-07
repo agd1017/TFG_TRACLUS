@@ -2,6 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 from controllers.callbacks import register_upload_callbacks
+import os
 
 # Definición de la aplicación Dash
 app = dash.Dash(__name__, suppress_callback_exceptions=True, assets_folder='./views/assets', 
