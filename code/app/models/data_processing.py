@@ -3,16 +3,17 @@ import geopandas as gpd
 import numpy as np
 import json
 from shapely.geometry import LineString
+import base64
+import io
 
 def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.01, chunksize=10000):
     try:
-        """ df_list = []
-        chunk_iter = pd.read_csv(filename, sep=",", chunksize=chunksize, nrows=rows, low_memory=False)
-        for chunk in chunk_iter:
-            df_list.append(chunk)
-        df = pd.concat(df_list) """
+        content_type, content_string = filename.split(',')
+        decoded = base64.b64decode(content_string)
+        
         # Cargar datos
-        df = pd.read_csv(filename, nrows=rows, sep=",", low_memory=False)
+        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        # df = pd.read_csv(filename, nrows=rows, sep=",", low_memory=False)
 
         # Filtrar y crear LineString para cada polilínea
         def create_line(x):

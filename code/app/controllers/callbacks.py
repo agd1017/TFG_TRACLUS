@@ -428,7 +428,8 @@ def register_upload_callbacks(app):
         Output('url', 'pathname', allow_duplicate=True),
         Output('output-container', 'data', allow_duplicate=True),
         Input('process-url-button', 'n_clicks'),
-        State('input-url', 'value'),
+        State('upload-data', 'value'),
+        # State('input-url', 'value'),
         State('nrows-input', 'value'),
         Input('input-name', 'value'), 
         prevent_initial_call=True

@@ -22,11 +22,13 @@ def get_page_dataUpdate():
             ], className='box inputtext'),
             html.Div([
                 html.H3("Introduce el enlace del archivo que se va a analizar:"),
-                dcc.Input(
-                    id='input-url',
-                    type='text',
-                    placeholder='Introduce el enlace del archivo .csv',
-                    className='file-upload'
+                dcc.Upload( # dcc.Input(
+                    id='upload-data', # 'input-url'
+                    children=html.Button('Seleccionar archivo'),
+                    multiple=False  # Si deseas permitir múltiples archivos, ponlo como True
+                    # type='text',
+                    #placeholder='Introduce el enlace del archivo .csv',
+                    #className='file-upload'
                 ),
             ], className='box inputfile'),
             html.Div([
