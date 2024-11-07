@@ -20,5 +20,6 @@ app.layout = html.Div([
 register_upload_callbacks(app)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    port = int(os.environ.get("PORT", 8080))  # Obtiene el puerto de la variable de entorno o usa el 8080
+    app.run_server(debug=True, host='0.0.0.0', port=port)  # Usar host 0.0.0.0 y puerto dinámico
     # http://127.0.0.1:8050/ , host='127.0.0.1', port=8050
