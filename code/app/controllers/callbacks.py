@@ -426,11 +426,11 @@ def register_upload_callbacks(app):
 
     @app.callback(
         Output('url', 'pathname', allow_duplicate=True),
-        Output('output-container', 'data', allow_duplicate=True),
+        Output('output-container', 'children', allow_duplicate=True),
         Input('process-url-button', 'n_clicks'),
-        State('upload-data', 'value'),
+        Input('upload-data', 'contents'),
         # State('input-url', 'value'),
-        State('nrows-input', 'value'),
+        Input('nrows-input', 'value'),
         Input('input-name', 'value'), 
         prevent_initial_call=True
     )

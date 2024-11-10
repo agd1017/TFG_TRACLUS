@@ -8,12 +8,16 @@ import io
 
 def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.01, chunksize=10000):
     try:
-        content_type, content_string = filename.split(',')
+        _, content_string = filename.split(',')
         decoded = base64.b64decode(content_string)
-        
-        # Cargar datos
-        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-        # df = pd.read_csv(filename, nrows=rows, sep=",", low_memory=False)
+
+        if filename.endswith('.csv'):
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), nrows=rows) 
+        else:
+            df = pd.read_excel(io.BytesIO(decoded), nrows=rows)
+
+        """ print(df)
+        print(df['TRIP_ID']) """
 
         # Filtrar y crear LineString para cada polilínea
         def create_line(x):
