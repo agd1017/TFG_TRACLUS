@@ -1,4 +1,31 @@
 \capitulo{7}{Conclusiones y Líneas de trabajo futuras}
 
-Todo proyecto debe incluir las conclusiones que se derivan de su desarrollo. Éstas pueden ser de diferente índole, dependiendo de la tipología del proyecto, pero normalmente van a estar presentes un conjunto de conclusiones relacionadas con los resultados del proyecto y un conjunto de conclusiones técnicas. 
-Además, resulta muy útil realizar un informe crítico indicando cómo se puede mejorar el proyecto, o cómo se puede continuar trabajando en la línea del proyecto realizado. 
+\section{Conclusiones}
+
+El desarrollo de este proyecto ha permitido abordar diversas problemáticas relacionadas con el análisis y la visualización de datos geoespaciales mediante técnicas de clustering. A continuación, se resumen las principales conclusiones obtenidas durante su realización:
+
+\begin{itemize}
+    \item Se logró implementar con éxito el algoritmo TRA-CLUS, permitiendo segmentar y agrupar trayectorias geográficas de manera eficiente, y generando resultados útiles para la interpretación de grandes volúmenes de datos.
+    \item La aplicación web desarrollada ha demostrado ser una herramienta valiosa para visualizar, comparar y analizar los resultados de diferentes algoritmos de clustering. La posibilidad de interactuar con gráficos, mapas y tablas ha facilitado la interpretación de los datos.
+    \item Durante las pruebas comparativas, se evidenció que cada algoritmo de clustering tiene ventajas y limitaciones dependiendo de las características de los datos y los parámetros configurados. Esto refuerza la importancia de disponer de herramientas flexibles que permitan explorar múltiples opciones.
+    \item La adopción de la arquitectura modelo-vista-controlador (MVC) mejoró significativamente la organización y mantenibilidad del código, facilitando la incorporación de nuevas funcionalidades y la resolución de problemas técnicos.
+    \item El despliegue de la aplicación en un entorno de producción a través de la plataforma Render permitió validar la funcionalidad del sistema en condiciones reales, garantizando su accesibilidad a otros usuarios.
+\end{itemize}
+
+Técnicamente, el proyecto ha permitido afianzar conocimientos en áreas como el análisis de trayectorias, la programación en Python, el uso de bibliotecas de visualización y frameworks web, además de explorar técnicas de optimización y manejo de datos masivos.
+
+\section{Líneas de Trabajo Futuras}
+
+A pesar de los logros alcanzados, existen múltiples aspectos que podrían mejorarse o extenderse en futuros trabajos relacionados con este proyecto. Algunas de las líneas de trabajo futuras incluyen:
+
+\begin{itemize}
+    \item \textbf{Optimización del rendimiento}: Implementar técnicas de optimización tanto en el procesamiento de datos como en la generación de gráficos interactivos para reducir los tiempos de carga y procesamiento en datasets más grandes.
+    \item \textbf{Ampliación de funcionalidades}: Incluir soporte para nuevos algoritmos de clustering, como Birch o K-Means, y permitir configuraciones más avanzadas de los parámetros por parte del usuario.
+    \item \textbf{Análisis en tiempo real}: Adaptar la aplicación para procesar datos en tiempo real, lo que sería especialmente útil en aplicaciones relacionadas con la gestión del tráfico o la monitorización de flotas de vehículos.
+    \item \textbf{Mejoras en la interfaz de usuario}: Refinar la experiencia del usuario mediante el uso de bibliotecas avanzadas de diseño y optimización de la navegación, además de añadir herramientas de análisis más intuitivas.
+    \item \textbf{Integración con otras fuentes de datos}: Permitir la carga y análisis de datos provenientes de diversas fuentes, como APIs de mapas en tiempo real, sensores o bases de datos externas.
+    \item \textbf{Validación con expertos}: Realizar evaluaciones cualitativas con expertos en análisis geoespacial para identificar posibles mejoras en los resultados generados y la interfaz de la aplicación.
+    \item \textbf{Publicación científica}: Documentar los resultados obtenidos y presentarlos en conferencias o revistas científicas relacionadas con el análisis de datos y Big Data.
+\end{itemize}
+
+En conclusión, este proyecto ha sentado las bases para el desarrollo de sistemas de análisis de trayectorias avanzados, demostrando la viabilidad y utilidad de combinar algoritmos de clustering con herramientas de visualización. Los resultados obtenidos abren un abanico de posibilidades para futuras investigaciones y desarrollos en el ámbito del Big Data aplicado a datos geoespaciales.
