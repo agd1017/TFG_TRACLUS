@@ -40,6 +40,21 @@ def get_page_tables(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON):
             dcc.Store(id='stored-data'),  # Almacenamiento en el lado del cliente
             html.Div([
                 dbc.Spinner(children=[html.Div(id='table-container')])  
-            ], className="box map1")          
+            ], className="box map1") ,
+            html.Div([
+                html.Label("Selecciona Clústeres a Mostrar:"),
+                dcc.Dropdown(
+                    id='cluster-selector',
+                    options=[
+                        {'label': 'OPTICS', 'value': 'optics', 'disabled': not OPTICS_ON},
+                        {'label': 'HDBSCAN', 'value': 'hdbscan', 'disabled': not HDBSCAN_ON},
+                        {'label': 'DBSCAN', 'value': 'dbscan', 'disabled': not DBSCAN_ON},
+                        {'label': 'Spectral Clustering', 'value': 'spectral', 'disabled': not Spect_ON},
+                        {'label': 'Agglomerative Clustering', 'value': 'agglomerative', 'disabled': not Aggl_ON}
+                    ],
+                    value=None
+                ),
+                dcc.Graph(id='cluster-bar-chart')
+            ])
         ])
     ])

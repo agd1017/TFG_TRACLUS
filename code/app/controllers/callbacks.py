@@ -6,6 +6,7 @@ import geopandas as gpd
 import matplotlib
 matplotlib.use('Agg')
 import zipfile
+import shutil
 import os
 import io
 
@@ -17,8 +18,7 @@ from views.layout.map_page import get_page_map, get_map_image_as_html
 from views.layout.select_page import get_page_select
 from views.layout.TRACLUSmap_page import get_page_mapTRACLUS, get_clusters_map
 from views.layout.table_page import get_page_tables, get_table
-from controllers.clustering import constructor
-
+from controllers.clustering import data_constructor
 
 # Callbacks
 def register_upload_callbacks(app):
@@ -94,21 +94,26 @@ def register_upload_callbacks(app):
 
     def load_data(files, folder_name):
         global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-        TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-        TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-        TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-        TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-        tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering
+            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
+            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
+            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
+            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
+            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
+            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
+            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl
         global OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON 
 
         # Reiniciar las variables globales
         OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON  = False, False, False, False, False
         gdf = tray = html_map = html_heatmap = TRACLUS_map_OPTICS = None
         TRACLUS_map_df_OPTICS = TRACLUS_map_HDBSCAN = TRACLUS_map_df_HDBSCAN = None
-        TRACLUS_map_DBSCAN = TRACLUS_map_df_DBSCAN = TRACLUS_map_SpectralClustering = None
-        TRACLUS_map_df_SpectralClustering = TRACLUS_map_AgglomerativeClustering = None
-        TRACLUS_map_df_AgglomerativeClustering = tabla_OPTICS = tabla_HDBSCAN = None
-        tabla_DBSCAN = tabla_SpectralClustering = tabla_AgglomerativeClustering = None
+        TRACLUS_map_DBSCAN = TRACLUS_map_df_DBSCAN = TRACLUS_map_Spect = None
+        TRACLUS_map_df_Spect = TRACLUS_map_Aggl = None
+        TRACLUS_map_df_Aggl = tabla_OPTICS = tabla_HDBSCAN = None
+        tabla_DBSCAN = tabla_Spect = tabla_Aggl = None
+        graph_OPTICS = graph_HDBSCAN = graph_DBSCAN = graph_Spect = graph_Aggl = None
+        TRACLUS_map_cluster_Aggl = TRACLUS_map_cluster_DBSCAN = TRACLUS_map_cluster_HDBSCAN = None
+        TRACLUS_map_cluster_OPTICS = TRACLUS_map_cluster_Spect = None
 
         for file in files:
                 file_path = os.path.join(UPLOAD_FOLDER, folder_name, file)
@@ -154,6 +159,16 @@ def register_upload_callbacks(app):
                     tabla_SpectralClustering = convert_to_dataframe(file_path)
                 elif file == "tabla_AgglomerativeClustering.csv":
                     tabla_AgglomerativeClustering = convert_to_dataframe(file_path)
+                elif file == "graph_OPTICS.csv":
+                    graph_OPTICS = pd.read_csv(file_path)['Data'].tolist()
+                elif file == "graph_HDBSCAN.csv":
+                    graph_HDBSCAN = pd.read_csv(file_path)['Data'].tolist()
+                elif file == "graph_DBSCAN.csv":
+                    graph_DBSCAN = pd.read_csv(file_path)['Data'].tolist()
+                elif file == "graph_SpectralClustering.csv":
+                    graph_Spect = pd.read_csv(file_path)['Data'].tolist()
+                elif file == "graph_AgglomerativeClustering.csv":
+                    graph_Aggl = pd.read_csv(file_path)['Data'].tolist()
 
     @app.callback(
         Output('url', 'pathname', allow_duplicate=True),
@@ -317,8 +332,12 @@ def register_upload_callbacks(app):
     def save_data(folder_name):
         # Crear la carpeta en la ubicación deseada
         folder_path = os.path.join(UPLOAD_FOLDER, folder_name)
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
+        # Si la carpeta existe, eliminarla
+        if os.path.exists(folder_path):
+            shutil.rmtree(folder_path)  # Elimina la carpeta y todo su contenido
+        
+        # Crear la carpeta nuevamente
+        os.makedirs(folder_path)
 
         # Guardar los datos en la carpeta creada:
         # 1. Guardar gdf como archivo GeoJSON
@@ -339,11 +358,11 @@ def register_upload_callbacks(app):
         if TRACLUS_map_DBSCAN is not None:
             save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_DBSCAN.html"), TRACLUS_map_DBSCAN)
 
-        if TRACLUS_map_SpectralClustering is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_SpectralClustering.html"), TRACLUS_map_SpectralClustering)
+        if TRACLUS_map_Spect is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_SpectralClustering.html"), TRACLUS_map_Spect)
 
-        if TRACLUS_map_AgglomerativeClustering is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_AgglomerativeClustering.html"), TRACLUS_map_AgglomerativeClustering)
+        if TRACLUS_map_Aggl is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_AgglomerativeClustering.html"), TRACLUS_map_Aggl)
 
         # 4. Guardar los mapas con DataFrames en archivos HTML si no son None
         if TRACLUS_map_df_OPTICS is not None:
@@ -355,11 +374,11 @@ def register_upload_callbacks(app):
         if TRACLUS_map_df_DBSCAN is not None:
             save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_DBSCAN.html"), TRACLUS_map_df_DBSCAN)
 
-        if TRACLUS_map_df_SpectralClustering is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_SpectralClustering.html"), TRACLUS_map_df_SpectralClustering)
+        if TRACLUS_map_df_Spect is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_SpectralClustering.html"), TRACLUS_map_df_Spect)
 
-        if TRACLUS_map_df_AgglomerativeClustering is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_AgglomerativeClustering.html"), TRACLUS_map_df_AgglomerativeClustering)
+        if TRACLUS_map_df_Aggl is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_AgglomerativeClustering.html"), TRACLUS_map_df_Aggl)
 
         # 5. Guardar las tablas generadas por cada algoritmo en CSV si no son None
         if tabla_OPTICS is not None:
@@ -371,11 +390,28 @@ def register_upload_callbacks(app):
         if tabla_DBSCAN is not None:
             tabla_DBSCAN.to_csv(os.path.join(folder_path, "tabla_DBSCAN.csv"), index=False)
 
-        if tabla_SpectralClustering is not None:
-            tabla_SpectralClustering.to_csv(os.path.join(folder_path, "tabla_SpectralClustering.csv"), index=False)
+        if tabla_Spect is not None:
+            tabla_Spect.to_csv(os.path.join(folder_path, "tabla_SpectralClustering.csv"), index=False)
 
-        if tabla_AgglomerativeClustering is not None:
-            tabla_AgglomerativeClustering.to_csv(os.path.join(folder_path, "tabla_AgglomerativeClustering.csv"), index=False)
+        if tabla_Aggl is not None:
+            tabla_Aggl.to_csv(os.path.join(folder_path, "tabla_AgglomerativeClustering.csv"), index=False)
+
+        # 6. Guardar los gráficos como CSV
+        if graph_OPTICS is not None:
+            pd.DataFrame({'Data': graph_OPTICS}).to_csv(os.path.join(folder_path, "graph_OPTICS.csv"), index=False)
+
+        if graph_HDBSCAN is not None:
+            pd.DataFrame({'Data': graph_HDBSCAN}).to_csv(os.path.join(folder_path, "graph_HDBSCAN.csv"), index=False)
+
+        if graph_DBSCAN is not None:
+            pd.DataFrame({'Data': graph_DBSCAN}).to_csv(os.path.join(folder_path, "graph_DBSCAN.csv"), index=False)
+
+        if graph_Spect is not None:
+            pd.DataFrame({'Data': graph_Spect}).to_csv(os.path.join(folder_path, "graph_SpectralClustering.csv"), index=False)
+
+        if graph_Aggl is not None:
+            pd.DataFrame({'Data': graph_Aggl}).to_csv(os.path.join(folder_path, "graph_AgglomerativeClustering.csv"), index=False)
+
 
     @app.callback(
         Output('url', 'pathname', allow_duplicate=True),
@@ -393,24 +429,28 @@ def register_upload_callbacks(app):
             data = TRAIN_DATA
             nrows = 5
 
-            result = constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, DBSCAN_ON, 
+            result = data_constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, DBSCAN_ON, 
                                 DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample, HDBSCAN_ON, HDBSCAN_metric, 
                                 HDBSCAN_algorithm, HDBSCAN_sample, Aggl_ON, Aggl_metric, Aggl_linkage, 
                                 Aggl_n_clusters, Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters)
 
             global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-            TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-            TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message
+            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
+            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
+            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
+            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
+            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
+            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
+            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl, error_message
 
             gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-            TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-            TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message = result
+            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
+            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
+            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
+            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
+            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
+            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
+            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl, error_message, = result
 
             # Manejar el mensaje de error
             if error_message:
@@ -444,24 +484,27 @@ def register_upload_callbacks(app):
             if not nrows:
                 return dash.no_update, html.Div(["No se ha introducido el número de filas."])
             
-            result = constructor(url, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, DBSCAN_ON, 
+            result = data_constructor(url, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, DBSCAN_ON, 
                                 DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample, HDBSCAN_ON, HDBSCAN_metric, 
                                 HDBSCAN_algorithm, HDBSCAN_sample, Aggl_ON, Aggl_metric, Aggl_linkage, 
                                 Aggl_n_clusters, Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters)
 
-            global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-            TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-            TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message
+            global gdf, tray, html_map, html_heatmap
+            global TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_df_OPTICS, tabla_OPTICS, graph_OPTICS
+            global TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_df_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN
+            global TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN, tabla_DBSCAN, graph_DBSCAN
+            global TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_df_Spect, tabla_Spect, graph_Spect
+            global TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl, tabla_Aggl, graph_Aggl
+            global error_message
 
             gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_SpectralClustering, \
-            TRACLUS_map_df_SpectralClustering, TRACLUS_map_AgglomerativeClustering, \
-            TRACLUS_map_df_AgglomerativeClustering, tabla_OPTICS, tabla_HDBSCAN,  \
-            tabla_DBSCAN, tabla_SpectralClustering, tabla_AgglomerativeClustering, error_message = result
+            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
+            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
+            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
+            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
+            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
+            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
+            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl, error_message = result
 
             # Manejar el mensaje de error
             if error_message:
@@ -484,30 +527,8 @@ def register_upload_callbacks(app):
         Input('option-1-3', 'n_clicks')]
     )
 
-    def update_map(*args):
-        ctx = callback_context
-
-        if not ctx.triggered:
-            map = html_map
-            heatmap = html_heatmap # "Seleccione un elemento para el mapa 2."
-        """ else:
-            button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-            if button_id == 'option-1-1':
-                map = html_map
-                heatmap = html_heatmap
-            elif button_id == 'option-1-2':
-                minx, miny, maxx, maxy = -8.689, 41.107, -8.560, 41.185
-                # Define aquí cómo generas el mapa para la Opción 2
-                map = map_ilustration(gdf, minx, miny, maxx, maxy)
-                heatmap = map_heat(gdf, minx, miny, maxx, maxy)  
-            elif button_id == 'option-1-3':
-                minx, miny, maxx, maxy = solicitar_coordenadas(gdf)
-                # Define aquí cómo generas el mapa para la Opción 3
-                map = map_ilustration(gdf, minx, miny, maxx, maxy)
-                heatmap = map_heat(gdf, minx, miny, maxx, maxy)  """
-            
-        map_image = get_map_image_as_html(map, heatmap)  
-            
+    def update_map(*args):            
+        map_image = get_map_image_as_html(html_map, html_heatmap)
         return [map_image]
 
     # Callbacks for TRACLUS map page
@@ -525,27 +546,27 @@ def register_upload_callbacks(app):
 
         if not ctx.triggered:
             if OPTICS_ON:
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS,TRACLUS_map_df_OPTICS)
             elif HDBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN,TRACLUS_map_df_HDBSCAN)
             elif DBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
             elif Spect_ON:
-                return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_df_Spect)
             elif Aggl_ON:
-                return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             if button_id == 'item-1-1':
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_df_OPTICS)
             elif button_id == 'item-1-2':
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_df_HDBSCAN)
             elif button_id == 'item-1-3':
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
             elif button_id == 'item-1-4':
-                return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect,TRACLUS_map_df_Spect)
             elif button_id == 'item-1-5':
-                return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
             
     @app.callback(
         Output('map-clusters-2', 'children'),
@@ -561,27 +582,27 @@ def register_upload_callbacks(app):
 
         if not ctx.triggered:
             if OPTICS_ON:
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS,TRACLUS_map_df_OPTICS)
             elif HDBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN,TRACLUS_map_df_HDBSCAN)
             elif DBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
             elif Spect_ON:
-                return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering)
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_df_Spect)
             elif Aggl_ON:
-                return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-            if button_id == 'item-2-1':
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_df_OPTICS)
-            elif button_id == 'item-2-2':
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_df_HDBSCAN)
-            elif button_id == 'item-2-3':
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN)
-            elif button_id == 'item-2-4':
-                return get_clusters_map(TRACLUS_map_SpectralClustering, TRACLUS_map_df_SpectralClustering,)
-            elif button_id == 'item-2-5':
-                return get_clusters_map(TRACLUS_map_AgglomerativeClustering, TRACLUS_map_df_AgglomerativeClustering)
+            if button_id == 'item-1-1':
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_df_OPTICS)
+            elif button_id == 'item-1-2':
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+            elif button_id == 'item-1-3':
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
+            elif button_id == 'item-1-4':
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect,TRACLUS_map_df_Spect)
+            elif button_id == 'item-1-5':
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
 
     # Callbacks for tables page
 
@@ -606,9 +627,9 @@ def register_upload_callbacks(app):
             elif DBSCAN_ON:
                 return get_table(tabla_DBSCAN)
             elif Spect_ON:
-                return get_table(tabla_SpectralClustering)
+                return get_table(tabla_Spect)
             elif Aggl_ON:
-                return get_table(tabla_AgglomerativeClustering)
+                return get_table(tabla_Aggl)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             if button_id == 'table-1':
@@ -618,10 +639,57 @@ def register_upload_callbacks(app):
             elif button_id == 'table-3':
                 return get_table(tabla_DBSCAN)
             elif button_id == 'table-4':
-                return get_table(tabla_SpectralClustering)
+                return get_table(tabla_Spect)
             elif button_id == 'table-5':
-                return get_table(tabla_AgglomerativeClustering)
+                return get_table(tabla_Aggl)
+            
+    # Callback para actualizar el gráfico
+    import plotly.express as px
+    from collections import Counter
+            
+    @app.callback(
+        Output('cluster-bar-chart', 'figure'),
+        Input('cluster-selector', 'value')
+    )
+    def update_graph(selected_filter):
+        # Si no hay una selección, devolver un gráfico vacío
+        if not selected_filter:
+            return px.bar(
+                title='Gráfico vacío',
+                labels={'x': 'Clúster', 'y': 'Segmentos'}
+            )
 
+        # Filtrar los datos según la selección del usuario
+        if selected_filter == 'optics' and OPTICS_ON:
+            filtered_data = graph_OPTICS
+        elif selected_filter == 'hdbscan' and HDBSCAN_ON:
+            filtered_data = graph_HDBSCAN
+        elif selected_filter == 'dbscan' and DBSCAN_ON:
+            filtered_data = graph_DBSCAN
+        elif selected_filter == 'spectral' and Spect_ON:
+            filtered_data = graph_Spect
+        elif selected_filter == 'agglomerative' and Aggl_ON:
+            filtered_data = graph_Aggl
+        else:
+            # Si el filtro seleccionado no tiene datos o está deshabilitado
+            return px.bar(
+                title=f'No hay datos para {selected_filter.capitalize()}',
+                labels={'x': 'Clúster', 'y': 'Segmentos'}
+            )
+
+        # Contar la frecuencia de cada clúster
+        cluster_counts = Counter(filtered_data)
+        
+        # Crear el gráfico de barras con Plotly Express
+        figure = px.bar(
+            x=list(cluster_counts.keys()),
+            y=list(cluster_counts.values()),
+            labels={'x': 'Clúster', 'y': 'Segmentos'},
+            title=f'Segmentos por Clúster - {selected_filter.capitalize()}'
+        )
+
+        return figure
+    
     # Callbacks for download data
 
     @app.callback(
@@ -655,13 +723,13 @@ def register_upload_callbacks(app):
                 images["TRACLUS_map_DBSCAN.png"] = TRACLUS_map_DBSCAN
                 images["TRACLUS_map_df_DBSCAN.png"] = TRACLUS_map_df_DBSCAN
             if Spect_ON:
-                txt_files["tabla_SpectralClustering.txt"] = tabla_SpectralClustering.to_csv(index=False, sep='\t')
-                images["TRACLUS_map_SpectralClustering.png"] = TRACLUS_map_SpectralClustering
-                images["TRACLUS_map_df_SpectralClustering.png"] = TRACLUS_map_df_SpectralClustering
+                txt_files["tabla_SpectralClustering.txt"] = tabla_Spect.to_csv(index=False, sep='\t')
+                images["TRACLUS_map_SpectralClustering.png"] = TRACLUS_map_Spect
+                images["TRACLUS_map_df_SpectralClustering.png"] = TRACLUS_map_df_Spect
             if Aggl_ON:
-                txt_files["tabla_AgglomerativeClustering.txt"] = tabla_AgglomerativeClustering.to_csv(index=False, sep='\t')
-                images["TRACLUS_map_AgglomerativeClustering.png"] = TRACLUS_map_AgglomerativeClustering
-                images["TRACLUS_map_df_AgglomerativeClustering.png"] = TRACLUS_map_df_AgglomerativeClustering
+                txt_files["tabla_AgglomerativeClustering.txt"] = tabla_Aggl.to_csv(index=False, sep='\t')
+                images["TRACLUS_map_AgglomerativeClustering.png"] = TRACLUS_map_Aggl
+                images["TRACLUS_map_df_AgglomerativeClustering.png"] = TRACLUS_map_df_Aggl
 
             # Agregar los archivos TXT al ZIP
             for filename, txt_content in txt_files.items():

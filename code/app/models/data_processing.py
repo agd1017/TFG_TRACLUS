@@ -81,43 +81,5 @@ def relational_table(df, segments, cluster_assignments, representative_trajector
 
     return gdf_stc
 
-""" #! Carga de datos pureba provisional
-def load_and_simplify_data_df(input_data, rows, tolerance=0.001, umbral_distancia=0.01):
-    # Verifica si se ha pasado un filename o contenido de archivo
-    if isinstance(input_data, str):
-        # Si es un filename, se carga directamente desde el sistema
-        df = pd.read_csv(input_data, nrows=rows, sep=",", low_memory=False)
-    else:
-        # Si es contenido de archivo, decodifica y carga desde base64
-        content_type, content_string = input_data.split(',')
-        decoded = base64.b64decode(content_string)
-        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), nrows=rows, sep=",", low_memory=False)
-
-    # Filtrar y crear LineString para cada polilínea
-    def create_line(x):
-        points = json.loads(x)
-        if len(points) > 1:
-            return LineString(points)
-        return None
-    
-    df['geometry'] = df['POLYLINE'].apply(create_line)
-    
-    # Eliminar filas con geometrías nulas
-    df = df[df['geometry'].notnull()]
-    
-    # Convertir a Geopandas DataFrame
-    gdf = gpd.GeoDataFrame(df, geometry='geometry')
-    
-    # Simplificar las geometrías
-    gdf['geometry'] = gdf['geometry'].simplify(tolerance)
-
-    # Convertir las polilíneas de JSON a listas de coordenadas
-    df['POLYLINE'] = df['POLYLINE'].apply(lambda x: json.loads(x) if pd.notnull(x) else None)
-
-    # Filtrar filas con polilíneas vacías o nulas
-    df = df[df['POLYLINE'].apply(lambda x: x is not None and len(x) > 0)]
-
-    # Preparar las trayectorias para TRACLUS
-    trayectorias = [np.array(polyline) for polyline in df['POLYLINE']]
-    
-    return gdf, trayectorias, df['POLYLINE'] """
+def get_cluster_graph(cluster_assignments):
+    return  [asig for asig in cluster_assignments if asig != -1]

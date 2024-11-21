@@ -5,16 +5,19 @@ matplotlib.use('Agg')
 from utils.data_utils import bytes_to_base64
     
 # Ejemplo de uso para mostrar las imágenes en el carousel
-def get_clusters_map(TRACLUS_map, TRACLUS_map_df):
+def get_clusters_map(TRACLUS_map, TRACLUS_map_cluster, TRACLUS_map_df):
     # Convertir las imágenes a base64 para mostrarlas en el navegador
     TRACLUS_map = bytes_to_base64(TRACLUS_map)
+    TRACLUS_map_cluster = bytes_to_base64(TRACLUS_map_cluster)
     TRACLUS_map_df = bytes_to_base64(TRACLUS_map_df)
+    
 
     return html.Div([
         dbc.Carousel(
             items=[
                 {"key": "1", "src": f"data:image/png;base64,{TRACLUS_map}"},
-                {"key": "2", "src": f"data:image/png;base64,{TRACLUS_map_df}"}
+                {"key": "2", "src": f"data:image/png;base64,{TRACLUS_map_cluster}"},
+                {"key": "3", "src": f"data:image/png;base64,{TRACLUS_map_df}"}
             ],
             controls=True,
             indicators=True,
