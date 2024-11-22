@@ -132,7 +132,7 @@ body {
     height: 600%;
     display: grid;
     grid-template-areas: 'dropdown-experiment'
-                            'button1';
+                            'button-select';
     grid-template-rows: auto auto;
 }
 
@@ -140,9 +140,23 @@ body {
     grid-area: dropdown-experiment;
 }
 
-.button1 {
-    grid-area: button1;
-    height: 50%;
+.button1-select-container {
+    grid-area: button-select;
+    display: grid;
+    grid-template-areas: 'button1-load button1-delete';
+}
+
+.button1-load {
+    grid-area: button1-load;
+    height: 40%;
+    margin-right: 10%;
+    justify-self: center;
+}
+
+.button1-delete {
+    grid-area: button1-delete;
+    height: 40%;
+    margin-left: 10%;
     justify-self: center;
 }
 

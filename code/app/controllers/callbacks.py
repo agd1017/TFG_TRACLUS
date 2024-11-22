@@ -93,28 +93,24 @@ def register_upload_callbacks(app):
         return '/'
 
     def load_data(files, folder_name):
-        global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
-            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
-            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
-            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
-            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
-            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl
+        global gdf, tray, html_map, html_heatmap
+        global TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS
+        global TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN
+        global TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN
+        global TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect
+        global TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl
+        global error_message
         global OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON 
 
         # Reiniciar las variables globales
-        OPTICS_ON, DBSCAN_ON, HDBSCAN_ON, Aggl_ON, Spect_ON  = False, False, False, False, False
-        gdf = tray = html_map = html_heatmap = TRACLUS_map_OPTICS = None
-        TRACLUS_map_df_OPTICS = TRACLUS_map_HDBSCAN = TRACLUS_map_df_HDBSCAN = None
-        TRACLUS_map_DBSCAN = TRACLUS_map_df_DBSCAN = TRACLUS_map_Spect = None
-        TRACLUS_map_df_Spect = TRACLUS_map_Aggl = None
-        TRACLUS_map_df_Aggl = tabla_OPTICS = tabla_HDBSCAN = None
-        tabla_DBSCAN = tabla_Spect = tabla_Aggl = None
-        graph_OPTICS = graph_HDBSCAN = graph_DBSCAN = graph_Spect = graph_Aggl = None
-        TRACLUS_map_cluster_Aggl = TRACLUS_map_cluster_DBSCAN = TRACLUS_map_cluster_HDBSCAN = None
-        TRACLUS_map_cluster_OPTICS = TRACLUS_map_cluster_Spect = None
-
+        OPTICS_ON = DBSCAN_ON = HDBSCAN_ON = Aggl_ON = Spect_ON  = False
+        gdf = tray = html_map = html_heatmap = None
+        TRACLUS_map_OPTICS = TRACLUS_map_cluster_OPTICS = TRACLUS_map_segments_OPTICS = tabla_OPTICS = graph_OPTICS  = None
+        TRACLUS_map_HDBSCAN = TRACLUS_map_cluster_HDBSCAN = TRACLUS_map_segments_HDBSCAN = tabla_HDBSCAN = graph_HDBSCA = None
+        TRACLUS_map_DBSCAN = TRACLUS_map_cluster_DBSCAN = TRACLUS_map_segments_DBSCAN = tabla_DBSCAN = graph_DBSCAN = None
+        TRACLUS_map_Spect = TRACLUS_map_cluster_Spect = TRACLUS_map_segments_Spect = tabla_Spect = graph_Spect = None
+        TRACLUS_map_Aggl = TRACLUS_map_cluster_Aggl = TRACLUS_map_segments_Aggl = tabla_Aggl = graph_Aggl = None
+        
         for file in files:
                 file_path = os.path.join(UPLOAD_FOLDER, folder_name, file)
 
@@ -127,28 +123,38 @@ def register_upload_callbacks(app):
                 elif file == "TRACLUS_map_OPTICS.html":
                     OPTICS_ON = True
                     TRACLUS_map_OPTICS = read_html_file(file_path)
-                elif file == "TRACLUS_map_df_OPTICS.html":
-                    TRACLUS_map_df_OPTICS = read_html_file(file_path)
+                elif file == "TRACLUS_map_cluster_OPTICS.html":
+                    TRACLUS_map_cluster_OPTICS = read_html_file(file_path)
+                elif file == "TRACLUS_map_segments_OPTICS.html":
+                    TRACLUS_map_segments_OPTICS = read_html_file(file_path)
                 elif file == "TRACLUS_map_HDBSCAN.html":
                     HDBSCAN_ON = True
                     TRACLUS_map_HDBSCAN = read_html_file(file_path)
-                elif file == "TRACLUS_map_df_HDBSCAN.html":
-                    TRACLUS_map_df_HDBSCAN = read_html_file(file_path)
+                elif file == "TRACLUS_map_cluster_HDBSCAN.html":
+                    TRACLUS_map_cluster_HDBSCAN = read_html_file(file_path)
+                elif file == "TRACLUS_map_segments_HDBSCAN.html":
+                    TRACLUS_map_segments_HDBSCAN = read_html_file(file_path)
                 elif file == "TRACLUS_map_DBSCAN.html":
                     DBSCAN_ON = True
                     TRACLUS_map_DBSCAN = read_html_file(file_path)
-                elif file == "TRACLUS_map_df_DBSCAN.html":
-                    TRACLUS_map_df_DBSCAN = read_html_file(file_path)
+                elif file == "TRACLUS_map_segments_DBSCAN.html":
+                    TRACLUS_map_cluster_DBSCAN = read_html_file(file_path)
+                elif file == "TRACLUS_map_cluster_DBSCAN.html":
+                    TRACLUS_map_cluster_DBSCAN = read_html_file(file_path)
                 elif file == "TRACLUS_map_SpectralClustering.html":
                     Spect_ON = True
-                    TRACLUS_map_SpectralClustering = read_html_file(file_path)
-                elif file == "TRACLUS_map_df_SpectralClustering.html":
-                    TRACLUS_map_df_SpectralClustering = read_html_file(file_path)
+                    TRACLUS_map_Spect = read_html_file(file_path)
+                elif file == "TRACLUS_map_segments_SpectralClustering.html":
+                    TRACLUS_map_segments_Spect = read_html_file(file_path)
+                elif file == "TRACLUS_map_cluster_SpectralClustering.html":
+                    TRACLUS_map_cluster_Spect = read_html_file(file_path)
                 elif file == "TRACLUS_map_AgglomerativeClustering.html":
                     Aggl_ON = True
-                    TRACLUS_map_AgglomerativeClustering = read_html_file(file_path)
-                elif file == "TRACLUS_map_df_AgglomerativeClustering.html":
-                    TRACLUS_map_df_AgglomerativeClustering = read_html_file(file_path)
+                    TRACLUS_map_Aggl = read_html_file(file_path)
+                elif file == "TRACLUS_map_segments_AgglomerativeClustering.html":
+                    TRACLUS_map_segments_Aggl = read_html_file(file_path)
+                elif file == "TRACLUS_map_cluster_AgglomerativeClustering.html":
+                    TRACLUS_map_cluster_Aggl= read_html_file(file_path)
                 elif file == "tabla_OPTICS.csv":
                     tabla_OPTICS = convert_to_dataframe(file_path)
                 elif file == "tabla_HDBSCAN.csv":
@@ -156,9 +162,9 @@ def register_upload_callbacks(app):
                 elif file == "tabla_DBSCAN.csv":
                     tabla_DBSCAN = convert_to_dataframe(file_path)
                 elif file == "tabla_SpectralClustering.csv":
-                    tabla_SpectralClustering = convert_to_dataframe(file_path)
+                    tabla_Spect = convert_to_dataframe(file_path)
                 elif file == "tabla_AgglomerativeClustering.csv":
-                    tabla_AgglomerativeClustering = convert_to_dataframe(file_path)
+                    tabla_Aggl= convert_to_dataframe(file_path)
                 elif file == "graph_OPTICS.csv":
                     graph_OPTICS = pd.read_csv(file_path)['Data'].tolist()
                 elif file == "graph_HDBSCAN.csv":
@@ -174,7 +180,7 @@ def register_upload_callbacks(app):
         Output('url', 'pathname', allow_duplicate=True),
         #Output('file-list-container', 'children'),
         [Input('experiment-dropdown', 'value'),
-        Input('previous-exp-button', 'n_clicks')],
+        Input('load-exp-button', 'n_clicks')],
         prevent_initial_call=True
     )
     def display_files_in_selected_folder(folder_name, n_clicks_previous):
@@ -191,6 +197,37 @@ def register_upload_callbacks(app):
                 return '/map-page' #, {}
         
         return dash.no_update #, dash.no_update
+    
+    @app.callback(
+        Output("delete-modal", "is_open"),
+        [Input("delete-exp-button", "n_clicks"),
+        Input("cancel-delete-button", "n_clicks"),
+        Input("confirm-delete-button", "n_clicks")],
+        [State("delete-modal", "is_open"),
+        State("experiment-dropdown", "value")],
+        prevent_initial_call=True
+    )
+    def toggle_modal(n_delete, n_cancel, n_confirm, is_open, folder_name):
+        if folder_name is not None:
+            if n_delete or n_cancel or n_confirm:
+                return not is_open
+        return is_open
+
+
+    @app.callback(
+        Output("url", "pathname"),
+        [Input("confirm-delete-button", "n_clicks")],
+        [State("experiment-dropdown", "value")],
+        prevent_initial_call=True
+    )
+    def delete_experiment(n_clicks, folder_name):
+        if n_clicks and folder_name:
+            folder_path = os.path.join(UPLOAD_FOLDER, folder_name)
+            if os.path.exists(folder_path):
+                shutil.rmtree(folder_path)
+                return "/"
+        return dash.no_update
+    
 
     # Callbacks for experiment page
 
@@ -364,23 +401,39 @@ def register_upload_callbacks(app):
         if TRACLUS_map_Aggl is not None:
             save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_AgglomerativeClustering.html"), TRACLUS_map_Aggl)
 
-        # 4. Guardar los mapas con DataFrames en archivos HTML si no son None
-        if TRACLUS_map_df_OPTICS is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_OPTICS.html"), TRACLUS_map_df_OPTICS)
+        # 4. Guardar los mapas con segmentos en archivos HTML si no son None
+        if TRACLUS_map_segments_OPTICS is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_segments_OPTICS.html"), TRACLUS_map_segments_OPTICS)
 
-        if TRACLUS_map_df_HDBSCAN is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_HDBSCAN.html"), TRACLUS_map_df_HDBSCAN)
+        if TRACLUS_map_segments_HDBSCAN is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_segments_HDBSCAN.html"), TRACLUS_map_segments_HDBSCAN)
 
-        if TRACLUS_map_df_DBSCAN is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_DBSCAN.html"), TRACLUS_map_df_DBSCAN)
+        if TRACLUS_map_segments_DBSCAN is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_segments_DBSCAN.html"), TRACLUS_map_segments_DBSCAN)
 
-        if TRACLUS_map_df_Spect is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_SpectralClustering.html"), TRACLUS_map_df_Spect)
+        if TRACLUS_map_segments_Spect is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_segments_SpectralClustering.html"), TRACLUS_map_segments_Spect)
 
-        if TRACLUS_map_df_Aggl is not None:
-            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_df_AgglomerativeClustering.html"), TRACLUS_map_df_Aggl)
+        if TRACLUS_map_segments_Aggl is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_segments_AgglomerativeClustering.html"), TRACLUS_map_segments_Aggl)
 
-        # 5. Guardar las tablas generadas por cada algoritmo en CSV si no son None
+        # 5. Guardar los mapas con clusters en archivos HTML si no son None
+        if TRACLUS_map_cluster_OPTICS is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_cluster_OPTICS.html"), TRACLUS_map_cluster_OPTICS)
+
+        if TRACLUS_map_cluster_HDBSCAN is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_cluster_HDBSCAN.html"), TRACLUS_map_cluster_HDBSCAN)
+
+        if TRACLUS_map_cluster_DBSCAN is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_cluster_DBSCAN.html"), TRACLUS_map_cluster_DBSCAN)
+
+        if TRACLUS_map_cluster_Spect is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_cluster_SpectralClustering.html"), TRACLUS_map_cluster_Spect)
+
+        if TRACLUS_map_cluster_Aggl is not None:
+            save_html_or_binary(os.path.join(folder_path, "TRACLUS_map_cluster_AgglomerativeClustering.html"), TRACLUS_map_cluster_Aggl)
+
+        # 6. Guardar las tablas generadas por cada algoritmo en CSV si no son None
         if tabla_OPTICS is not None:
             tabla_OPTICS.to_csv(os.path.join(folder_path, "tabla_OPTICS.csv"), index=False)
 
@@ -396,7 +449,7 @@ def register_upload_callbacks(app):
         if tabla_Aggl is not None:
             tabla_Aggl.to_csv(os.path.join(folder_path, "tabla_AgglomerativeClustering.csv"), index=False)
 
-        # 6. Guardar los gráficos como CSV
+        # 7. Guardar los gráficos como CSV
         if graph_OPTICS is not None:
             pd.DataFrame({'Data': graph_OPTICS}).to_csv(os.path.join(folder_path, "graph_OPTICS.csv"), index=False)
 
@@ -434,23 +487,21 @@ def register_upload_callbacks(app):
                                 HDBSCAN_algorithm, HDBSCAN_sample, Aggl_ON, Aggl_metric, Aggl_linkage, 
                                 Aggl_n_clusters, Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters)
 
-            global gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
-            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
-            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
-            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
-            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
-            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl, error_message
+            global gdf, tray, html_map, html_heatmap
+            global TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS
+            global TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN
+            global TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN
+            global TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect
+            global TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl
+            global error_message
 
-            gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
-            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
-            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
-            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
-            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
-            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl, error_message, = result
+            gdf, tray, html_map, html_heatmap, \
+            TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS, \
+            TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN, \
+            TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN, \
+            TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect, \
+            TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl, \
+            error_message = result
 
             # Manejar el mensaje de error
             if error_message:
@@ -490,21 +541,20 @@ def register_upload_callbacks(app):
                                 Aggl_n_clusters, Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters)
 
             global gdf, tray, html_map, html_heatmap
-            global TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_df_OPTICS, tabla_OPTICS, graph_OPTICS
-            global TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_df_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN
-            global TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN, tabla_DBSCAN, graph_DBSCAN
-            global TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_df_Spect, tabla_Spect, graph_Spect
-            global TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl, tabla_Aggl, graph_Aggl
+            global TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS
+            global TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN
+            global TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN
+            global TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect
+            global TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl
             global error_message
 
-            gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_df_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
-            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
-            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_df_DBSCAN, TRACLUS_map_Spect, \
-            TRACLUS_map_df_Spect, TRACLUS_map_Aggl, TRACLUS_map_df_Aggl, \
-            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
-            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl, error_message = result
+            gdf, tray, html_map, html_heatmap, \
+            TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS, \
+            TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN, \
+            TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN, \
+            TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect, \
+            TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl, \
+            error_message = result
 
             # Manejar el mensaje de error
             if error_message:
@@ -546,27 +596,27 @@ def register_upload_callbacks(app):
 
         if not ctx.triggered:
             if OPTICS_ON:
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS,TRACLUS_map_df_OPTICS)
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS,TRACLUS_map_segments_OPTICS)
             elif HDBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN,TRACLUS_map_df_HDBSCAN)
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN,TRACLUS_map_segments_HDBSCAN)
             elif DBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN)
             elif Spect_ON:
-                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_df_Spect)
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect)
             elif Aggl_ON:
-                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             if button_id == 'item-1-1':
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_df_OPTICS)
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS)
             elif button_id == 'item-1-2':
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN)
             elif button_id == 'item-1-3':
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN)
             elif button_id == 'item-1-4':
-                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect,TRACLUS_map_df_Spect)
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect,TRACLUS_map_segments_Spect)
             elif button_id == 'item-1-5':
-                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl)
             
     @app.callback(
         Output('map-clusters-2', 'children'),
@@ -582,27 +632,27 @@ def register_upload_callbacks(app):
 
         if not ctx.triggered:
             if OPTICS_ON:
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS,TRACLUS_map_df_OPTICS)
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS,TRACLUS_map_segments_OPTICS)
             elif HDBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN,TRACLUS_map_df_HDBSCAN)
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN,TRACLUS_map_segments_HDBSCAN)
             elif DBSCAN_ON:
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN)
             elif Spect_ON:
-                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_df_Spect)
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect)
             elif Aggl_ON:
-                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl)
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             if button_id == 'item-1-1':
-                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_df_OPTICS)
+                return get_clusters_map(TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS)
             elif button_id == 'item-1-2':
-                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_df_HDBSCAN)
+                return get_clusters_map(TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN)
             elif button_id == 'item-1-3':
-                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_df_DBSCAN)
+                return get_clusters_map(TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN)
             elif button_id == 'item-1-4':
-                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect,TRACLUS_map_df_Spect)
+                return get_clusters_map(TRACLUS_map_Spect, TRACLUS_map_cluster_Spect,TRACLUS_map_segments_Spect)
             elif button_id == 'item-1-5':
-                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_df_Aggl)
+                return get_clusters_map(TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl)
 
     # Callbacks for tables page
 
@@ -713,23 +763,23 @@ def register_upload_callbacks(app):
             if OPTICS_ON:
                 txt_files["tabla_OPTICS.txt"] = tabla_OPTICS.to_csv(index=False, sep='\t')
                 images["TRACLUS_map_OPTICS.png"] = TRACLUS_map_OPTICS
-                images["TRACLUS_map_df_OPTICS.png"] = TRACLUS_map_df_OPTICS
+                images["TRACLUS_map_df_OPTICS.png"] = TRACLUS_map_segments_OPTICS
             if HDBSCAN_ON:
                 txt_files["tabla_HDBSCAN.txt"] = tabla_HDBSCAN.to_csv(index=False, sep='\t')
                 images["TRACLUS_map_HDBSCAN.png"] = TRACLUS_map_HDBSCAN
-                images["TRACLUS_map_df_HDBSCAN.png"] = TRACLUS_map_df_HDBSCAN
+                images["TRACLUS_map_df_HDBSCAN.png"] = TRACLUS_map_segments_HDBSCAN
             if DBSCAN_ON:
                 txt_files["tabla_DBSCAN.txt"] = tabla_DBSCAN.to_csv(index=False, sep='\t')
                 images["TRACLUS_map_DBSCAN.png"] = TRACLUS_map_DBSCAN
-                images["TRACLUS_map_df_DBSCAN.png"] = TRACLUS_map_df_DBSCAN
+                images["TRACLUS_map_df_DBSCAN.png"] = TRACLUS_map_segments_DBSCAN
             if Spect_ON:
                 txt_files["tabla_SpectralClustering.txt"] = tabla_Spect.to_csv(index=False, sep='\t')
                 images["TRACLUS_map_SpectralClustering.png"] = TRACLUS_map_Spect
-                images["TRACLUS_map_df_SpectralClustering.png"] = TRACLUS_map_df_Spect
+                images["TRACLUS_map_df_SpectralClustering.png"] = TRACLUS_map_segments_Spect
             if Aggl_ON:
                 txt_files["tabla_AgglomerativeClustering.txt"] = tabla_Aggl.to_csv(index=False, sep='\t')
                 images["TRACLUS_map_AgglomerativeClustering.png"] = TRACLUS_map_Aggl
-                images["TRACLUS_map_df_AgglomerativeClustering.png"] = TRACLUS_map_df_Aggl
+                images["TRACLUS_map_df_AgglomerativeClustering.png"] = TRACLUS_map_segments_Aggl
 
             # Agregar los archivos TXT al ZIP
             for filename, txt_content in txt_files.items():

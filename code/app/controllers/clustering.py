@@ -186,11 +186,10 @@ def data_constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OP
         TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
 
     # Retornar resultados
-    return gdf, tray, html_map, html_heatmap, TRACLUS_map_OPTICS, \
-            TRACLUS_map_segments_OPTICS, TRACLUS_map_HDBSCAN,TRACLUS_map_cluster_OPTICS, \
-            TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_cluster_DBSCAN, \
-            TRACLUS_map_cluster_Spect, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_segments_DBSCAN, TRACLUS_map_Spect, \
-            TRACLUS_map_segments_Spect, TRACLUS_map_Aggl, TRACLUS_map_segments_Aggl, \
-            tabla_OPTICS, tabla_HDBSCAN, tabla_DBSCAN, tabla_Spect, tabla_Aggl, \
-            graph_OPTICS, graph_HDBSCAN, graph_DBSCAN, graph_Spect, graph_Aggl, error_message
+    return  gdf, tray, html_map, html_heatmap, \
+            TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS, \
+            TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN, \
+            TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN, \
+            TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect, \
+            TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl, \
+            error_message
