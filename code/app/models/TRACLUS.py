@@ -451,7 +451,7 @@ def clustering(segments, dist_matrix, clustering_algorithm,
     # Asegurar que el modelo se ha creado antes de continuar
     if clustering_model is not None:
         cluster_assignments = clustering_model.fit_predict(dist_matrix)
-        clusters = [[segments[i] for i in np.where(cluster_assignments == c)[0]] for c in np.unique(cluster_assignments)]
+        clusters = [[segments[i] for i in np.nonzero(cluster_assignments == c)[0]] for c in np.unique(cluster_assignments)]
     else:
         raise ValueError("No se proporcionó un algoritmo de clustering válido o no se pudo crear el modelo.")
 

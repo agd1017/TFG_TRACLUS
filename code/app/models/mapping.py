@@ -75,7 +75,7 @@ def map_ilustration(gdf, minx, miny, maxx, maxy):
 
     return img_data
 
-def map_heat(gdf, minx, miny, maxx, maxy, bin_count=300, posicion_x=0, posicion_y=0, zoom=2):  
+def map_heat(gdf, minx, miny, maxx, maxy, bin_count=300):  
     # Obtener las coordenadas x e y de las geometrías 
     x_coords_flat, y_coords_flat = list_coordinates(gdf)
 

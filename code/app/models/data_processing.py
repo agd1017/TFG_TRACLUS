@@ -6,7 +6,7 @@ from shapely.geometry import LineString
 import base64
 import io
 
-def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.01, chunksize=10000):
+def load_and_simplify_data(filename, rows, tolerance=0.001):
     try:
         _, content_string = filename.split(',')
         decoded = base64.b64decode(content_string)
@@ -15,9 +15,6 @@ def load_and_simplify_data(filename, rows, tolerance=0.001, umbral_distancia=0.0
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), nrows=rows) 
         else:
             df = pd.read_excel(io.BytesIO(decoded), nrows=rows)
-
-        """ print(df)
-        print(df['TRIP_ID']) """
 
         # Filtrar y crear LineString para cada polilínea
         def create_line(x):
@@ -56,7 +53,6 @@ def relational_table(df, segments, cluster_assignments, representative_trajector
     for segment, cluster_id in zip(segments, cluster_assignments):
         if isinstance(segment, np.ndarray):
             line = LineString(segment)
-            tray_id_found = False
             tray_id = -1  # Indicador de 'no encontrado'
 
             # Buscamos la trayectoria representativa correspondiente al clúster

@@ -208,11 +208,9 @@ def register_upload_callbacks(app):
         prevent_initial_call=True
     )
     def toggle_modal(n_delete, n_cancel, n_confirm, is_open, folder_name):
-        if folder_name is not None:
-            if n_delete or n_cancel or n_confirm:
-                return not is_open
+        if folder_name is not None and (n_delete or n_cancel or n_confirm):
+            return not is_open
         return is_open
-
 
     @app.callback(
         Output("url", "pathname"),
