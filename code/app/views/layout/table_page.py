@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import *
+from dash import dash_table, html, dcc
 import matplotlib
 matplotlib.use('Agg')
 
@@ -20,13 +20,13 @@ def get_table(tabla):
         style_table={'overflowX': 'auto'},
     )
 
-def get_page_tables(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON):
+def get_page_tables(optics_on, hdbscan_on, dbscan_on, spect_ON, aggl_ON):
     item_table = [
-        dbc.DropdownMenuItem("OPTICS", id="table-1", disabled=not OPTICS_ON), 
-        dbc.DropdownMenuItem("HDBSCAN", id="table-2", disabled=not HDBSCAN_ON),
-        dbc.DropdownMenuItem("DBSCAN", id="table-3", disabled=not DBSCAN_ON),
-        dbc.DropdownMenuItem("SpectralClustering", id="table-4", disabled=not Spect_ON),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5", disabled=not Aggl_ON)
+        dbc.DropdownMenuItem("OPTICS", id="table-1", disabled=not optics_on), 
+        dbc.DropdownMenuItem("HDBSCAN", id="table-2", disabled=not hdbscan_on),
+        dbc.DropdownMenuItem("DBSCAN", id="table-3", disabled=dbscan_on),
+        dbc.DropdownMenuItem("SpectralClustering", id="table-4", disabled=not spect_ON),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5", disabled=not aggl_ON)
     ]
 
     return html.Div([
@@ -46,11 +46,11 @@ def get_page_tables(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON):
                 dcc.Dropdown(
                     id='cluster-selector',
                     options=[
-                        {'label': 'OPTICS', 'value': 'optics', 'disabled': not OPTICS_ON},
-                        {'label': 'HDBSCAN', 'value': 'hdbscan', 'disabled': not HDBSCAN_ON},
-                        {'label': 'DBSCAN', 'value': 'dbscan', 'disabled': not DBSCAN_ON},
-                        {'label': 'Spectral Clustering', 'value': 'spectral', 'disabled': not Spect_ON},
-                        {'label': 'Agglomerative Clustering', 'value': 'agglomerative', 'disabled': not Aggl_ON}
+                        {'label': 'OPTICS', 'value': 'optics', 'disabled': not optics_on},
+                        {'label': 'HDBSCAN', 'value': 'hdbscan', 'disabled': not hdbscan_on},
+                        {'label': 'DBSCAN', 'value': 'dbscan', 'disabled': dbscan_on},
+                        {'label': 'Spectral Clustering', 'value': 'spectral', 'disabled': not spect_ON},
+                        {'label': 'Agglomerative Clustering', 'value': 'agglomerative', 'disabled': not aggl_ON}
                     ],
                     value=None
                 ),

@@ -7,18 +7,18 @@ from models.mapping import get_coordinates, map_ilustration, map_heat, plot_map_
 from models.data_processing import load_and_simplify_data, relational_table, get_cluster_graph
 
 def get_cluster_trajectories(trajectories, directional=True, use_segments=True, clustering_algorithm=None, 
-                            OPTICS_metric=None, OPTICS_algorithm=None, OPTICS_eps=None, OPTICS_sample=None, 
-                            DBSCAN_metric=None, DBSCAN_algorithm=None, DBSCAN_eps=None, DBSCAN_sample=None, 
-                            HDBSCAN_metric=None, HDBSCAN_algorithm=None, HDBSCAN_sample=None, 
-                            Aggl_metric=None, Aggl_linkage=None, Aggl_n_clusters=None, 
-                            Spect_affinity=None, Spect_assign_labels=None, Spect_n_clusters=None):
+                            optics_metric=None, optics_algorithm=None, optics_eps=None, optics_sample=None, 
+                            dbscan_metric=None, dbscan_algorithm=None, dbscan_eps=None, dbscan_sample=None, 
+                            hdbscan_metric=None, hdbscan_algorithm=None, hdbscan_sample=None, 
+                            aggl_metric=None, aggl_linkage=None, aggl_n_clusters=None, 
+                            spect_affinity=None, spect_assign_labels=None, spect_n_clusters=None):
     
     result = tr(trajectories=trajectories, directional=directional, use_segments=use_segments, clustering_algorithm=clustering_algorithm, 
-                OPTICS_min_samples=OPTICS_sample, OPTICS_max_eps=OPTICS_eps, OPTICS_metric=OPTICS_metric, OPTICS_algorithm=OPTICS_algorithm, 
-                DBSCAN_min_samples=DBSCAN_sample, DBSCAN_eps=DBSCAN_eps, DBSCAN_metric=DBSCAN_metric, DBSCAN_algorithm=DBSCAN_algorithm, 
-                HDBSCAN_min_samples=HDBSCAN_sample, HDBSCAN_metric=HDBSCAN_metric, HDBSCAN_algorithm=HDBSCAN_algorithm, 
-                Spect_n_clusters=Spect_n_clusters, Spect_affinity=Spect_affinity, Spect_assign_labels=Spect_assign_labels,
-                Aggl_n_clusters=Aggl_n_clusters, Aggl_linkage=Aggl_linkage, Aggl_metric=Aggl_metric)
+                optics_min_samples=optics_sample, optics_max_eps=optics_eps, optics_metric=optics_metric, optics_algorithm=optics_algorithm, 
+                dbscan_min_samples=dbscan_sample, dbscan_eps=dbscan_eps, dbscan_metric=dbscan_metric, dbscan_algorithm=dbscan_algorithm, 
+                hdbscan_min_samples=hdbscan_sample, hdbscan_metric=hdbscan_metric, hdbscan_algorithm=hdbscan_algorithm, 
+                spect_n_clusters=spect_n_clusters, spect_affinity=spect_affinity, spect_assign_labels=spect_assign_labels,
+                aggl_n_clusters=aggl_n_clusters, aggl_linkage=aggl_linkage, aggl_metric=aggl_metric)
     
     _, segments, _, clusters, cluster_assignments, representative_trajectories = result
     # Representacion de las trayectorias pero sin el primer elemento, este parece ser solo un conjunto basura
@@ -28,11 +28,11 @@ def get_cluster_trajectories(trajectories, directional=True, use_segments=True, 
 
 def get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters):
 
-    TRACLUS_map = plot_map_traclus(representative_clusters)
+    traclus_map = plot_map_traclus(representative_clusters)
     
-    TRACLUS_map_cluster = plot_clusters_on_map(clusters)
+    traclus_map_cluster = plot_clusters_on_map(clusters)
     
-    TRACLUS_map_segments = plot_segments_on_map(segments, cluster_assignments)
+    traclus_map_segments = plot_segments_on_map(segments, cluster_assignments)
     
     def generate_relational_table():
         return relational_table(df, segments, cluster_assignments, representative_clusters)
@@ -49,110 +49,110 @@ def get_experiment_results(df, segments, clusters,  cluster_assignments, represe
         tabla_relacional = future_relational_table.result()
         filtered_cluster_graph = future_cluster_graph.result()
 
-    return TRACLUS_map, TRACLUS_map_cluster, TRACLUS_map_segments, tabla_relacional, filtered_cluster_graph
+    return traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph
 
-def run_optics(tray, results, lock, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample):
+def run_optics(tray, results, lock, optics_metric, optics_algorithm, optics_eps, optics_sample):
     try:
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=OPTICS, 
-            OPTICS_metric=OPTICS_metric, OPTICS_algorithm=OPTICS_algorithm,
-            OPTICS_eps=OPTICS_eps, OPTICS_sample=OPTICS_sample
+            optics_metric=optics_metric, optics_algorithm=optics_algorithm,
+            optics_eps=optics_eps, optics_sample=optics_sample
         )
         with lock:
-            results['OPTICS'] = result
+            results['optics'] = result
     except Exception as e:
         with lock:
-            results['errors'].append(f'Error en el algoritmo OPTICS: {e}')
+            results['errors'].append(f'Error en el algoritmo optics: {e}')
 
-def run_hdbscan(tray, results, lock, HDBSCAN_metric, HDBSCAN_algorithm, HDBSCAN_sample):
+def run_hdbscan(tray, results, lock, hdbscan_metric, hdbscan_algorithm, hdbscan_sample):
     try:
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=HDBSCAN,
-            HDBSCAN_metric=HDBSCAN_metric, HDBSCAN_algorithm=HDBSCAN_algorithm,
-            HDBSCAN_sample=HDBSCAN_sample
+            hdbscan_metric=hdbscan_metric, hdbscan_algorithm=hdbscan_algorithm,
+            hdbscan_sample=hdbscan_sample
         )
         with lock:
-            results['HDBSCAN'] = result
+            results['hdbscan'] = result
     except Exception as e:
         with lock:
-            results['errors'].append(f'Error en el algoritmo HDBSCAN: {e}')
+            results['errors'].append(f'Error en el algoritmo hdbscan: {e}')
 
-def run_dbscan(tray, results, lock, DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample):
+def run_dbscan(tray, results, lock, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample):
     try:
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=DBSCAN,
-            DBSCAN_metric=DBSCAN_metric, DBSCAN_algorithm=DBSCAN_algorithm,
-            DBSCAN_eps=DBSCAN_eps, DBSCAN_sample=DBSCAN_sample
+            dbscan_metric=dbscan_metric, dbscan_algorithm=dbscan_algorithm,
+            dbscan_eps=dbscan_eps, dbscan_sample=dbscan_sample
         )
         with lock:
-            results['DBSCAN'] = result
+            results['dbscan'] = result
     except Exception as e:
         with lock:
-            results['errors'].append(f'Error en el algoritmo DBSCAN: {e}')
+            results['errors'].append(f'Error en el algoritmo dbscan: {e}')
 
-def run_spectral(tray, results, lock, Spect_affinity, Spect_assign_labels, Spect_n_clusters):
+def run_spectral(tray, results, lock, spect_affinity, spect_assign_labels, spect_n_clusters):
     try:
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=SpectralClustering,
-            Spect_affinity=Spect_affinity, Spect_assign_labels=Spect_assign_labels,
-            Spect_n_clusters=Spect_n_clusters
+            spect_affinity=spect_affinity, spect_assign_labels=spect_assign_labels,
+            spect_n_clusters=spect_n_clusters
         )
         with lock:
-            results['Spectral'] = result
+            results['spectral'] = result
     except Exception as e:
         with lock:
-            results['errors'].append(f'Error en el algoritmo Spectral: {e}')
+            results['errors'].append(f'Error en el algoritmo spectral: {e}')
 
-def run_agglomerative(tray, results, lock, Aggl_metric, Aggl_linkage, Aggl_n_clusters):
+def run_agglomerative(tray, results, lock, aggl_metric, aggl_linkage, aggl_n_clusters):
     try:
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=AgglomerativeClustering,
-            Aggl_metric=Aggl_metric, Aggl_linkage=Aggl_linkage, Aggl_n_clusters=Aggl_n_clusters
+            aggl_metric=aggl_metric, aggl_linkage=aggl_linkage, aggl_n_clusters=aggl_n_clusters
         )
         with lock:
-            results['Agglomerative'] = result
+            results['agglomerative'] = result
     except Exception as e:
         with lock:
-            results['errors'].append(f'Error en el algoritmo Agglomerative: {e}')
+            results['errors'].append(f'Error en el algoritmo agglomerative: {e}')
 
-def data_constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample, 
-                DBSCAN_ON, DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample, 
-                HDBSCAN_ON, HDBSCAN_metric, HDBSCAN_algorithm, HDBSCAN_sample, 
-                Aggl_ON, Aggl_metric, Aggl_linkage, Aggl_n_clusters, 
-                Spect_ON, Spect_affinity, Spect_assign_labels, Spect_n_clusters):
+def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, optics_eps, optics_sample, 
+                dbscan_on, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample, 
+                hdbscan_on, hdbscan_metric, hdbscan_algorithm, hdbscan_sample, 
+                aggl_ON, aggl_metric, aggl_linkage, aggl_n_clusters, 
+                spect_ON, spect_affinity, spect_assign_labels, spect_n_clusters):
     # Carga de datos
     gdf, tray, df = load_and_simplify_data(data, nrows) 
     minx, miny, maxx, maxy = get_coordinates(gdf)
     html_map = map_ilustration(gdf, minx, miny, maxx, maxy)
     html_heatmap = map_heat(gdf, minx, miny, maxx, maxy)
 
-    TRACLUS_map_OPTICS = TRACLUS_map_cluster_OPTICS = TRACLUS_map_segments_OPTICS = tabla_OPTICS = graph_OPTICS = None
-    TRACLUS_map_HDBSCAN = TRACLUS_map_cluster_HDBSCAN = TRACLUS_map_segments_HDBSCAN = tabla_HDBSCAN= graph_HDBSCAN = None
-    TRACLUS_map_DBSCAN = TRACLUS_map_cluster_DBSCAN = TRACLUS_map_segments_DBSCAN = tabla_DBSCAN = graph_DBSCAN = None
-    TRACLUS_map_Spect = TRACLUS_map_cluster_Spect = TRACLUS_map_segments_Spect = tabla_Spect = graph_Spect = None
-    TRACLUS_map_Aggl = TRACLUS_map_cluster_Aggl = TRACLUS_map_segments_Aggl = tabla_Aggl = graph_Aggl = None
+    traclus_map_optics = traclus_map_cluster_optics = traclus_map_segments_optics = tabla_optics = graph_optics = None
+    traclus_map_hdbscan = traclus_map_cluster_hdbscan = traclus_map_segments_hdbscan = tabla_hdbscan= graph_hdbscan = None
+    traclus_map_dbscan = traclus_map_cluster_dbscan = traclus_map_segments_dbscan = tabla_dbscan = graph_dbscan = None
+    traclus_map_spect = traclus_map_cluster_spect = traclus_map_segments_spect = tabla_spect = graph_spect = None
+    traclus_map_aggl = traclus_map_cluster_aggl = traclus_map_segments_aggl = tabla_aggl = graph_aggl = None
 
     # Resultados compartidos entre hilos
-    results = {'OPTICS': None, 'HDBSCAN': None, 'DBSCAN': None, 
-                'Spectral': None, 'Agglomerative': None, 'errors': []}
+    results = {'optics': None, 'hdbscan': None, 'dbscan': None, 
+                'spectral': None, 'agglomerative': None, 'errors': []}
     lock = threading.Lock()
 
     # Crear hilos para cada algoritmo
     threads = []
-    if OPTICS_ON:
-        t = threading.Thread(target=run_optics, args=(tray, results, lock, OPTICS_metric, OPTICS_algorithm, OPTICS_eps, OPTICS_sample))
+    if optics_on:
+        t = threading.Thread(target=run_optics, args=(tray, results, lock, optics_metric, optics_algorithm, optics_eps, optics_sample))
         threads.append(t)
-    if HDBSCAN_ON:
-        t = threading.Thread(target=run_hdbscan, args=(tray, results, lock, HDBSCAN_metric, HDBSCAN_algorithm, HDBSCAN_sample))
+    if hdbscan_on:
+        t = threading.Thread(target=run_hdbscan, args=(tray, results, lock, hdbscan_metric, hdbscan_algorithm, hdbscan_sample))
         threads.append(t)
-    if DBSCAN_ON:
-        t = threading.Thread(target=run_dbscan, args=(tray, results, lock, DBSCAN_metric, DBSCAN_algorithm, DBSCAN_eps, DBSCAN_sample))
+    if dbscan_on:
+        t = threading.Thread(target=run_dbscan, args=(tray, results, lock, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample))
         threads.append(t)
-    if Spect_ON:
-        t = threading.Thread(target=run_spectral, args=(tray, results, lock, Spect_affinity, Spect_assign_labels, Spect_n_clusters))
+    if spect_ON:
+        t = threading.Thread(target=run_spectral, args=(tray, results, lock, spect_affinity, spect_assign_labels, spect_n_clusters))
         threads.append(t)
-    if Aggl_ON:
-        t = threading.Thread(target=run_agglomerative, args=(tray, results, lock, Aggl_metric, Aggl_linkage, Aggl_n_clusters))
+    if aggl_ON:
+        t = threading.Thread(target=run_agglomerative, args=(tray, results, lock, aggl_metric, aggl_linkage, aggl_n_clusters))
         threads.append(t)
     
     # Iniciar todos los hilos
@@ -169,27 +169,27 @@ def data_constructor(data, nrows, OPTICS_ON, OPTICS_metric, OPTICS_algorithm, OP
         error_message = ' | '.join(results['errors'])
 
     # Desempaquetar los resultados para devolverlos como antes
-    if OPTICS_ON and results.get('OPTICS', None):
-        segments, clusters, cluster_assignments, representative_clusters = results.get('OPTICS', (None, None, None, None))
-        TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)  
-    if HDBSCAN_ON and results.get('HDBSCAN', None):
-        segments, clusters, cluster_assignments, representative_clusters = results.get('HDBSCAN', (None, None, None, None))
-        TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-    if DBSCAN_ON and results.get('DBSCAN', None):
-        segments, clusters, cluster_assignments, representative_clusters = results.get('DBSCAN', (None, None, None, None))
-        TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-    if Spect_ON and results.get('Spectral', None):
-        segments, clusters, cluster_assignments, representative_clusters = results.get('Spectral', (None, None, None, None))
-        TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-    if Aggl_ON and results.get('Agglomerative', None):
-        segments, clusters, cluster_assignments, representative_clusters = results.get('Agglomerative', (None, None, None, None))
-        TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
+    if optics_on and results.get('optics', None):
+        segments, clusters, cluster_assignments, representative_clusters = results.get('optics', (None, None, None, None))
+        traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)  
+    if hdbscan_on and results.get('hdbscan', None):
+        segments, clusters, cluster_assignments, representative_clusters = results.get('hdbscan', (None, None, None, None))
+        traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
+    if dbscan_on and results.get('dbscan', None):
+        segments, clusters, cluster_assignments, representative_clusters = results.get('dbscan', (None, None, None, None))
+        traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
+    if spect_ON and results.get('spectral', None):
+        segments, clusters, cluster_assignments, representative_clusters = results.get('spectral', (None, None, None, None))
+        traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
+    if aggl_ON and results.get('agglomerative', None):
+        segments, clusters, cluster_assignments, representative_clusters = results.get('agglomerative', (None, None, None, None))
+        traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
 
     # Retornar resultados
     return  gdf, tray, html_map, html_heatmap, \
-            TRACLUS_map_OPTICS, TRACLUS_map_cluster_OPTICS, TRACLUS_map_segments_OPTICS, tabla_OPTICS, graph_OPTICS, \
-            TRACLUS_map_HDBSCAN, TRACLUS_map_cluster_HDBSCAN, TRACLUS_map_segments_HDBSCAN, tabla_HDBSCAN, graph_HDBSCAN, \
-            TRACLUS_map_DBSCAN, TRACLUS_map_cluster_DBSCAN, TRACLUS_map_segments_DBSCAN, tabla_DBSCAN, graph_DBSCAN, \
-            TRACLUS_map_Spect, TRACLUS_map_cluster_Spect, TRACLUS_map_segments_Spect, tabla_Spect, graph_Spect, \
-            TRACLUS_map_Aggl, TRACLUS_map_cluster_Aggl, TRACLUS_map_segments_Aggl, tabla_Aggl, graph_Aggl, \
+            traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics, \
+            traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan, \
+            traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan, \
+            traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect, \
+            traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl, \
             error_message

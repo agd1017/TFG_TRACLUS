@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import *
+from dash import html
 import matplotlib
 matplotlib.use('Agg')
 from utils.data_utils import bytes_to_base64

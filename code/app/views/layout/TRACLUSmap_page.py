@@ -1,23 +1,23 @@
 import dash_bootstrap_components as dbc
-from dash import *
+from dash import html
 import matplotlib
 matplotlib.use('Agg')
 from utils.data_utils import bytes_to_base64
     
 # Ejemplo de uso para mostrar las imágenes en el carousel
-def get_clusters_map(TRACLUS_map, TRACLUS_map_cluster, TRACLUS_map_segments):
+def get_clusters_map(traclus_map, traclus_map_cluster, traclus_map_segments):
     # Convertir las imágenes a base64 para mostrarlas en el navegador
-    TRACLUS_map = bytes_to_base64(TRACLUS_map)
-    TRACLUS_map_cluster = bytes_to_base64(TRACLUS_map_cluster)
-    TRACLUS_map_segments = bytes_to_base64(TRACLUS_map_segments)
+    traclus_map = bytes_to_base64(traclus_map)
+    traclus_map_cluster = bytes_to_base64(traclus_map_cluster)
+    traclus_map_segments = bytes_to_base64(traclus_map_segments)
     
 
     return html.Div([
         dbc.Carousel(
             items=[
-                {"key": "1", "src": f"data:image/png;base64,{TRACLUS_map}"},
-                {"key": "2", "src": f"data:image/png;base64,{TRACLUS_map_cluster}"},
-                {"key": "3", "src": f"data:image/png;base64,{TRACLUS_map_segments}"}
+                {"key": "1", "src": f"data:image/png;base64,{traclus_map}"},
+                {"key": "2", "src": f"data:image/png;base64,{traclus_map_cluster}"},
+                {"key": "3", "src": f"data:image/png;base64,{traclus_map_segments}"}
             ],
             controls=True,
             indicators=True,
@@ -26,21 +26,21 @@ def get_clusters_map(TRACLUS_map, TRACLUS_map_cluster, TRACLUS_map_segments):
         )
     ], className="container-map")
 
-def get_page_mapTRACLUS(OPTICS_ON, HDBSCAN_ON, DBSCAN_ON, Spect_ON, Aggl_ON):
+def get_page_maptraclus(optics_on, hdbscan_on, dbscan_on, spect_on, aggl_on):
     items1 = [
-        dbc.DropdownMenuItem("OPTICS", id="item-1-1", disabled=not OPTICS_ON), 
-        dbc.DropdownMenuItem("HDBSCAN", id="item-1-2", disabled=not HDBSCAN_ON),
-        dbc.DropdownMenuItem("DBSCAN", id="item-1-3", disabled=not DBSCAN_ON),
-        dbc.DropdownMenuItem("SpectralClustering", id="item-1-4", disabled=not Spect_ON),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-1-5", disabled=not Aggl_ON)
+        dbc.DropdownMenuItem("OPTICS", id="item-1-1", disabled=not optics_on), 
+        dbc.DropdownMenuItem("HDBSCAN", id="item-1-2", disabled=not hdbscan_on),
+        dbc.DropdownMenuItem("DBSCAN", id="item-1-3", disabled=not dbscan_on),
+        dbc.DropdownMenuItem("SpectralClustering", id="item-1-4", disabled=not spect_on),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-1-5", disabled=not aggl_on)
     ]
 
     items2 = [
-        dbc.DropdownMenuItem("OPTICS", id="item-2-1", disabled=not OPTICS_ON), 
-        dbc.DropdownMenuItem("HDBSCAN", id="item-2-2", disabled=not HDBSCAN_ON),
-        dbc.DropdownMenuItem("DBSCAN", id="item-2-3", disabled=not DBSCAN_ON),
-        dbc.DropdownMenuItem("SpectralClustering", id="item-2-4", disabled=not Spect_ON),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-2-5",disabled=not Aggl_ON)
+        dbc.DropdownMenuItem("OPTICS", id="item-2-1", disabled=not optics_on), 
+        dbc.DropdownMenuItem("HDBSCAN", id="item-2-2", disabled=not hdbscan_on),
+        dbc.DropdownMenuItem("DBSCAN", id="item-2-3", disabled=not dbscan_on),
+        dbc.DropdownMenuItem("SpectralClustering", id="item-2-4", disabled=not spect_on),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="item-2-5",disabled=not aggl_on)
     ]
 
     return html.Div([

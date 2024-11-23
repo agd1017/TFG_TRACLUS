@@ -4,7 +4,7 @@ import warnings
 import time
 import threading
 import numpy as np
-from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
+from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering
 
 #* Optimizacion provisional y forma original
 
@@ -23,36 +23,36 @@ def get_point_projection_on_line(point, line):
     if np.isinf(line_slope):
         return np.array([line[0,0], point[1]])
     
-    R = slope_to_rotation_matrix(line_slope)
+    r = slope_to_rotation_matrix(line_slope)
 
-    rot_line = np.matmul(line, R.T)
-    rot_point = np.matmul(point, R.T)
+    rot_line = np.matmul(line, r.T)
+    rot_point = np.matmul(point, r.T)
 
     proj = np.array([rot_point[0], rot_line[0,1]])
 
-    R_inverse = np.linalg.inv(R)
-    proj = np.matmul(proj, R_inverse.T)
+    r_inverse = np.linalg.inv(r)
+    proj = np.matmul(proj, r_inverse.T)
 
     return proj
 
 def get_point_projection_on_line_optimize(point, line):
-    A = np.array(line[0])
-    B = np.array(line[1])
-    P = np.array(point)
+    a = np.array(line[0])
+    b = np.array(line[1])
+    p = np.array(point)
     
     # Vectores AB y AP
-    AB = B - A
-    AP = P - A
+    ab = b - a
+    ap = p - a
     
     # Producto escalar de AB y AP, y producto escalar de AB con sí mismo
-    dot_product = np.dot(AP, AB)
-    AB_square = np.dot(AB, AB)
+    dot_product = np.dot(ap, ab)
+    ab_square = np.dot(ab, ab)
     
     # Factor de proyección sobre AB
-    factor = dot_product / AB_square
+    factor = dot_product / ab_square
     
     # Proyección en términos de vector
-    projection = A + factor * AB
+    projection = a + factor * ab
     
     return projection
 
@@ -297,7 +297,7 @@ def get_vectorice_distance_matrix(partitions, directional=True, w_perpendicular=
 
     return dist_matrix
 
-# Particiones
+#* Particiones
 
 def partition2segments(partition):
 
@@ -359,7 +359,7 @@ def partition(trajectory, directional=True, progress_bar=False, w_perpendicular=
 
     return np.array([trajectory[i] for i in cp_indices])
 
-# Representacion de trayecorias
+#* Representacion de trayecorias
 
 def get_average_direction_slope(line_list):
 
@@ -416,43 +416,39 @@ def get_representative_trajectory(lines, min_lines=3):
 #* Clustering de las trayectorias con los diversoso algoritmos
 
 def clustering(segments, dist_matrix, clustering_algorithm, 
-                OPTICS_min_samples, OPTICS_max_eps, OPTICS_metric, OPTICS_algorithm,
-                DBSCAN_min_samples, DBSCAN_eps, DBSCAN_metric, DBSCAN_algorithm,
-                HDBSCAN_min_samples, HDBSCAN_metric, HDBSCAN_algorithm,
-                Spect_n_clusters, Spect_affinity, Spect_assign_labels,
-                Aggl_n_clusters, Aggl_linkage, Aggl_metric):
+                optics_min_samples, optics_max_eps, optics_metric, optics_algorithm, 
+                dbscan_min_samples, dbscan_eps, dbscan_metric, dbscan_algorithm, 
+                hdbscan_min_samples, hdbscan_metric, hdbscan_algorithm, 
+                spect_n_clusters, spect_affinity, spect_assign_labels,
+                aggl_n_clusters, aggl_linkage, aggl_metric):
     
     clusters = []
     clustering_model = None
 
     # Para OPTICS
     if clustering_algorithm == OPTICS:
-        params = {'min_samples': OPTICS_min_samples, 'max_eps': OPTICS_max_eps, 'metric': OPTICS_metric, 'algorithm': OPTICS_algorithm}
+        params = {'min_samples': optics_min_samples, 'max_eps': optics_max_eps, 'metric': optics_metric, 'algorithm': optics_algorithm}
         clustering_model = OPTICS(**params)
 
     # Para DBSCAN
     elif clustering_algorithm == DBSCAN:
-        params = {'min_samples': DBSCAN_min_samples, 'eps': DBSCAN_eps, 'metric': DBSCAN_metric, 'algorithm': DBSCAN_algorithm}
+        params = {'min_samples': dbscan_min_samples, 'eps': dbscan_eps, 'metric': dbscan_metric, 'algorithm': dbscan_algorithm}
         clustering_model = DBSCAN(**params)
 
     # Para HDBSCAN
     elif clustering_algorithm == HDBSCAN:
-        params = {'min_samples': HDBSCAN_min_samples, 'metric': HDBSCAN_metric, 'algorithm': HDBSCAN_algorithm}
+        params = {'min_samples': hdbscan_min_samples, 'metric': hdbscan_metric, 'algorithm': hdbscan_algorithm}
         clustering_model = HDBSCAN(**params)
 
     # Para SpectralClustering
     elif clustering_algorithm == SpectralClustering:
-        params = {'n_clusters': Spect_n_clusters, 'affinity': Spect_affinity, 'assign_labels': Spect_assign_labels}
+        params = {'n_clusters': spect_n_clusters, 'affinity': spect_affinity, 'assign_labels': spect_assign_labels}
         clustering_model = SpectralClustering(**params)
 
     # Para AgglomerativeClustering
     elif clustering_algorithm == AgglomerativeClustering:
-        params = {'n_clusters': Aggl_n_clusters, 'linkage': Aggl_linkage, 'metric': Aggl_metric}
+        params = {'n_clusters': aggl_n_clusters, 'linkage': aggl_linkage, 'metric': aggl_metric}
         clustering_model = AgglomerativeClustering(**params)
-
-    """ elif clustering_algorithm == Birch:
-        params = {'n_clusters': n_clusters, 'threshold': threshold}
-        clustering_model = Birch(**params) """
 
     # Asegurar que el modelo se ha creado antes de continuar
     if clustering_model is not None:
@@ -463,14 +459,14 @@ def clustering(segments, dist_matrix, clustering_algorithm,
 
     return clusters, cluster_assignments
 
-
-# Traclus
+#* Traclus
 
 def traclus(trajectories, directional=True, use_segments=True, clustering_algorithm=OPTICS, mdl_weights=[1,1,1], d_weights=[1,1,1], 
-            OPTICS_min_samples=None, OPTICS_max_eps=None, OPTICS_metric=None, OPTICS_algorithm=None, DBSCAN_min_samples=None, 
-            DBSCAN_eps=None, DBSCAN_metric=None, DBSCAN_algorithm=None, HDBSCAN_min_samples=None, 
-            HDBSCAN_metric=None, HDBSCAN_algorithm=None, Spect_n_clusters=None, Spect_affinity=None, Spect_assign_labels=None,
-            Aggl_n_clusters=None, Aggl_linkage=None, Aggl_metric=None):
+            optics_min_samples=None, optics_max_eps=None, optics_metric=None, optics_algorithm=None, 
+            dbscan_min_samples=None, dbscan_eps=None, dbscan_metric=None, dbscan_algorithm=None, 
+            hdbscan_min_samples=None, hdbscan_metric=None, hdbscan_algorithm=None, 
+            spect_n_clusters=None, spect_affinity=None, spect_assign_labels=None,
+            aggl_n_clusters=None, aggl_linkage=None, aggl_metric=None):
     """
         Trajectory Clustering Algorithm
     """
@@ -486,27 +482,14 @@ def traclus(trajectories, directional=True, use_segments=True, clustering_algori
             raise ValueError("Trajectories must be a list of numpy arrays of shape (n, 2)")
 
     # Partition trajectories
-    """ if progress_bar:
-        print("Partitioning trajectories...") """
     partitions = []
-    i = 0
     for trajectory in trajectories:
-        """ if progress_bar:
-            print(f"\rTrajectory {i + 1}/{len(trajectories)}", end='')
-            i += 1 """
         partitions.append(partition(trajectory, directional=directional, progress_bar=False, w_perpendicular=mdl_weights[0], w_angular=mdl_weights[2]))
-    """ if progress_bar:
-        print() """
 
     # Convert partitions to segments
     segments = []
     if use_segments:
-        """ if progress_bar:
-            print("Converting partitioned trajectories to segments...") """
-        i = 0
         for parts in partitions:
-            """ if progress_bar:
-                print(f"\rPartition {i + 1}/{len(parts)}", end='') """
             segments += partition2segments(parts)
     else:
         segments = partitions
@@ -514,38 +497,17 @@ def traclus(trajectories, directional=True, use_segments=True, clustering_algori
     # Get distance matrix
     dist_matrix = get_vectorice_distance_matrix(segments, directional=directional, w_perpendicular=d_weights[0], w_parallel=d_weights[1], w_angular=d_weights[2])
 
-    """ # Group the partitions
-    if progress_bar:
-        print("Grouping partitions...") """
-
     # Clustering
     clusters, cluster_assignments = clustering(segments, dist_matrix, clustering_algorithm, 
-                                                OPTICS_min_samples, OPTICS_max_eps, OPTICS_metric, OPTICS_algorithm,
-                                                DBSCAN_min_samples, DBSCAN_eps, DBSCAN_metric, DBSCAN_algorithm,
-                                                HDBSCAN_min_samples, HDBSCAN_metric, HDBSCAN_algorithm,
-                                                Spect_n_clusters, Spect_affinity, Spect_assign_labels,
-                                                Aggl_n_clusters, Aggl_linkage, Aggl_metric)
-
-    """ clusters = []
-    clustering_model = None
-    if max_eps is not None:
-        clustering_model = clustering_algorithm(max_eps=max_eps, min_samples=min_samples)
-    else:
-        clustering_model = clustering_algorithm(min_samples=min_samples)
-    cluster_assignments = clustering_model.fit_predict(dist_matrix)
-    for c in range(min(cluster_assignments), max(cluster_assignments) + 1):
-        clusters.append([segments[i] for i in range(len(segments)) if cluster_assignments[i] == c]) """
-
-    """ if progress_bar:
-        print() """
+                                                optics_min_samples, optics_max_eps, optics_metric, optics_algorithm, 
+                                                dbscan_min_samples, dbscan_eps, dbscan_metric, dbscan_algorithm, 
+                                                hdbscan_min_samples, hdbscan_metric, hdbscan_algorithm, 
+                                                spect_n_clusters, spect_affinity, spect_assign_labels,
+                                                aggl_n_clusters, aggl_linkage, aggl_metric)
 
     # Get the representative trajectories
-    """ if progress_bar:
-        print("Getting representative trajectories...") """
     representative_trajectories = []
     for cluster in clusters:
         representative_trajectories.append(get_representative_trajectory(cluster))
-    """ if progress_bar:
-        print() """
 
     return partitions, segments, dist_matrix, clusters, cluster_assignments, representative_trajectories
