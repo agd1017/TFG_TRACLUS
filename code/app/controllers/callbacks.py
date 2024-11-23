@@ -12,7 +12,7 @@ import io
 
 from utils.config import UPLOAD_FOLDER, TRAIN_DATA
 from utils.data_utils import list_files_in_folder, save_html_or_binary
-from views.layout.dataupload_page import get_page_dataUpdate
+from views.layout.dataupload_page import get_page_dataupdate
 from views.layout.experiment_page import get_page_experiment
 from views.layout.map_page import get_page_map, get_map_image_as_html
 from views.layout.select_page import get_page_select
@@ -58,7 +58,7 @@ def register_upload_callbacks(app):
         elif pathname == '/new-experiment':
             return get_page_experiment()
         elif pathname == '/data-update':
-            return get_page_dataUpdate()
+            return get_page_dataupdate()
         elif pathname == '/map-page':
             return get_page_map()
         elif pathname == '/TRACLUS-map':
@@ -311,55 +311,55 @@ def register_upload_callbacks(app):
 
     # Callbacks for disable/enable selectors
     @app.callback(
-        [Output(f'dropdown-optics-metric', 'disabled'),
-        Output(f'dropdown-optics-algorithm', 'disabled'),
-        Output(f'input-optics-eps', 'disabled'),
-        Output(f'input-optics-sample', 'disabled')],
-        [Input(f'selector-optics', 'value')]
+        [Output('dropdown-optics-metric', 'disabled'),
+        Output('dropdown-optics-algorithm', 'disabled'),
+        Output('input-optics-eps', 'disabled'),
+        Output('input-optics-sample', 'disabled')],
+        [Input('selector-optics', 'value')]
     )
-    def toggle_rowO_controls(selector_value_O):
-            is_enabled = 'on' in selector_value_O
+    def toggle_rowo_controls(selector_value_o):
+            is_enabled = 'on' in selector_value_o
             return not is_enabled, not is_enabled, not is_enabled, not is_enabled
 
     @app.callback(
-        [Output(f'dropdown-dbscan-metric', 'disabled'),
-        Output(f'dropdown-dbscan-algorithm', 'disabled'),
-        Output(f'input-dbscan-eps', 'disabled'),
-        Output(f'input-dbscan-sample', 'disabled')],
-        [Input(f'selector-dbscan', 'value')]
+        [Output('dropdown-dbscan-metric', 'disabled'),
+        Output('dropdown-dbscan-algorithm', 'disabled'),
+        Output('input-dbscan-eps', 'disabled'),
+        Output('input-dbscan-sample', 'disabled')],
+        [Input('selector-dbscan', 'value')]
     )
-    def toggle_rowD_controls(selector_value_D):
-            is_enabled = 'on' in selector_value_D
+    def toggle_rowd_controls(selector_value_d):
+            is_enabled = 'on' in selector_value_d
             return not is_enabled, not is_enabled, not is_enabled, not is_enabled
 
     @app.callback(
-        [Output(f'dropdown-hdbscan-metric', 'disabled'),
-        Output(f'dropdown-hdbscan-algorithm', 'disabled'),
-        Output(f'input-hdbscan-sample', 'disabled')],
-        [Input(f'selector-hdbscan', 'value')]
+        [Output('dropdown-hdbscan-metric', 'disabled'),
+        Output('dropdown-hdbscan-algorithm', 'disabled'),
+        Output('input-hdbscan-sample', 'disabled')],
+        [Input('selector-hdbscan', 'value')]
     )
-    def toggle_rowH_controls(selector_value_H):
-            is_enabled = 'on' in selector_value_H
+    def toggle_rowh_controls(selector_value_h):
+            is_enabled = 'on' in selector_value_h
             return not is_enabled, not is_enabled, not is_enabled
 
     @app.callback(
-        [Output(f'dropdown-agglomerativeclustering-metric', 'disabled'),
-        Output(f'dropdown-agglomerativeclustering-linkage', 'disabled'),
-        Output(f'input-agglomerativeclustering-n_clusters', 'disabled')],
-        [Input(f'selector-agglomerativeclustering', 'value')]
+        [Output('dropdown-agglomerativeclustering-metric', 'disabled'),
+        Output('dropdown-agglomerativeclustering-linkage', 'disabled'),
+        Output('input-agglomerativeclustering-n_clusters', 'disabled')],
+        [Input('selector-agglomerativeclustering', 'value')]
     )
-    def toggle_rowA_controls(selector_value_A):
-            is_enabled = 'on' in selector_value_A
+    def toggle_rowa_controls(selector_value_a):
+            is_enabled = 'on' in selector_value_a
             return not is_enabled, not is_enabled, not is_enabled
 
     @app.callback(
-        [Output(f'dropdown-spectralclustering-affinity', 'disabled'),
-        Output(f'dropdown-spectralclustering-assign_labels', 'disabled'),
-        Output(f'input-spectralclustering-n_clusters', 'disabled')],
-        [Input(f'selector-spectralclustering', 'value')]
+        [Output('dropdown-spectralclustering-affinity', 'disabled'),
+        Output('dropdown-spectralclustering-assign_labels', 'disabled'),
+        Output('input-spectralclustering-n_clusters', 'disabled')],
+        [Input('selector-spectralclustering', 'value')]
     )
-    def toggle_rowS_controls(selector_value_S):
-            is_enabled = 'on' in selector_value_S
+    def toggle_rows_controls(selector_value_s):
+            is_enabled = 'on' in selector_value_s
             return not is_enabled, not is_enabled, not is_enabled
 
     # Callbacks for data upload page
@@ -706,7 +706,7 @@ def register_upload_callbacks(app):
         if not selected_filter:
             return px.bar(
                 title='Gráfico vacío',
-                labels={'x': 'Clúster', 'y': 'Segmentos'}
+                labels={'x': 'Clusters', 'y': 'Segments'}
             )
 
         # Filtrar los datos según la selección del usuario
@@ -724,7 +724,7 @@ def register_upload_callbacks(app):
             # Si el filtro seleccionado no tiene datos o está deshabilitado
             return px.bar(
                 title=f'No hay datos para {selected_filter.capitalize()}',
-                labels={'x': 'Clúster', 'y': 'Segmentos'}
+                labels={'x': 'Clusters', 'y': 'Segments'}
             )
 
         # Contar la frecuencia de cada clúster
@@ -734,7 +734,7 @@ def register_upload_callbacks(app):
         figure = px.bar(
             x=list(cluster_counts.keys()),
             y=list(cluster_counts.values()),
-            labels={'x': 'Clúster', 'y': 'Segmentos'},
+            labels={'x': 'Clusters', 'y': 'Segments'},
             title=f'Segmentos por Clúster - {selected_filter.capitalize()}'
         )
 
@@ -763,23 +763,28 @@ def register_upload_callbacks(app):
             if optics_on:
                 txt_files["tabla_optics.txt"] = tabla_optics.to_csv(index=False, sep='\t')
                 images["traclus_map_optics.png"] = traclus_map_optics
-                images["traclus_map_df_optics.png"] = traclus_map_segments_optics
+                images["traclus_map_segments_optics.png"] = traclus_map_segments_optics
+                images["traclus_map_cluster_optics.png"] = traclus_map_cluster_optics
             if hdbscan_on:
                 txt_files["tabla_hdbscan.txt"] = tabla_hdbscan.to_csv(index=False, sep='\t')
                 images["traclus_map_hdbscan.png"] = traclus_map_hdbscan
-                images["traclus_map_df_hdbscan.png"] = traclus_map_segments_hdbscan
+                images["traclus_map_segments_hdbscan.png"] = traclus_map_segments_hdbscan
+                images["traclus_map_cluster_hdbscan.png"] = traclus_map_cluster_hdbscan
             if dbscan_on:
                 txt_files["tabla_dbscan.txt"] = tabla_dbscan.to_csv(index=False, sep='\t')
                 images["traclus_map_dbscan.png"] = traclus_map_dbscan
-                images["traclus_map_df_dbscan.png"] = traclus_map_segments_dbscan
+                images["traclus_map_segments_dbscan.png"] = traclus_map_segments_dbscan
+                images["traclus_map_cluster_dbscan.png"] = traclus_map_cluster_dbscan
             if spect_on:
                 txt_files["tabla_spectralclustering.txt"] = tabla_spect.to_csv(index=False, sep='\t')
                 images["traclus_map_spectralclustering.png"] = traclus_map_spect
-                images["traclus_map_df_spectralclustering.png"] = traclus_map_segments_spect
+                images["traclus_map_segments_spectralclustering.png"] = traclus_map_segments_spect
+                images["traclus_map_cluster_spectralclustering.png"] = traclus_map_cluster_spect
             if aggl_on:
                 txt_files["tabla_agglomerativeclustering.txt"] = tabla_aggl.to_csv(index=False, sep='\t')
                 images["traclus_map_agglomerativeclustering.png"] = traclus_map_aggl
-                images["traclus_map_df_agglomerativeclustering.png"] = traclus_map_segments_aggl
+                images["traclus_map_segments_agglomerativeclustering.png"] = traclus_map_segments_aggl
+                images["traclus_map_cluster_agglomerativeclustering.png"] = traclus_map_cluster_aggl
 
             # Agregar los archivos TXT al ZIP
             for filename, txt_content in txt_files.items():

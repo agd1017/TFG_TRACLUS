@@ -20,13 +20,13 @@ def get_table(tabla):
         style_table={'overflowX': 'auto'},
     )
 
-def get_page_tables(optics_on, hdbscan_on, dbscan_on, spect_ON, aggl_ON):
+def get_page_tables(optics_on, hdbscan_on, dbscan_on, spect_on, aggl_on):
     item_table = [
         dbc.DropdownMenuItem("OPTICS", id="table-1", disabled=not optics_on), 
         dbc.DropdownMenuItem("HDBSCAN", id="table-2", disabled=not hdbscan_on),
         dbc.DropdownMenuItem("DBSCAN", id="table-3", disabled=dbscan_on),
-        dbc.DropdownMenuItem("SpectralClustering", id="table-4", disabled=not spect_ON),
-        dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5", disabled=not aggl_ON)
+        dbc.DropdownMenuItem("SpectralClustering", id="table-4", disabled=not spect_on),
+        dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5", disabled=not aggl_on)
     ]
 
     return html.Div([
@@ -49,8 +49,8 @@ def get_page_tables(optics_on, hdbscan_on, dbscan_on, spect_ON, aggl_ON):
                         {'label': 'OPTICS', 'value': 'optics', 'disabled': not optics_on},
                         {'label': 'HDBSCAN', 'value': 'hdbscan', 'disabled': not hdbscan_on},
                         {'label': 'DBSCAN', 'value': 'dbscan', 'disabled': dbscan_on},
-                        {'label': 'Spectral Clustering', 'value': 'spectral', 'disabled': not spect_ON},
-                        {'label': 'Agglomerative Clustering', 'value': 'agglomerative', 'disabled': not aggl_ON}
+                        {'label': 'Spectral Clustering', 'value': 'spectral', 'disabled': not spect_on},
+                        {'label': 'Agglomerative Clustering', 'value': 'agglomerative', 'disabled': not aggl_on}
                     ],
                     value=None
                 ),

@@ -7,12 +7,12 @@ def experiment_row_optics():
     return html.Div([
         # Selector
         dcc.Checklist(
-            id=f'selector-optics',
+            id='selector-optics',
             options=[{'label': '', 'value': 'on'}],
             value=[],
             className='selector'
         ),
-        html.Div(f'OPTICS', className='row-label'),
+        html.Div('OPTICS', className='row-label'),
         # Dropdown metric
         dcc.Dropdown(
             id='dropdown-optics-metric',
@@ -41,17 +41,17 @@ def experiment_row_optics():
         ),
         # Input numérico Max_eps
         dcc.Input(
-            id=f'input-optics-eps',
+            id='input-optics-eps',
             type='number',
-            placeholder=f'Max_eps',
+            placeholder='Max_eps',
             disabled=True, 
             className='input'
         ),
         # Input numérico Min_samples
         dcc.Input(
-            id=f'input-optics-sample',
+            id='input-optics-sample',
             type='number',
-            placeholder=f'Min_samples',
+            placeholder='Min_samples',
             disabled=True,  
             className='input'
         )
@@ -61,12 +61,12 @@ def experiment_row_dbscan():
     return html.Div([
         # Selector
         dcc.Checklist(
-            id=f'selector-dbscan',
+            id='selector-dbscan',
             options=[{'label': '', 'value': 'on'}],
             value=[],
             className='selector'
         ),
-        html.Div(f'DBSCAN', className='row-label'),
+        html.Div('DBSCAN', className='row-label'),
         # Dropdown metric
         dcc.Dropdown(
             id='dropdown-dbscan-metric',
@@ -95,17 +95,17 @@ def experiment_row_dbscan():
         ),
         # Input numérico Eps
         dcc.Input(
-            id=f'input-dbscan-eps',
+            id='input-dbscan-eps',
             type='number',
-            placeholder=f'Eps',
+            placeholder='Eps',
             disabled=True, 
             className='input'
         ),
         # Input numérico Min_samples
         dcc.Input(
-            id=f'input-dbscan-sample',
+            id='input-dbscan-sample',
             type='number',
-            placeholder=f'Min_samples',
+            placeholder='Min_samples',
             disabled=True,  
             className='input'
         )
@@ -115,12 +115,12 @@ def experiment_row_hdbscan():
     return html.Div([
         # Selector
         dcc.Checklist(
-            id=f'selector-hdbscan',
+            id='selector-hdbscan',
             options=[{'label': '', 'value': 'on'}],
             value=[],
             className='selector'
         ),
-        html.Div(f'HDBSCAN', className='row-label'),
+        html.Div('HDBSCAN', className='row-label'),
         # Dropdown metric
         dcc.Dropdown(
             id='dropdown-hdbscan-metric',
@@ -149,9 +149,9 @@ def experiment_row_hdbscan():
         ),
         # Input numérico Min_samples
         dcc.Input(
-            id=f'input-hdbscan-sample',
+            id='input-hdbscan-sample',
             type='number',
-            placeholder=f'Min_samples',
+            placeholder='Min_samples',
             disabled=True,  
             className='input'
         )
@@ -161,12 +161,12 @@ def experiment_row_aggl():
     return html.Div([
         # Selector
         dcc.Checklist(
-            id=f'selector-agglomerativeclustering',
+            id='selector-agglomerativeclustering',
             options=[{'label': '', 'value': 'on'}],
             value=[],
             className='selector'
         ),
-        html.Div(f'AgglomerativeClustering', className='row-label'),
+        html.Div('AgglomerativeClustering', className='row-label'),
         # Dropdown metric
         dcc.Dropdown(
             id='dropdown-agglomerativeclustering-metric',
@@ -195,9 +195,9 @@ def experiment_row_aggl():
         ),
         # Input numérico n_clusters
         dcc.Input(
-            id=f'input-agglomerativeclustering-n_clusters',
+            id='input-agglomerativeclustering-n_clusters',
             type='number',
-            placeholder=f'n_clusters',
+            placeholder='n_clusters',
             disabled=True, 
             className='input'
         )
@@ -207,12 +207,12 @@ def experiment_row_spect():
     return html.Div([
         # Selector
         dcc.Checklist(
-            id=f'selector-spectralclustering',
+            id='selector-spectralclustering',
             options=[{'label': '', 'value': 'on'}],
             value=[],
             className='selector'
         ),
-        html.Div(f'SpectralClustering', className='row-label'),
+        html.Div('SpectralClustering', className='row-label'),
         # Dropdown affinity
         dcc.Dropdown(
             id='dropdown-spectralclustering-affinity',
@@ -238,9 +238,9 @@ def experiment_row_spect():
         ),
         # Input numérico n_clusters
         dcc.Input(
-            id=f'input-spectralclustering-n_clusters',
+            id='input-spectralclustering-n_clusters',
             type='number',
-            placeholder=f'n_clusters',
+            placeholder='n_clusters',
             disabled=True,  
             className='input'
         )

@@ -284,8 +284,6 @@ def distance_vector(partitions, directional=True, w_perpendicular=1, w_parallel=
 
 def get_vectorice_distance_matrix(partitions, directional=True, w_perpendicular=1, w_parallel=1, w_angular=1):
     partitions = np.asarray(partitions)  # Asegurar que partitions sea un array de NumPy
-    n_partitions = len(partitions)
-    dist_matrix = np.zeros((n_partitions, n_partitions))
     
     dist_matrix = distance_vector(partitions, directional, w_perpendicular, w_parallel, w_angular)
 

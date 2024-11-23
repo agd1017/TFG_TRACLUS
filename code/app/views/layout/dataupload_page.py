@@ -5,7 +5,7 @@ matplotlib.use('Agg')
 
 # Pagina Carga de datos
 
-def get_page_dataUpdate():
+def get_page_dataupdate():
     return html.Div([
         html.Div([
             html.H1("Introducción de datos previos"),

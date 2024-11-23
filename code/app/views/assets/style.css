@@ -13,20 +13,6 @@ body {
     color: #fff !important;
 }
 
-/* .dropdown-menu {
-    margin: auto;
-}
-
-.dropdown-item:hover {
-    background-color: #0056b3 !important;
-} */
-
-/* .box{
-    text-align: center;
-    background-color: #fff6ee;
-}
- */
-
 .image-carousel .carousel-item img {
     max-height: 80vh;
     border-radius: 5%; 
@@ -217,24 +203,6 @@ body {
     grid-template-columns: 5% 13% auto auto auto;  /* Cuatro columnas: selector, row-label, dropdown, input */
 }
 
-/* .grid-row-container {
-    grid-area: row3, row4, row5;
-    display: grid;
-    padding: 0 1%;
-    margin: 0.7% 0;
-    grid-template-areas: 'selector row-label dropdown1.3 dropdown2.3 input1.3';  /* Cuatro áreas: selector, row-label, dropdown, input */
-    /*grid-template-columns: 5% 13% auto auto; */ /*Cuatro columnas: selector, row-label, dropdown, input 
-}
-
-.custom-dropdown{
-    grid-area: dropdown1, dropdown2;
-}
-
-.custom-dropdown{
-    grid-area: dropdown1.3, dropdown2.3;
-    width: 50%;
-} */
-
 /* Estilo para el selector */
 .selector {
     justify-self: start;  
@@ -308,7 +276,6 @@ hr {
     border: 1px solid black;
     border-radius: 8px;
     box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.4);
-    /* background-color: #d3cdc7; */
     display: grid;
     grid-template-areas: 'text text'
                             'file file' 
@@ -340,17 +307,6 @@ hr {
     border: 1px solid #000;
     border-Radius: 5px; 
 } 
-
-/* .file-upload{
-    width: 50%;
-    border: 1px dashed #000;
-    border-Radius: 5px; 
-    text-Align: center;
-    padding: 12px 20px;
-    margin: 0 auto;
-    display: block;
-    background-color: #fff;
-} */
 
 .inputnumber{
     grid-area: number;

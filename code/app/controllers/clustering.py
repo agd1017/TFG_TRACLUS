@@ -118,8 +118,8 @@ def run_agglomerative(tray, results, lock, aggl_metric, aggl_linkage, aggl_n_clu
 def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, optics_eps, optics_sample, 
                 dbscan_on, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample, 
                 hdbscan_on, hdbscan_metric, hdbscan_algorithm, hdbscan_sample, 
-                aggl_ON, aggl_metric, aggl_linkage, aggl_n_clusters, 
-                spect_ON, spect_affinity, spect_assign_labels, spect_n_clusters):
+                aggl_on, aggl_metric, aggl_linkage, aggl_n_clusters, 
+                spect_on, spect_affinity, spect_assign_labels, spect_n_clusters):
     # Carga de datos
     gdf, tray, df = load_and_simplify_data(data, nrows) 
     minx, miny, maxx, maxy = get_coordinates(gdf)
@@ -148,10 +148,10 @@ def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, op
     if dbscan_on:
         t = threading.Thread(target=run_dbscan, args=(tray, results, lock, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample))
         threads.append(t)
-    if spect_ON:
+    if spect_on:
         t = threading.Thread(target=run_spectral, args=(tray, results, lock, spect_affinity, spect_assign_labels, spect_n_clusters))
         threads.append(t)
-    if aggl_ON:
+    if aggl_on:
         t = threading.Thread(target=run_agglomerative, args=(tray, results, lock, aggl_metric, aggl_linkage, aggl_n_clusters))
         threads.append(t)
     
@@ -178,10 +178,10 @@ def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, op
     if dbscan_on and results.get('dbscan', None):
         segments, clusters, cluster_assignments, representative_clusters = results.get('dbscan', (None, None, None, None))
         traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-    if spect_ON and results.get('spectral', None):
+    if spect_on and results.get('spectral', None):
         segments, clusters, cluster_assignments, representative_clusters = results.get('spectral', (None, None, None, None))
         traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-    if aggl_ON and results.get('agglomerative', None):
+    if aggl_on and results.get('agglomerative', None):
         segments, clusters, cluster_assignments, representative_clusters = results.get('agglomerative', (None, None, None, None))
         traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
 
