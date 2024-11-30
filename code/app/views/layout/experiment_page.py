@@ -1,7 +1,5 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
-import matplotlib
-matplotlib.use('Agg')
 
 def experiment_row_optics():
     return html.Div([

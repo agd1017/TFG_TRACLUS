@@ -1,7 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
-import matplotlib
-matplotlib.use('Agg')
+
 from utils.data_utils import list_experiment_folders
 
 # Pagina Experimento

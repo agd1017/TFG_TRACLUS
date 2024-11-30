@@ -1,7 +1,5 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
-import matplotlib
-matplotlib.use('Agg')
 
 # Pagina Carga de datos
 
@@ -43,10 +41,7 @@ def get_page_dataupdate():
             ], className='box inputnumber'),
             html.Div([
                 dbc.Button('Comenzar procesamiento', id='process-url-button', n_clicks=0)
-            ], className='box buttonsconfirm'),
-            html.Div([
-                dbc.Button('Configuración predeterminada', id='default-config-button', n_clicks=0)
-            ], className='box buttonsdefault'),
+            ], className='box buttonsconfirm')
         ], className='grid-data-container'),
         html.Div([
             dbc.Spinner(children=[

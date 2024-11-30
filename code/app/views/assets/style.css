@@ -280,7 +280,7 @@ hr {
     grid-template-areas: 'text text'
                             'file file' 
                             'number number'
-                            'button1 button2';
+                            'button_load button_load';
     grid-template-rows: auto auto auto;
     grid-template-columns: 50% 50%;
 }
@@ -323,13 +323,7 @@ hr {
 }
 
 .buttonsconfirm{
-    grid-area: button1;
-    margin-top: 3%;
-    margin-bottom: 3%;
-}
-
-.buttonsdefault{
-    grid-area: button2;
+    grid-area: button_load;
     margin-top: 3%;
     margin-bottom: 3%;
 }
@@ -340,25 +334,13 @@ hr {
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-areas:  'menu3 menu4'
-                            'maps maps';
-    grid-template-rows: 7% auto;
+    grid-template-areas:  'maps maps';
     grid-template-columns: 50% 50%;
-}
-
-.menu3{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    grid-area: menu3;
-}
-.menu4{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    grid-area: menu4;
 }
 
 .maps{
     grid-area: maps;
+    margin-top: 2%;
 }
 
 /* Compratator page */

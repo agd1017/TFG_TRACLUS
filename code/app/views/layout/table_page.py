@@ -1,7 +1,5 @@
 import dash_bootstrap_components as dbc
 from dash import dash_table, html, dcc
-import matplotlib
-matplotlib.use('Agg')
 
 # Pagina tablas
 def get_table(tabla):
@@ -24,7 +22,7 @@ def get_page_tables(optics_on, hdbscan_on, dbscan_on, spect_on, aggl_on):
     item_table = [
         dbc.DropdownMenuItem("OPTICS", id="table-1", disabled=not optics_on), 
         dbc.DropdownMenuItem("HDBSCAN", id="table-2", disabled=not hdbscan_on),
-        dbc.DropdownMenuItem("DBSCAN", id="table-3", disabled=dbscan_on),
+        dbc.DropdownMenuItem("DBSCAN", id="table-3", disabled=not dbscan_on),
         dbc.DropdownMenuItem("SpectralClustering", id="table-4", disabled=not spect_on),
         dbc.DropdownMenuItem("AgglomerativeClustering", id="table-5", disabled=not aggl_on)
     ]
@@ -48,7 +46,7 @@ def get_page_tables(optics_on, hdbscan_on, dbscan_on, spect_on, aggl_on):
                     options=[
                         {'label': 'OPTICS', 'value': 'optics', 'disabled': not optics_on},
                         {'label': 'HDBSCAN', 'value': 'hdbscan', 'disabled': not hdbscan_on},
-                        {'label': 'DBSCAN', 'value': 'dbscan', 'disabled': dbscan_on},
+                        {'label': 'DBSCAN', 'value': 'dbscan', 'disabled': not dbscan_on},
                         {'label': 'Spectral Clustering', 'value': 'spectral', 'disabled': not spect_on},
                         {'label': 'Agglomerative Clustering', 'value': 'agglomerative', 'disabled': not aggl_on}
                     ],

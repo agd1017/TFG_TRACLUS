@@ -1,7 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import html
-import matplotlib
-matplotlib.use('Agg')
+
 from utils.data_utils import bytes_to_base64
     
 # Ejemplo de uso para mostrar las imágenes en el carousel
@@ -11,7 +10,6 @@ def get_clusters_map(traclus_map, traclus_map_cluster, traclus_map_segments):
     traclus_map_cluster = bytes_to_base64(traclus_map_cluster)
     traclus_map_segments = bytes_to_base64(traclus_map_segments)
     
-
     return html.Div([
         dbc.Carousel(
             items=[
