@@ -2,10 +2,264 @@
 
 \section{Introducción}
 
+En este apéndice se presenta la documentación técnica del proyecto, proporcionando una descripción detallada de la estructura del código y sus directorios. Este apartado tiene como objetivo facilitar la comprensión del proyecto para desarrolladores que deseen trabajar en él, analizarlo o realizar modificaciones futuras.
+
 \section{Estructura de directorios}
+
+Todo el código de este proyecto se encuentra dentro de la carpeta \texttt{code}, que se divide en dos subcarpetas principales:
+
+\begin{itemize}
+    \item \texttt{app/} -- Contiene toda la aplicación web desarrollada para el proyecto, organizada siguiendo el patrón Modelo-Vista-Controlador (MVC). Incluye el código relacionado con los controladores, modelos, vistas y utilidades, así como los recursos estáticos necesarios para la interfaz de usuario.
+    \item \texttt{Research and experiments/} -- Agrupa todas las pruebas y experimentos realizados durante el desarrollo. En esta carpeta se incluyen tanto los prototipos iniciales como los análisis realizados con diferentes componentes del proyecto. Solo se han conservado aquellas pruebas que se consideran claras y relevantes.
+\end{itemize}
+
+A continuación, se describe en detalle la estructura interna, incluyendo las funcionalidades principales de cada archivo o directorio.
+            
+
+\begin{itemize}
+    \item \texttt{code/}
+    \begin{itemize}
+        \item \texttt{app/} -- Directorio principal de la aplicación web.
+        \item \texttt{Research and experiments/} -- Directorio que contiene experimentos y pruebas realizadas durante el desarrollo.
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+	\item \texttt{app/}
+	\begin{itemize}
+		\item \texttt{controllers/} -- Contiene la lógica principal de control que conecta los modelos con las vistas.
+        	\begin{itemize}
+        		\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo.
+        		\item \texttt{callbacks.py} -- Define los callbacks utilizados en la aplicación, gestionando la interacción entre la interfaz de usuario y la lógica del servidor.
+        		\item \texttt{clustering.py} -- Implementa funciones relacionadas con la ejecución de algoritmos de agrupamiento, incluyendo TRACLUS.
+ 		\end{itemize}
+        	\item \texttt{models/} -- Agrupa la lógica de procesamiento de datos y las funciones principales del algoritmo TRACLUS.
+         \begin{itemize}
+         	\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo.
+         	\item \texttt{data\_processing.py} -- Contiene funciones para la limpieza, transformación y preparación de los datos.
+         	\item \texttt{mapping.py} -- Proporciona herramientas para la visualización de datos geoespaciales.
+         	\item \texttt{TRACLUS.py} -- Implementa el núcleo del algoritmo TRACLUS.
+		\end{itemize}
+        	\item \texttt{saved\_results/} -- Almacena resultados generados y guardados por el usuario.
+        	\item \texttt{test/} -- Contiene pruebas unitarias y funcionales.
+        	\begin{itemize}
+        		\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo de pruebas.
+        		\item \texttt{text\_callbacks.py} -- Pruebas específicas para los callbacks de la aplicación.
+		\end{itemize}
+        	\item \texttt{utils/} -- Incluye utilidades generales y configuraciones globales.
+        	\begin{itemize}
+        		\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo.
+         	\item \texttt{config.py} -- Configuraciones generales del proyecto, como rutas y parámetros predeterminados.
+        		\item \texttt{data\_utils.py} -- Funciones auxiliares para manipulación de datos.
+        	\end{itemize}
+        	\item \texttt{views/} -- Directorio que agrupa las vistas y la estructura visual de la aplicación.
+ 		\begin{itemize}
+        		\item \texttt{assets/} -- Contiene recursos estáticos como hojas de estilo y archivos multimedia.
+			\begin{itemize}
+            		\item \texttt{style.css} -- Archivo CSS para la personalización del diseño de la interfaz de usuario.
+            	\end{itemize}
+			\item \texttt{layout/} -- Define las vistas de cada sección de la aplicación.
+			\begin{itemize}
+            		\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo.
+           		\item \texttt{datauptate\_page.py} -- Página para la carga y actualización de datos.
+            		\item \texttt{experiment\_page.py} -- Página para seleccionar algoritmos de clustering.
+            		\item \texttt{map\_page.py} -- Página que muestra mapas con los datos sin tratar.
+            		\item \texttt{select\_page.py} -- Página para la selección del experimento o la creación de uno nuevo.
+            		\item \texttt{table\_page.py} -- Página para mostrar tablas con los resultados del análisis.
+				\item \texttt{TRACLUSmap\_page.py} -- Página que muestra mapas con los resultados del algoritmo TRACLUS.
+			\end{itemize}
+		\end{itemize}
+		\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo principal.
+		\item \texttt{main.py} -- Archivo principal que ejecuta la aplicación web.
+		\item \texttt{requirements.txt} -- Archivo que especifica las dependencias necesarias para ejecutar el proyecto.
+    \end{itemize}
+\end{itemize}
 
 \section{Manual del programador}
 
+Este apartado proporciona información sobre las herramientas clave que un programador necesita para trabajar en el proyecto de manera eficiente, desde la instalación hasta la configuración del entorno de desarrollo.
+
+\subsection{Herramientas clave}
+
+A continuación, se detallan las herramientas y su configuración:
+
+\subsubsection{Git}
+Git es esencial para gestionar el control de versiones del proyecto.
+
+\begin{enumerate}
+    \item Descargue e instale Git desde la página oficial: \url{https://git-scm.com/}.
+    \item Configure su nombre de usuario y correo electrónico:
+    \begin{verbatim}
+    git config --global user.name "TuNombre"
+    git config --global user.email "TuCorreo@example.com"
+    \end{verbatim}
+    \item Clone el repositorio del proyecto:
+    \begin{verbatim}
+    git clone https://github.com/agd1017/TFG_TRACLUS.git
+    \end{verbatim}
+\end{enumerate}
+
+\subsubsection{Visual Studio Code}
+Visual Studio Code es el editor recomendado.
+
+\begin{enumerate}
+    \item Descargue VS Code desde: \url{https://code.visualstudio.com/}.
+    \item Instale las extensiones sugeridas:
+    \begin{itemize}
+        \item Python.
+        \item Pylance.
+        \item GitLens.
+    \end{itemize}
+    \item Configure el intérprete de Python para que apunte a su entorno virtual.
+\end{enumerate}
+
+\subsubsection{Python}
+El proyecto requiere Python 3.11.2 o superior.
+
+\begin{enumerate}
+    \item Descargue Python desde: \url{https://www.python.org/}.
+    \item Durante la instalación, habilite la opción \textit{Add Python to PATH}.
+    \item Verifique la instalación con:
+    \begin{verbatim}
+    python --version
+    \end{verbatim}
+\end{enumerate}
+
+\subsubsection{Librerías Python}
+El archivo \texttt{requirements.txt} especifica las dependencias necesarias.
+
+\begin{enumerate}
+    \item Cree un entorno virtual:
+    \begin{verbatim}
+    python -m venv venv
+    \end{verbatim}
+    \item Active el entorno virtual:
+    \begin{itemize}
+        \item En Windows:
+        \begin{verbatim}
+        venv\Scripts\activate
+        \end{verbatim}
+        \item En macOS/Linux:
+        \begin{verbatim}
+        source venv/bin/activate
+        \end{verbatim}
+    \end{itemize}
+    \item Instale las dependencias:
+    \begin{verbatim}
+    pip install -r requirements.txt
+    \end{verbatim}
+\end{enumerate}
+
 \section{Compilación, instalación y ejecución del proyecto}
 
+En este apartado se detallan los pasos para ejecutar el proyecto en un entorno local desde el código fuente.
+
+\subsection{Preparación del entorno}
+\begin{enumerate}
+    \item Asegúrese de haber instalado todas las herramientas clave mencionadas en el \textit{Manual del programador}.
+    \item Clone el repositorio del proyecto en su máquina local.
+    \item Navegue hasta la carpeta \texttt{code/app}.
+    \item Cree y active el entorno virtual como se describe en la sección de \texttt{Librerías Python}.
+\end{enumerate}
+
+\subsection{Ejecución del proyecto}
+\begin{enumerate}
+    \item Ejecute el archivo principal de la aplicación:
+    \begin{verbatim}
+    python main.py
+    \end{verbatim}
+    \item Abra un navegador web y acceda a:
+    \begin{verbatim}
+    http://127.0.0.1:8050/
+    \end{verbatim}
+\end{enumerate}
+
+\subsection{Modificaciones y control de versiones}
+Para realizar cambios en el código:
+\begin{enumerate}
+    \item Edite los archivos necesarios utilizando Visual Studio Code.
+    \item Guarde los cambios y verifique que la aplicación funcione correctamente.
+    \item Utilice Git para gestionar los cambios:
+    \begin{verbatim}
+    git add .
+    git commit -m "Descripción de los cambios"
+    git push origin rama-principal
+    \end{verbatim}
+\end{enumerate}
+
+Con estas instrucciones, el programador podrá compilar, instalar y ejecutar el proyecto localmente de manera efectiva.
+
 \section{Pruebas del sistema}
+
+En esta sección se describirá cómo realizar pruebas en el sistema para comprobar que los cambios realizados se han implementado correctamente.
+
+\subsection{Prueba manual}
+
+Las pruebas más utilizadas en este proyecto, especialmente para verificar la ejecución del algoritmo y la funcionalidad general de la aplicación, son de tipo manual.
+
+Para realizar las pruebas de manera correcta y en un entorno local, se recomienda modificar la función \texttt{app.run\_server()} ubicada al final del archivo \texttt{main.py}. 
+
+Se deben realizar los siguientes ajustes:
+\begin{itemize}
+    \item Añadir el parámetro \texttt{debug=True}, lo que permitirá visualizar en la consola los errores o advertencias durante la ejecución.
+    \item Configurar el servidor local especificando el host y el puerto. Por ejemplo:
+    \begin{verbatim}
+    app.run_server(debug=True, host='127.0.0.1', port=8050)
+    \end{verbatim}
+\end{itemize}
+
+Después de realizar esta configuración, ejecute el archivo \texttt{main.py}. Se deberá acceder en un navegador web a la dirección \texttt{http://127.0.0.1:8050}. Si la aplicación se ha cargado correctamente, se mostrará la página inicial, desde la cual podrá navegar y utilizarla normalmente.
+
+Para realizar cualquier prueba, siga el flujo de trabajo estándar de la aplicación para llegar al recurso que desea verificar. Por ejemplo:
+\begin{itemize}
+    \item Si el cambio realizado afecta a la visualización de los resultados tras cargar un experimento, intente acceder a uno de los experimentos ya creados. 
+    \item Si el cambio afecta a la carga de datos, deberá crear nuevos experimentos, ya que los experimentos guardados anteriormente no reflejarán los cambios en la lógica de carga.
+\end{itemize}
+
+En caso de que no sea posible acceder a los experimentos guardados, asegúrese de que la configuración de rutas en el archivo \texttt{config.py} sea válida para su dispositivo. Si es necesario, actualice las rutas para que apunten correctamente a las ubicaciones de los datos y recursos requeridos.
+
+Este método permite identificar errores directamente en el flujo de trabajo de la aplicación y verificar que los cambios realizados se comporten de manera esperada.
+
+\subsection{Testing}
+
+El proyecto también incluye pruebas automáticas que pueden ejecutarse para verificar la funcionalidad de diversos componentes. Estas pruebas están ubicadas en el directorio \texttt{test/}.
+
+\subsubsection{Ejecución de pruebas}
+
+Para ejecutar las pruebas existentes, siga estos pasos:
+\begin{enumerate}
+    \item Asegúrese de que todas las dependencias necesarias estén instaladas. Puede verificar esto ejecutando:
+    \begin{verbatim}
+    pip install -r requirements.txt
+    \end{verbatim}
+    \item Desde la terminal, navegue hasta el directorio raíz del proyecto donde se encuentra el archivo \texttt{main.py}.
+    \item Ejecute las pruebas utilizando el siguiente comando:
+    \begin{verbatim}
+    pytest -v {nombre test}
+    \end{verbatim}
+    \item Si este no funcion use el siguiente: 
+    \begin{verbatim}
+    PYTHONPATH=code/app pytest -v code/app/test/{nombre test}
+    \end{verbatim}
+    \item Revise los resultados en la terminal. Si alguna prueba falla, se mostrará el motivo del fallo y la ubicación correspondiente en el código.
+\end{enumerate}
+
+\subsubsection{Creación de nuevas pruebas}
+
+Si necesita añadir nuevas pruebas al sistema, siga estos pasos:
+\begin{enumerate}
+    \item Cree un nuevo archivo de prueba en el directorio \texttt{test/}. Por convención, los archivos de prueba deben comenzar con el prefijo \texttt{test\_}, por ejemplo: \texttt{test\_nueva\_funcionalidad.py}.
+    \item Dentro del archivo, defina funciones que comiencen con el prefijo \texttt{test\_}, como en el siguiente ejemplo:
+    \begin{verbatim}
+    def test_nueva_funcionalidad():
+        resultado = funcion_a_probar(parametros)
+        assert resultado == valor_esperado
+    \end{verbatim}
+    \item Utilice las funciones de prueba para validar las salidas de las funciones o métodos que haya implementado. Asegúrese de cubrir casos de uso válidos, así como posibles errores o entradas no válidas.
+    \item Ejecute nuevamente \texttt{pytest} para confirmar que todas las pruebas, incluidas las nuevas, se ejecutan correctamente.
+\end{enumerate}
+
+Al incluir nuevas pruebas, asegúrese de documentar el propósito de cada prueba dentro del archivo correspondiente. Esto ayudará a otros desarrolladores a comprender el objetivo y alcance de cada conjunto de pruebas.
+
+
+

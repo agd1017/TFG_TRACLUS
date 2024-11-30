@@ -1,3 +1,46 @@
 \capitulo{6}{Trabajos relacionados}
 
-Este apartado sería parecido a un estado del arte de una tesis o tesina. En un trabajo final grado no parece obligada su presencia, aunque se puede dejar a juicio del tutor el incluir un pequeño resumen comentado de los trabajos y proyectos ya realizados en el campo del proyecto en curso. 
+En el desarrollo de este proyecto, fue crucial estudiar tanto los fundamentos teóricos como los trabajos previos relacionados con el algoritmo TRA-CLUS, ya que estos sirvieron como base para implementar y adaptar la solución propuesta. Este capítulo describe dos elementos clave: el artículo original que introduce TRA-CLUS y la biblioteca de código en GitHub que proporcionó una referencia práctica para la implementación del algoritmo.
+
+\section{Estudio del algoritmo TRA-CLUS}
+
+El algoritmo TRA-CLUS, introducido en el artículo \emph{Trajectory Clustering: A Partition-and-Group Framework} \cite{lee2007trajectory}, establece un marco novedoso para la agrupación de trayectorias basado en dos fases principales: segmentación y agrupamiento. Este enfoque busca identificar patrones significativos en conjuntos de datos espaciales y temporales, como los recorridos de taxis, rutas de navegación o trayectorias de animales.
+
+Entre los conceptos fundamentales del algoritmo destacan:
+
+\begin{itemize}
+    \item \textbf{Segmentación}: Las trayectorias se dividen en segmentos lineales, utilizando un enfoque de optimización que minimiza el error de representación.
+    \item \textbf{Agrupamiento}: Los segmentos resultantes se agrupan utilizando un algoritmo de clustering basado en densidad, como DBSCAN, para identificar patrones comunes en las trayectorias.
+    \item \textbf{Representación}: Cada grupo de segmentos se representa mediante una trayectoria "representativa", que captura la esencia del grupo y permite una interpretación más clara de los datos.
+\end{itemize}
+
+Este marco de partición y agrupamiento demostró ser efectivo para manejar grandes volúmenes de datos geoespaciales, ofreciendo una solución escalable y precisa para el análisis de trayectorias. Este trabajo sirvió como base teórica para este proyecto, orientando el desarrollo y la implementación del algoritmo.
+
+\section{Biblioteca TRA-CLUS}
+
+Para complementar el estudio teórico del algoritmo, se utilizó como referencia práctica la biblioteca de código \emph{TRA-CLUS} disponible en GitHub \cite{traclus_library}. Esta implementación, desarrollada por Adriel Amoguis, ofrece una base funcional del algoritmo TRA-CLUS con una estructura modular y clara, ideal para ser reutilizada y adaptada en proyectos personalizados.
+
+\subsection{Características principales de la biblioteca}
+
+La biblioteca \emph{TRA-CLUS} destaca por:
+
+\begin{itemize}
+    \item Una implementación directa de las dos fases principales del algoritmo: segmentación y agrupamiento.
+    \item Código bien documentado que facilita su comprensión y modificación.
+    \item Ejemplos prácticos que demuestran su aplicación en datasets sencillos, lo que reduce la curva de aprendizaje para los usuarios.
+\end{itemize}
+
+\subsection{Adaptaciones y mejoras realizadas en este proyecto}
+
+Aunque la biblioteca original ofrecía una base sólida, fue necesario realizar una serie de adaptaciones para cumplir con los requisitos específicos de este proyecto:
+
+\begin{itemize}
+    \item \textbf{Optimización}: Se mejoraron ciertos aspectos del código para garantizar su rendimiento en conjuntos de datos más grandes, como los datos de trayectorias de taxis utilizados en este trabajo.
+    \item \textbf{Integración con visualización}: Se desarrollaron herramientas adicionales para vincular los resultados del algoritmo con representaciones gráficas interactivas, facilitando la interpretación de los datos.
+    \item \textbf{Extensibilidad}: Se modularizó aún más el código para permitir su integración en la aplicación web desarrollada.
+    \item \textbf{Comparativas}: Se añadieron funciones para realizar comparaciones con otros algoritmos de clustering, como DBSCAN, OPTICS y HDBSCAN.
+\end{itemize}
+
+\section{Impacto en el proyecto}
+
+El uso combinado del artículo original de TRA-CLUS y la biblioteca de código permitió acelerar el desarrollo y centrar los esfuerzos en aspectos diferenciadores del proyecto, como la visualización y el análisis comparativo. Además, este enfoque demostró cómo los trabajos previos pueden ser un recurso invaluable en la investigación y el desarrollo, ofreciendo tanto una base teórica sólida como herramientas prácticas para la implementación.

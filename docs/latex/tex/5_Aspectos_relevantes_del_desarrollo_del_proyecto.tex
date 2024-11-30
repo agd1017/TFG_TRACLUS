@@ -27,16 +27,17 @@ Adicionalmente, se evaluó el uso de una implementación de TRACLUS disponible e
 Durante el desarrollo del proyecto, se analizaron varias propuestas de variantes del algoritmo TRACLUS que han surgido en estudios recientes. Aunque finalmente no se utilizaron, la investigación detallada de estos derivados fue enriquecedora y ayudó a contrastar enfoques para una implementación eficiente. Las variantes de TRACLUS estudiadas fueron:
 
 \begin{itemize}
-    \item \textbf{GTraclus:} Una variante diseñada para ejecutarse en unidades de procesamiento gráfico (GPU), optimizando la eficiencia del algoritmo al aprovechar la capacidad de procesamiento paralelo de las GPUs.
+    \item \textbf{GTraclus:} Una variante diseñada para ejecutarse en unidades de procesamiento gráfico (GPU), optimizando la eficiencia del algoritmo al aprovechar la capacidad de procesamiento paralelo de las GPUs \cite{gtraclus}.
 
-    \item \textbf{ST-TRACLUS (Ansari, Ahmad \& Bhushan, 2021):} Esta versión incorpora una dimensión temporal además de la espacial, permitiendo realizar agrupamientos espaciotemporales de trayectorias, lo cual mejora la calidad del análisis para datos donde el tiempo es una variable relevante.
+    \item \textbf{ST-TRACLUS:} Esta versión incorpora una dimensión temporal además de la espacial, permitiendo realizar agrupamientos espaciotemporales de trayectorias, lo cual mejora la calidad del análisis para datos donde el tiempo es una variable relevante \cite{st-traclus}.
 
-    \item \textbf{ND-TRACLUS (Bermingham \& Lee, 2015):} Una extensión de TRACLUS que permite realizar el clustering en espacios de n dimensiones, expandiendo su aplicabilidad a trayectorias de mayor dimensionalidad.
+    \item \textbf{ND-TRACLUS:} Una extensión de TRACLUS que permite realizar el clustering en espacios de n dimensiones, expandiendo su aplicabilidad a trayectorias de mayor dimensionalidad \cite{nd-traclus}.
 
     \item \textbf{Neighborhood-Based Trajectory Clustering:} Una alternativa basada en densidad local de vecindad en lugar de densidad global. Este enfoque busca mantener la eficiencia de TRACLUS mientras reduce la necesidad de múltiples parámetros de entrada.
 
-    \item \textbf{Adaptive Trajectory Clustering based on Grid and Density (ATCGD):} Un método que introduce una cuadrícula y criterios de densidad para el análisis de patrones móviles, buscando reducir la complejidad computacional y la carga de trabajo en la calibración de parámetros, especialmente en aplicaciones a gran escala como la de trayectorias de vehículos en sistemas de transporte inteligente.
+    \item \textbf{Adaptive Trajectory Clustering based on Grid and Density (ATCGD):} Un método que introduce una cuadrícula y criterios de densidad para el análisis de patrones móviles, buscando reducir la complejidad computacional y la carga de trabajo en la calibración de parámetros, especialmente en aplicaciones a gran escala como la de trayectorias de vehículos en sistemas de transporte inteligente \cite{atcgd}.
 \end{itemize}
+
 
 \subsubsection{Técnicas de clustering complementarias}
 
@@ -98,7 +99,7 @@ Durante el desarrollo de este proyecto se realizaron numerosas pruebas, orientad
 
 \subsection{TRACLUS por partes}
 
-Desde el inicio del proyecto, se tomó como base para el desarrollo del algoritmo TRACLUS una implementación existente llamada \textit{TRACLUS\_library}\footnote{\url{https://github.com/agd1017/TRACLUS_library?tab=readme-ov-file}}, que fue crucial para establecer un punto de partida en la comprensión y adaptación de este algoritmo. \textit{TRACLUS\_library} proporciona una implementación básica del algoritmo TRACLUS.
+Desde el inicio del proyecto, se tomó como base para el desarrollo del algoritmo TRACLUS una implementación existente llamada \textit{TRACLUS\_library} \cite{TRACLUS_librery}, que fue crucial para establecer un punto de partida en la comprensión y adaptación de este algoritmo. \textit{TRACLUS\_library} proporciona una implementación básica del algoritmo TRACLUS.
 
 En una primera prueba, se intentó ejecutar el programa con un conjunto de datos seleccionado, lo cual presentó diversas complicaciones, principalmente debido a la falta de familiaridad con los formatos de datos requeridos y la preparación necesaria para que el programa pudiera leerlos y procesarlos correctamente. Una vez resueltos estos problemas iniciales de formato, se procedió a un análisis profundo del código de la librería, dividiéndolo en tres componentes principales: cálculo de distancia entre trayectorias, segmentación o partición de trayectorias, y vectorización de segmentos. Esta separación permitió estudiar cada parte de forma aislada.
 
@@ -122,9 +123,9 @@ Por último, la representación de trayectorias es el paso en el que se visualiz
 
 \subsection{Geolife Trajectories}
 
-Durante todo el proyecto se utilizó principalmente el conjunto de datos **Trayectorias Taxis** (ver \cite{trayectorias_taxis}). Este conjunto de datos fue ideal para el análisis, ya que contaba con los datos necesarios y estaba estructurado de manera adecuada para ejecutar el algoritmo TRACLUS de forma eficiente. 
+Durante todo el proyecto se utilizó principalmente el conjunto de datos **Trayectorias Taxis** \cite{trayectorias_taxis}. Este conjunto de datos fue ideal para el análisis, ya que contaba con los datos necesarios y estaba estructurado de manera adecuada para ejecutar el algoritmo TRACLUS de forma eficiente. 
 
-Sin embargo, también se exploraron otras fuentes de datos, como el conjunto **Geolife Trajectories** (ver \cite{geolife_trajectories}). 
+Sin embargo, también se exploraron otras fuentes de datos, como el conjunto **Geolife Trajectories** \cite{geolife_trajectories}. 
 
 Este estudio proporciona un interesante conjunto de datos sobre los movimientos de múltiples individuos. Los datos abarcan un período de más de tres años, durante los cuales 182 usuarios contribuyeron al proyecto con un total de 17,621 trayectorias GPS. Estas trayectorias representan más de 1.2 millones de kilómetros registrados y aproximadamente 48,000 horas de actividad.
 
@@ -395,5 +396,75 @@ Aunque Render presenta ciertas limitaciones en su plan gratuito, como tiempos de
 Con el despliegue en Render, la aplicación quedó lista para ser utilizada por cualquier usuario con acceso a Internet, cumpliendo así el objetivo de trasladar el trabajo desde un entorno local a un entorno accesible y escalable en la nube.
 
 \section{Testing}
+
+Para que un código sea verdaderamente funcional, seguro y mantenible, debe someterse a pruebas exhaustivas. Durante el desarrollo del proyecto, se implementaron varios tipos de pruebas para evaluar el rendimiento y la calidad del código, así como para ampliar el conocimiento en el campo del testing.
+
+\subsection{Análisis de código estático}
+
+El análisis de código estático es una técnica utilizada para identificar posibles errores en el código fuente sin necesidad de ejecutarlo. Este método es particularmente útil para evitar fallos humanos como bucles infinitos, errores de formato o problemas de nomenclatura.
+
+Se evaluaron varias herramientas de análisis estático teniendo en cuenta las siguientes limitaciones:
+\begin{itemize}
+    \item Debían ser compatibles con Python y CSS, los lenguajes utilizados en el proyecto.
+    \item No debían implicar costos adicionales.
+    \item Era deseable la integración directa con GitHub para facilitar el flujo de trabajo.
+\end{itemize}
+
+Con estas características, se seleccionaron dos herramientas principales: \textbf{SonarQube} y \textbf{Code Climate}. De estas, \textbf{SonarQube} fue la más utilizada, ya que ofrecía soporte para analizar IPython Notebooks, un formato clave en los experimentos realizados durante el proyecto. Aunque los notebooks no formaban parte directa de la aplicación web, su análisis fue crucial para garantizar la calidad de los experimentos previos.
+
+Lo ideal en este tipo de análisis es aplicarlo de manera continua durante las diversas fases del proyecto, ya que esto reduce significativamente la carga de trabajo y mejora la calidad del código a medida que se desarrolla. Sin embargo, en este proyecto, el análisis estático se realizó al final, lo que no fue óptimo pero permitió identificar una serie de problemas, entre ellos:
+
+\begin{itemize}
+    \item \textbf{Mejoras en nomenclatura:} Se ajustaron nombres de variables para facilitar su comprensión y evitar confusiones con otros datos.
+    
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/sonarq_regularexp.png}
+    \caption{Error nomenclatura.}
+    \label{fig:trayectorias_Spectral}
+\end{figure}    
+    
+    \item \textbf{Variables no utilizadas:} Se detectaron y eliminaron variables que ya no eran relevantes, ya fuera por errores en su definición o por haber quedado obsoletas durante el desarrollo.
+    
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/sonarq_codigo_sobrante.png}
+    \caption{Código innecesario.}
+    \label{fig:trayectorias_Spectral}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/sonarq_unused.png}
+    \caption{Variable sin usar necesaria.}
+    \label{fig:trayectorias_Spectral}
+\end{figure}    
+    
+    \item \textbf{Importaciones innecesarias:} Se eliminaron módulos y librerías no utilizadas, lo que ayudó a reducir la carga del programa y mejorar su legibilidad.
+    
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/sonarq_imports.png}
+    \caption{Importación excesiva.}
+    \label{fig:trayectorias_Spectral}
+\end{figure}
+   
+    \item \textbf{Complejidad en funciones:} Se identificaron funciones cuya complejidad excedía los límites recomendados. Aunque algunas de estas funciones no pudieron simplificarse debido a las características del algoritmo, el análisis ayudó a priorizar futuras mejoras.
+    
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/sonarq_complex.png}
+    \caption{Complejidad grande.}
+    \label{fig:trayectorias_Spectral}
+\end{figure}
+
+\end{itemize}
+
+Aunque este tipo de análisis no corrige directamente errores en la funcionalidad del algoritmo, resulta muy útil para evitar problemas menores, mejorar la mantenibilidad del código y garantizar un nivel básico de seguridad.
+
+\subsection{Pruebas unitarias}
+
+Las pruebas unitarias son fundamentales para garantizar la funcionalidad de cada componente del código. Estas pruebas...
+
 
 
