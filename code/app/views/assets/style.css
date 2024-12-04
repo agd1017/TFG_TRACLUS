@@ -1,10 +1,13 @@
-/* style.css */
+/* Style */
+
+/* Global styles */     
 body {
     font-family: italic;
     background-color: #fff6ee;
     text-align: center;
 }
 
+/* Navbar styles */
 .navbar {
     background-color: #206246 !important; 
 }
@@ -13,6 +16,7 @@ body {
     color: #fff !important;
 }
 
+/* Carousel styles */
 .image-carousel .carousel-item img {
     max-height: 80vh;
     border-radius: 5%; 
@@ -21,6 +25,7 @@ body {
     background-color: #fff;
 }
 
+/* Image rounded styles */
 .image-rounded{
     max-height: 80vh;
     width: 100%;     
@@ -37,6 +42,7 @@ body {
     transform: translateY(5px);
 }
 
+/* Image styles */
 .container-map{
     flex: 1;
     display: flex;
@@ -51,7 +57,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* Main container */
+/* Main Container for Layout */
 
 .grid-main-container{
     display: grid;
@@ -78,9 +84,7 @@ body {
     grid-area: main-contaner;
 }
 
-/* Clases especificas */
-
-/*Select container*/
+/* Select Container Layout */
 
 .grid-select-container{
     display: grid;
@@ -100,7 +104,6 @@ body {
     font-weight: bold;
 }
 
-/* Contenedor para los botones */
 .buttons-wrapper {
     grid-area: buttons;
     display: grid;
@@ -108,11 +111,10 @@ body {
     grid-template-columns: auto 40%;
 }
 
-/* Estilo individual de los botones */
 .button1-container {
     grid-area: button1;
-    background-image: url('./images/mapa-por.jpg') !important;
-    background-size: cover; /* Cambia 'cover' a 'contain' */
+    background-image: url('./images/Map_load.jpg') !important;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     height: 600%;
@@ -148,14 +150,14 @@ body {
 
 .button2-container {
     grid-area: button2;
-    background-image: url('./images/output2.jpg') !important;
+    background-image: url('./images/Map_create.jpg') !important;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     height: 600%;
     display: flex;
-    align-items: center; /* Centra verticalmente */
-    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    justify-content: center;
 }
 
 .button2 {
@@ -163,7 +165,7 @@ body {
     height: 20%;
 }
 
-/* Experiment container */
+/* Experiment Page Layout */
 
 .gid-experiment-container {
     display: grid;
@@ -179,7 +181,6 @@ body {
     font-size: 150%;
 }
 
-/* Contenedor de grid para las filas */
 .grid-selecetors-container {
     grid-area: grid-selecetors-container;
     width: 100%;
@@ -193,45 +194,38 @@ body {
     grid-template-rows: auto auto auto auto auto;
 }
 
-/* Estilo para cada fila (selector, dropdown, input) */
 .grid-row-container {
     grid-area: row1, row2;
     display: grid;
     padding: 0 1%;
     margin: 0.7% 0;
-    grid-template-areas: 'selector row-label dropdown1 dropdown2 input1 input2';  /* Cuatro áreas: selector, row-label, dropdown, input */
-    grid-template-columns: 5% 13% auto auto auto;  /* Cuatro columnas: selector, row-label, dropdown, input */
+    grid-template-areas: 'selector row-label dropdown1 dropdown2 input1 input2';
+    grid-template-columns: 5% 13% auto auto auto;
 }
 
-/* Estilo para el selector */
 .selector {
     justify-self: start;  
     width: 100%;
 }
 
-/* Estilo para el row-label */
 .row-label {
-    justify-self: start;  /* Alinea el dropdown al inicio de la segunda columna */
+    justify-self: start; 
 }
 
-/* Estilo para el dropdown */
 .dropdown {
-    justify-self: start;  /* Alinea el dropdown al inicio de la segunda columna */
+    justify-self: start;
     width: 100%;
 }
 
-/* Estilo para el input */
 .input {
     justify-self: center;
     width: 100%;
 }
 
-/* Contenedor para el botón de ejecución */
 .button-container {
     text-align: center;
 }
 
-/* Estilo para el botón */
 .execute-button {
     width: 50%;
     height: 120%;
@@ -243,7 +237,7 @@ hr {
     margin: 0.7% 0;
 }
 
-/* dataUpdate container */
+/* Data Update Container Layout */
 
 .grid-dataupdate-container{
     height: 100%;
@@ -328,7 +322,7 @@ hr {
     margin-bottom: 3%;
 }
 
-/* Map page page */
+/* Map Container Layout */
 
 .grid-map-container{
     height: 100%;
@@ -343,7 +337,7 @@ hr {
     margin-top: 2%;
 }
 
-/* Compratator page */
+/* Comparator Container Layout */
 
 .grid-compratator-container{
     height: 100%;

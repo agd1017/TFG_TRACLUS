@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.cluster import OPTICS
 import warnings
 import time
 import threading

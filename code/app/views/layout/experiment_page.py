@@ -2,8 +2,15 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 
 def experiment_row_optics():
+    """
+    This function generates the configuration row for the OPTICS clustering algorithm.
+    It includes:
+    - A checklist for enabling or disabling the OPTICS algorithm.
+    - Dropdown menus to select the metric and algorithm for OPTICS.
+    - Numeric input fields for setting the 'Max_eps' and 'Min_samples' parameters.
+    """
     return html.Div([
-        # Selector
+        # Selector for enabling or disabling the OPTICS algorithm
         dcc.Checklist(
             id='selector-optics',
             options=[{'label': '', 'value': 'on'}],
@@ -11,7 +18,8 @@ def experiment_row_optics():
             className='selector'
         ),
         html.Div('OPTICS', className='row-label'),
-        # Dropdown metric
+        
+        # Dropdown menu for selecting the metric used in OPTICS
         dcc.Dropdown(
             id='dropdown-optics-metric',
             options=[
@@ -25,7 +33,8 @@ def experiment_row_optics():
             placeholder='Seleccionar metric',
             className='custom-dropdown'
         ),
-        # Dropdown algorithm
+        
+        # Dropdown menu for selecting the algorithm to use in OPTICS
         dcc.Dropdown(
             id='dropdown-optics-algorithm',
             options=[
@@ -37,7 +46,8 @@ def experiment_row_optics():
             placeholder='Seleccionar algorithm',
             className='custom-dropdown'
         ),
-        # Input numérico Max_eps
+        
+        # Numeric input field for setting 'Max_eps' parameter
         dcc.Input(
             id='input-optics-eps',
             type='number',
@@ -45,7 +55,8 @@ def experiment_row_optics():
             disabled=True, 
             className='input'
         ),
-        # Input numérico Min_samples
+        
+        # Numeric input field for setting 'Min_samples' parameter
         dcc.Input(
             id='input-optics-sample',
             type='number',
@@ -55,9 +66,17 @@ def experiment_row_optics():
         )
     ], className='grid-row-container')
 
+
 def experiment_row_dbscan():
+    """
+    This function generates the configuration row for the DBSCAN clustering algorithm.
+    It includes:
+    - A checklist for enabling or disabling the DBSCAN algorithm.
+    - Dropdown menus to select the metric and algorithm for DBSCAN.
+    - Numeric input fields for setting the 'Eps' and 'Min_samples' parameters.
+    """
     return html.Div([
-        # Selector
+        # Selector for enabling or disabling the DBSCAN algorithm
         dcc.Checklist(
             id='selector-dbscan',
             options=[{'label': '', 'value': 'on'}],
@@ -65,7 +84,8 @@ def experiment_row_dbscan():
             className='selector'
         ),
         html.Div('DBSCAN', className='row-label'),
-        # Dropdown metric
+        
+        # Dropdown menu for selecting the metric used in DBSCAN
         dcc.Dropdown(
             id='dropdown-dbscan-metric',
             options=[
@@ -79,7 +99,8 @@ def experiment_row_dbscan():
             placeholder='Seleccionar metric',
             className='custom-dropdown'
         ),
-        # Dropdown algorithm
+        
+        # Dropdown menu for selecting the algorithm to use in DBSCAN
         dcc.Dropdown(
             id='dropdown-dbscan-algorithm',
             options=[
@@ -91,7 +112,8 @@ def experiment_row_dbscan():
             placeholder='Seleccionar algorithm',
             className='custom-dropdown'
         ),
-        # Input numérico Eps
+        
+        # Numeric input field for setting 'Eps' parameter
         dcc.Input(
             id='input-dbscan-eps',
             type='number',
@@ -99,7 +121,8 @@ def experiment_row_dbscan():
             disabled=True, 
             className='input'
         ),
-        # Input numérico Min_samples
+        
+        # Numeric input field for setting 'Min_samples' parameter
         dcc.Input(
             id='input-dbscan-sample',
             type='number',
@@ -109,9 +132,17 @@ def experiment_row_dbscan():
         )
     ], className='grid-row-container')
 
+
 def experiment_row_hdbscan():
+    """
+    This function generates the configuration row for the HDBSCAN clustering algorithm.
+    It includes:
+    - A checklist for enabling or disabling the HDBSCAN algorithm.
+    - Dropdown menus to select the metric and algorithm for HDBSCAN.
+    - Numeric input fields for setting the 'Min_samples' parameter.
+    """
     return html.Div([
-        # Selector
+        # Selector for enabling or disabling the HDBSCAN algorithm
         dcc.Checklist(
             id='selector-hdbscan',
             options=[{'label': '', 'value': 'on'}],
@@ -119,7 +150,8 @@ def experiment_row_hdbscan():
             className='selector'
         ),
         html.Div('HDBSCAN', className='row-label'),
-        # Dropdown metric
+        
+        # Dropdown menu for selecting the metric used in HDBSCAN
         dcc.Dropdown(
             id='dropdown-hdbscan-metric',
             options=[
@@ -133,7 +165,8 @@ def experiment_row_hdbscan():
             placeholder='Seleccionar metric',
             className='custom-dropdown'
         ),
-        # Dropdown algorithm
+        
+        # Dropdown menu for selecting the algorithm to use in HDBSCAN
         dcc.Dropdown(
             id='dropdown-hdbscan-algorithm',
             options=[
@@ -145,7 +178,8 @@ def experiment_row_hdbscan():
             placeholder='Seleccionar algorithm',
             className='custom-dropdown'
         ),
-        # Input numérico Min_samples
+        
+        # Numeric input field for setting 'Min_samples' parameter
         dcc.Input(
             id='input-hdbscan-sample',
             type='number',
@@ -155,9 +189,17 @@ def experiment_row_hdbscan():
         )
     ], className='grid-row-container')
 
+
 def experiment_row_aggl():
+    """
+    This function generates the configuration row for the AgglomerativeClustering algorithm.
+    It includes:
+    - A checklist for enabling or disabling the AgglomerativeClustering algorithm.
+    - Dropdown menus to select the metric and linkage method for AgglomerativeClustering.
+    - Numeric input field for setting the 'n_clusters' parameter.
+    """
     return html.Div([
-        # Selector
+        # Selector for enabling or disabling the AgglomerativeClustering algorithm
         dcc.Checklist(
             id='selector-agglomerativeclustering',
             options=[{'label': '', 'value': 'on'}],
@@ -165,7 +207,8 @@ def experiment_row_aggl():
             className='selector'
         ),
         html.Div('AgglomerativeClustering', className='row-label'),
-        # Dropdown metric
+        
+        # Dropdown menu for selecting the metric used in AgglomerativeClustering
         dcc.Dropdown(
             id='dropdown-agglomerativeclustering-metric',
             options=[
@@ -179,7 +222,8 @@ def experiment_row_aggl():
             placeholder='Seleccionar metric',
             className='custom-dropdown'
         ),
-        # Dropdown linkage
+        
+        # Dropdown menu for selecting the linkage method in AgglomerativeClustering
         dcc.Dropdown(
             id='dropdown-agglomerativeclustering-linkage',
             options=[
@@ -191,7 +235,8 @@ def experiment_row_aggl():
             placeholder='Seleccionar linkage',
             className='custom-dropdown'
         ),
-        # Input numérico n_clusters
+        
+        # Numeric input field for setting the 'n_clusters' parameter
         dcc.Input(
             id='input-agglomerativeclustering-n_clusters',
             type='number',
@@ -201,9 +246,17 @@ def experiment_row_aggl():
         )
     ], className='grid-row-container')
 
+
 def experiment_row_spect():
+    """
+    This function generates the configuration row for the SpectralClustering algorithm.
+    It includes:
+    - A checklist for enabling or disabling the SpectralClustering algorithm.
+    - Dropdown menus to select the affinity and assign_labels methods for SpectralClustering.
+    - Numeric input field for setting the 'n_clusters' parameter.
+    """
     return html.Div([
-        # Selector
+        # Selector for enabling or disabling the SpectralClustering algorithm
         dcc.Checklist(
             id='selector-spectralclustering',
             options=[{'label': '', 'value': 'on'}],
@@ -211,7 +264,8 @@ def experiment_row_spect():
             className='selector'
         ),
         html.Div('SpectralClustering', className='row-label'),
-        # Dropdown affinity
+
+        # Dropdown menu for selecting the affinity used in SpectralClustering
         dcc.Dropdown(
             id='dropdown-spectralclustering-affinity',
             options=[
@@ -223,7 +277,8 @@ def experiment_row_spect():
             placeholder='Seleccionar affinity',
             className='custom-dropdown'
         ),
-        # Dropdown assign_labels
+
+        # Dropdown menu for selecting the assign_labels method in SpectralClustering
         dcc.Dropdown(
             id='dropdown-spectralclustering-assign_labels',
             options=[
@@ -234,7 +289,8 @@ def experiment_row_spect():
             placeholder='Seleccionar assign_labels',
             className='custom-dropdown'
         ),
-        # Input numérico n_clusters
+
+        # Numeric input field for setting the 'n_clusters' parameter
         dcc.Input(
             id='input-spectralclustering-n_clusters',
             type='number',
@@ -244,15 +300,25 @@ def experiment_row_spect():
         )
     ], className='grid-row-container')
 
+
 def get_page_experiment():
+    """
+    This function generates the layout for the experiment configuration page.
+    It includes:
+    - A title for the page
+    - A series of experiment configuration sections for different clustering methods
+    - A button to trigger the execution of the experiment functions
+    """
     return html.Div([
-        # Título
+
+        # Title Section
         html.Div([
             html.H1("Configuración del experimento"),
         ], className='experiment-title'),
-        # Contenedor con grid
+
+        # Configuration Rows for different clustering algorithms
         html.Div([
-            html.Hr(),
+            html.Hr(),  # Horizontal rule for separation
             experiment_row_optics(),
             html.Hr(),
             experiment_row_dbscan(),
@@ -265,7 +331,7 @@ def get_page_experiment():
             html.Hr()
         ], className='grid-selecetors-container'),
 
-        # Botón al final
+        # Button to execute the selected experiment configurations
         html.Div([
             dbc.Button('Ejecutar funciones', id='execute-button', color='primary', className='execute-button')
         ], className='button-container'),
