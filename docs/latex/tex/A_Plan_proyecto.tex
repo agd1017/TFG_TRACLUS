@@ -317,7 +317,7 @@ Finalmente, se identificó que los datos devueltos no eran del todo satisfactori
 
 La estimación de tiempo fue de 45 horas, las cuales se cumplieron como en el \textit{sprint} anterior.
 
-\subsection{Décimo \textit{sprint} 04-11-2024 / ---}
+\subsection{Décimo \textit{sprint} 04-11-2024 / 18-11-2024}
 
 En este punto, la web estaba bastante avanzada, por lo que se abrió una nueva línea de trabajo necesaria para cualquier página web: su despliegue. Durante la reunión se discutió cuál sería el medio para lograrlo, llegando a la conclusión de que debía usarse un servicio remoto para ello.
 
@@ -349,9 +349,54 @@ Por último, debido a la proximidad de la fecha de entrega, se destacó la neces
 
 Se estimaron unas 45 horas para este \textit{sprint}, las cuales se cumplieron como en los anteriores.
 
-\subsection{Undécimo \textit{sprint} --- / ---}
+\subsection{Undécimo \textit{sprint} 19-11-2024 / 03-12-2024}
+
+Con la web ya muy avanzada, se buscó darle más solidez. Para ello, se propuso solucionar los errores más visibles y comunes, como un error de conexión que ocasionalmente ocurría al cargar los datos o ejecutar el algoritmo TRACLUS.
+
+Complementario a lo anterior, se buscó completar la funcionalidad existente. Se propuso añadir la opción de eliminar experimentos creados anteriormente para mantener un entorno de trabajo limpio. Además, se trabajó en reorganizar la interfaz, reubicando mapas y botones para mejorar la visualización y asegurarse de que los resultados fueran correctos y los datos pudieran ampliarse para un análisis más exhaustivo.
+
+Con el objetivo de mejorar la calidad del desarrollo, se propuso implementar dos tipos de pruebas comunes en el desarrollo de software: análisis estático y pruebas unitarias. Además, como en los sprints anteriores, se continuó avanzando en la memoria del proyecto, centrándose en esta ocasión en los anexos.
+
+Fuera de la reunión, surgieron dos tareas adicionales:
+
+\begin{itemize}
+    \item Paralelizar la ejecución de varios algoritmos de clustering de manera simultánea, ya que el objetivo principal de la aplicación es comparar sus resultados.
+    \item Explorar nuevas fuentes de datos para el análisis, evaluando cuáles de ellas podrían ser útiles.
+\end{itemize}
+
+\subsubsection{Resultados del undécimo \textit{sprint}}
+
+Las tareas propuestas en este sprint mejoraron significativamente la aplicación web:
+
+\begin{itemize}
+    \item \textbf{Resolución de errores:} El problema de conexión se identificó como una incompatibilidad de versiones, que se solucionó actualizando el archivo \texttt{requirements.txt}.
+    \item \textbf{Eliminación de experimentos:} Esta funcionalidad se implementó en la pantalla de inicio. Ahora, tras seleccionar un experimento anterior, el usuario puede acceder a sus resultados o eliminarlo. Para evitar eliminaciones accidentales, se añadió una ventana modal de confirmación.
+    \item \textbf{Mejoras en la interfaz:} Se corrigieron errores en la tabla de datos relacionados con los índices de las trayectorias utilizadas. Además, se agregó a la página de estadísticas la capacidad de visualizar la tabla de segmentos por clúster para cada algoritmo de clustering. También se reubicaron varios botones para mejorar su posición.
+    \item \textbf{Testing:}
+    \begin{itemize}
+        \item Gracias al análisis estático realizado mediante SonarQube, se identificaron y corrigieron redundancias, variables mal nombradas o sin uso, y otros errores.
+        \item Las pruebas unitarias intentadas con \texttt{pytest} no fueron completamente útiles, ya que no se encontró una forma viable de probar los \texttt{callbacks} de Dash durante la ejecución de la aplicación. Por lo tanto, se decidió continuar con pruebas manuales para evaluar el flujo de la aplicación.
+    \end{itemize}
+    \item \textbf{Optimización del código:} 
+    Se optimizaron las funciones de la clase \texttt{clustering.py} dividiendo la ejecución en hilos. Se implementó una solución donde cada algoritmo seleccionado se ejecuta en un hilo separado. Aunque se intentó paralelizar también la generación de mapas y tablas, esto no fue completamente posible debido a la incompatibilidad de \texttt{matplotlib} con la biblioteca \texttt{threading}. Solo se logró paralelizar la creación de tablas.
+    \item \textbf{Nuevas fuentes de datos:} 
+    Se evaluaron tres posibles formas de obtener datos. Dos de ellas, basadas en bibliotecas que generaban trayectorias artificiales, fueron descartadas porque sus resultados no aportaban un análisis significativo. La tercera fuente, un conjunto amplio de archivos con coordenadas registradas en distintos contextos (taxis, movimiento urbano, movimiento de animales, etc.), se consideró prometedora y se decidió investigar más a fondo.
+\end{itemize}
+
+\subsubsection{Duración estimada y real del sprint}
+
+Inicialmente, se estimaron 45 horas para completar este sprint. Sin embargo, con la inclusión de las dos tareas adicionales, la estimación se incrementó a 50 horas. Finalmente, el tiempo real invertido fue cercano a las 60 horas.
 
 
+\subsection{Duodécimo \textit{sprint} 04-12-2024 / 15-12-2024}
+
+Con los resutados de el anteror sprint se vio que aun se podia mojorar el testeo con los test unitarios esta vez centrados no a la web sino a las funciones de los modelos, la carga de datos, el traclus, la carga de los mapas... Por lo que se propuso crear los test neceasios para comprobar que estas funciones eran correctas fuera de las pruebas manuales.
+
+Ademas de esto hasta el momento exitia un apartado del codigo aun sin organizar para ser esponible correctamente, el aparado de las pruebas y experimentos, una carpeta ajena a la aplicacion que contienia multitud de pruebas realizadas durante el proyecto para que este funcionara correctamente, muchas de estas habian sido subidas git hub mientras que otras no. Se propuso analizar en profundidad para ver cuales de estos archivos podía mostrar datos del porceso de creacion del proyecto, ademas de documentar correctamente estos para mejorar la comprension.
+
+Siguiendo el analisis de los nuevos datos se propuso analizar los diferentes conjuntos de datos que se encontraron para ver si podian analizar correctamente, ademas que si se consigui se probara ha hacer un extenso conjunto de pruebas del algoritmo con difetentes tamaños y contidades de daots.
+
+\subsection{Décimo tercer \textit{sprint} 16-12-2024 / ---}
 
 \section{Estudio de viabilidad}
 
