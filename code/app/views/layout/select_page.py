@@ -53,4 +53,15 @@ def get_page_select():
             is_open=False,  # Modal is initially closed
         ),
 
+        # Modal que se despliega si no se selecciona un experimento
+        dbc.Modal(
+            [
+                dbc.ModalHeader("Selección requerida"),
+                dbc.ModalBody("Por favor selecciona un experimento antes de continuar.")
+            ],
+            id="experiment-modal",
+            centered=True,
+            is_open=False,  # Por defecto, está cerrado
+        )
+
     ], className='grid-select-container')  # Main container for the page layout

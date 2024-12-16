@@ -7,73 +7,112 @@ import base64
 import io
 
 def load_and_simplify_data(filename, rows, tolerance=0.001):
+    """
+    Loads and simplifies data from a file, either CSV or Excel, and prepares it for processing.
+
+    Parameters:
+    - filename: str, the uploaded file containing trajectory data.
+    - rows: int, the maximum number of rows to load.
+    - tolerance: float, the tolerance value used to simplify geometries.
+
+    Returns:
+    - gdf: GeoDataFrame, geospatial data with simplified geometries.
+    - trayectorias: list, a list of numpy arrays representing trajectories.
+    - df: DataFrame, original data with converted geometries and filtered rows.
+    """
     try:
+        # Decode the base64-encoded file content
         _, content_string = filename.split(',')
         decoded = base64.b64decode(content_string)
 
+        # Load data as DataFrame based on file type
         if filename.endswith('.csv'):
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), nrows=rows) 
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), nrows=rows)
         else:
             df = pd.read_excel(io.BytesIO(decoded), nrows=rows)
 
-        # Filtrar y crear LineString para cada polilínea
+        # Convert the POLYLINE column to geometries
         def create_line(x):
             points = json.loads(x)
             if len(points) > 1:
                 return LineString(points)
             return None
 
+        # Apply geometry transformation and filter invalid rows
         df['geometry'] = df['POLYLINE'].apply(create_line)
-        df = df[df['geometry'].notnull()]  # Eliminar filas con geometrías nulas
+        df = df[df['geometry'].notnull()]
         gdf = gpd.GeoDataFrame(df, geometry='geometry')
 
-        # Simplificar las geometrías
+        # Simplify geometries based on the tolerance value
         gdf['geometry'] = gdf['geometry'].simplify(tolerance)
 
-        # Convertir las polilíneas de JSON a listas de coordenadas
+        # Convert POLYLINE JSON strings to lists and filter invalid entries
         df['POLYLINE'] = df['POLYLINE'].apply(lambda x: json.loads(x) if pd.notnull(x) else None)
-        df = df[df['POLYLINE'].apply(lambda x: x is not None and len(x) > 0)]  # Filtrar polilíneas nulas o vacías
+        df = df[df['POLYLINE'].apply(lambda x: x is not None and len(x) > 0)]
 
-        # Preparar trayectorias para TRACLUS
+        # Prepare trajectories for TRACLUS processing
         trayectorias = [np.array(polyline) for polyline in df['POLYLINE']]
 
         return gdf, trayectorias, df
-    
+
     except Exception as e:
-        print(f"Error cargando y simplificando datos: {e}")
+        # Handle errors in data loading
+        print(f"Error loading and simplifying data: {e}")
         raise e
 
-# Funciones para la pagina "Estadisticas" (Pagina 3)
-#* Tablas de datos
-    
+
 def is_segment_in_trajectory(segment, trajectory):
+    """
+    Checks if a segment intersects a given trajectory.
+
+    Parameters:
+    - segment: list, a line segment represented as a list of points.
+    - trajectory: list, a trajectory represented as a list of points.
+
+    Returns:
+    - bool: True if the segment intersects the trajectory, False otherwise.
+    """
     segment_line = LineString(segment)
     trajectory_line = LineString(trajectory)
-
     return segment_line.intersects(trajectory_line)
 
 
 def relational_table(df, segments, cluster_assignments, representative_trajectories):
+    """
+    Creates a relational table that associates segments with trajectories, clusters, and representatives.
+
+    Parameters:
+    - df: DataFrame, the input data.
+    - segments: list, a list of segments as LineString objects.
+    - cluster_assignments: list, cluster IDs assigned to each segment.
+    - representative_trajectories: list, representative trajectories for each cluster.
+
+    Returns:
+    - GeoDataFrame: A GeoDataFrame containing segment relationships with clusters and representatives.
+    """
     gdf_stc_data = []
-    i = 0
+    i = 0  # Keeps track of the last processed trajectory index
 
     for segment, cluster_id in zip(segments, cluster_assignments):
         line = LineString(segment)
-        tray_id = -1  # Indicador de 'no encontrado'
+        tray_id = -1  # Default indicator for "not found"
         line_index = None
 
+        # Check which trajectory contains the segment
         for index, trajectory in zip(df.index, df['POLYLINE']):
             if is_segment_in_trajectory(segment, trajectory) and i <= index:
                 line_index = index
                 i = index
                 break
 
+        # Determine if the segment intersects any representative trajectory
         for rep_id, rep_trajectory in enumerate(representative_trajectories):
             rep_line = LineString(rep_trajectory)
             if rep_line.intersects(line):
                 tray_id = rep_id
                 break
 
+        # Append the relational data for the segment
         gdf_stc_data.append({
             'line_index': line_index,
             'segment': line,
@@ -81,10 +120,19 @@ def relational_table(df, segments, cluster_assignments, representative_trajector
             'represent_tray_id': tray_id
         })
 
+    # Create and return a GeoDataFrame
     gdf_stc = gpd.GeoDataFrame(gdf_stc_data, columns=['line_index', 'segment', 'cluster_id', 'represent_tray_id'])
     return gdf_stc
 
-#* Graficos de barras
 
 def get_cluster_graph(cluster_assignments):
-    return  [asig for asig in cluster_assignments if asig != -1]
+    """
+    Creates a filtered list of cluster assignments for visualization.
+
+    Parameters:
+    - cluster_assignments: list, cluster IDs assigned to each segment.
+
+    Returns:
+    - list: Cluster IDs excluding outliers (represented by -1).
+    """
+    return [asig for asig in cluster_assignments if asig != -1]

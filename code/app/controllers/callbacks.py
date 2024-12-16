@@ -108,10 +108,10 @@ def navigate_experiment_page( n_clicks_new):
         return '/new-experiment'
     return '/'
 
-def display_files_in_selected_folder(folder_name, n_clicks_previous):
+def display_files_in_selected_folder(folder_name, n_clicks_previous, is_modal_open):
     if n_clicks_previous > 0:
         if folder_name is None:
-            return dash.no_update
+            return dash.no_update, not is_modal_open
 
         # Obtener los archivos dentro de la carpeta seleccionada
         files = list_files_in_folder(folder_name)
@@ -135,9 +135,9 @@ def display_files_in_selected_folder(folder_name, n_clicks_previous):
         traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl = load
 
         if optics_on or dbscan_on or hdbscan_on or aggl_on or spect_on:
-            return '/map-page'
+            return '/map-page', is_modal_open
     
-    return dash.no_update
+    return dash.no_update, is_modal_open
 
 def toggle_modal(n_delete, n_cancel, n_confirm, is_open, folder_name):
     if folder_name is not None and (n_delete or n_cancel or n_confirm):
@@ -157,7 +157,8 @@ def delete_experiment(n_clicks, folder_name):
 def navigate_to_page_dataupdate(n_clicks_data, checkoptics, optics_metric_value, optics_algorithm_value, optics_eps_value, optics_sample_value, checkdbscan, 
                                 dbscan_metric_value, dbscan_algorithm_value, dbscan_eps_value, dbscan_sample_value, checkhdbscan, hdbscan_metric_value, 
                                 hdbscan_algorithm_value, hdbscan_sample_value, checkagglomerativeclustering, aggl_metric_value, aggl_linkage_value, 
-                                aggl_n_clusters_value, checkspectralclustering, spect_affinity_value, spect_assign_labels_value, spect_n_clusters_value):
+                                aggl_n_clusters_value, checkspectralclustering, spect_affinity_value, spect_assign_labels_value, spect_n_clusters_value,
+                                is_open):
     if n_clicks_data is not None and n_clicks_data > 0:
         global optics_on, dbscan_on, hdbscan_on, aggl_on, spect_on 
         optics_on = dbscan_on = hdbscan_on = aggl_on = spect_on = False
@@ -202,8 +203,10 @@ def navigate_to_page_dataupdate(n_clicks_data, checkoptics, optics_metric_value,
             spect_n_clusters = spect_n_clusters_value
 
         if optics_on or dbscan_on or hdbscan_on or aggl_on or spect_on:
-            return '/data-update'
-    return '/new-experiment'
+            return '/data-update', is_open
+        return dash.no_update, not is_open
+
+    return '/new-experiment', is_open
 
 def toggle_rowo_controls(selector_value_o):
         is_enabled = 'on' in selector_value_o

@@ -52,7 +52,8 @@ def experiment_row_optics():
             id='input-optics-eps',
             type='number',
             placeholder='Max_eps',
-            disabled=True, 
+            disabled=True,
+            min=0,
             className='input'
         ),
         
@@ -61,7 +62,8 @@ def experiment_row_optics():
             id='input-optics-sample',
             type='number',
             placeholder='Min_samples',
-            disabled=True,  
+            disabled=True,
+            min=0,
             className='input'
         )
     ], className='grid-row-container')
@@ -118,7 +120,8 @@ def experiment_row_dbscan():
             id='input-dbscan-eps',
             type='number',
             placeholder='Eps',
-            disabled=True, 
+            disabled=True,
+            min=0,
             className='input'
         ),
         
@@ -127,7 +130,8 @@ def experiment_row_dbscan():
             id='input-dbscan-sample',
             type='number',
             placeholder='Min_samples',
-            disabled=True,  
+            disabled=True, 
+            min=0,
             className='input'
         )
     ], className='grid-row-container')
@@ -184,7 +188,8 @@ def experiment_row_hdbscan():
             id='input-hdbscan-sample',
             type='number',
             placeholder='Min_samples',
-            disabled=True,  
+            disabled=True, 
+            min=0, 
             className='input'
         )
     ], className='grid-row-container')
@@ -242,6 +247,7 @@ def experiment_row_aggl():
             type='number',
             placeholder='n_clusters',
             disabled=True, 
+            min=0,
             className='input'
         )
     ], className='grid-row-container')
@@ -296,6 +302,7 @@ def experiment_row_spect():
             type='number',
             placeholder='n_clusters',
             disabled=True,  
+            min=0,
             className='input'
         )
     ], className='grid-row-container')
@@ -335,6 +342,18 @@ def get_page_experiment():
         html.Div([
             dbc.Button('Ejecutar funciones', id='execute-button', color='primary', className='execute-button')
         ], className='button-container'),
+
+        # Modal for displaying the results of the experiment
+        dbc.Modal(
+            [
+                dbc.ModalHeader("Falata seleccionar datos"),
+                dbc.ModalBody("Como minimo selecione todos los datos de uno de los algoritmos."),
+            ],
+            id="exp-data-modal",
+            centered=True,
+            is_open=False
+        )
+
     ], className='gid-experiment-container')
 
 
