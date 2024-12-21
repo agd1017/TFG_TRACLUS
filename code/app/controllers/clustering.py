@@ -5,9 +5,9 @@ import matplotlib
 matplotlib.use('Agg')
 import time
 
-from models.TRACLUS import traclus as tr
-from models.mapping import get_coordinates, map_ilustration, map_heat, plot_map_traclus, plot_clusters_on_map, plot_segments_on_map
-from models.data_processing import load_and_simplify_data, relational_table, get_cluster_graph
+from app.models.TRACLUS import traclus as tr
+from app.models.mapping import get_coordinates, map_ilustration, map_heat, plot_map_traclus, plot_clusters_on_map, plot_segments_on_map
+from app.models.data_processing import load_and_simplify_data, relational_table, get_cluster_graph
 
 # Function to generate clustered trajectories using specified algorithms and parameters.
 def get_cluster_trajectories(trajectories, directional=True, use_segments=True, clustering_algorithm=None, 

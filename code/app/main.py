@@ -481,5 +481,7 @@ def callback_update_graph(selected_filter):
 
 # Entry point of the program
 if __name__ == '__main__':
+    import sys
+    print(sys.path)
     app.run_server(debug=True)
     #app.run_server(host='127.0.0.1', port=8050) 

@@ -1,6 +1,6 @@
 import base64
 import os
-from utils.config import UPLOAD_FOLDER
+from app.utils.config import UPLOAD_FOLDER
 
 def list_experiment_folders():
     """

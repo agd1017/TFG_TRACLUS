@@ -8,17 +8,17 @@ import plotly.express as px
 from collections import Counter
 import time
 
-from utils.config import UPLOAD_FOLDER
-from utils.data_saveload import save_data, load_data
-from utils.data_utils import list_files_in_folder
-from views.layout.navbar import get_navbar
-from views.layout.dataupload_page import get_page_dataupdate
-from views.layout.experiment_page import get_page_experiment
-from views.layout.map_page import get_page_map, get_map_image_as_html
-from views.layout.select_page import get_page_select
-from views.layout.TRACLUSmap_page import get_page_maptraclus, get_clusters_map
-from views.layout.table_page import get_page_tables, get_table
-from controllers.clustering import data_constructor
+from app.utils.config import UPLOAD_FOLDER
+from app.utils.data_saveload import save_data, load_data
+from app.utils.data_utils import list_files_in_folder
+from app.views.layout.navbar import get_navbar
+from app.views.layout.dataupload_page import get_page_dataupdate
+from app.views.layout.experiment_page import get_page_experiment
+from app.views.layout.map_page import get_page_map, get_map_image_as_html
+from app.views.layout.select_page import get_page_select
+from app.views.layout.TRACLUSmap_page import get_page_maptraclus, get_clusters_map
+from app.views.layout.table_page import get_page_tables, get_table
+from app.controllers.clustering import data_constructor
 
 # -- Callbacks section --
 
