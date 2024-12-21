@@ -7,8 +7,9 @@ import dash
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash import html, dcc
-from .controllers.callbacks import *
+import logging
 import os
+from .controllers.callbacks import *
 
 # Create a Dash app instance with Bootstrap styling and custom asset folder
 app = dash.Dash(
@@ -28,6 +29,9 @@ app.layout = html.Div([
     html.Div(id='navbar-container', className="navbar-container"),  # Container for the navigation bar
     html.Div(id='page-content', className="page-content")  # Container for dynamic page content
 ], className="grid-main-container")  # Main layout with a CSS class for grid styling
+
+logging.basicConfig(level=logging.INFO)  # Cambia a DEBUG si necesitas más detalle
+logger = logging.getLogger(__name__)
 
 # --- Callbacks Section ---
 
@@ -482,6 +486,6 @@ def callback_update_graph(selected_filter):
 # Entry point of the program
 if __name__ == '__main__':
     import sys
-    print(sys.path)
+    logger.info("PYTHONPATH: %s", sys.path)
     app.run_server(debug=True)
     #app.run_server(host='127.0.0.1', port=8050) 
