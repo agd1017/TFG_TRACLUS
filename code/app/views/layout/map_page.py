@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
-from app.utils.data_utils import bytes_to_base64
+from utils.data_utils import bytes_to_base64
 
 def get_map_image_as_html(html_map, html_heatmap):
     """

@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 
-from app.utils.data_utils import list_experiment_folders
+from utils.data_utils import list_experiment_folders
 
 def get_page_select():
     """

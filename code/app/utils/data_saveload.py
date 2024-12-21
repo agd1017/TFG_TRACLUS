@@ -3,7 +3,7 @@ import shutil
 import pandas as pd
 import geopandas as gpd
 
-from app.utils.config import UPLOAD_FOLDER
+from .config import UPLOAD_FOLDER
 
 # Save data to a folder
 
