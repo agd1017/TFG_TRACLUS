@@ -7,9 +7,12 @@ train.csv
 table_clusters_trayectorias.txt
 table_relaciones.txt
 table_clusters.txt
+dataset_TSMC2014_NYC.txt
 
 *.html
-*.jpg
+# *.jpg
+Mapa_trayectorias_filtrado_100000filas_8min.JPG
+Mapa_trayectorias_filtrado_100000filas_oporto.JPG
 Prueba_algoritmos.ipynb
 Prueba_rendimiento.ipynb
 Prueba_distancias.ipynb

@@ -795,36 +795,51 @@ def traclus(trajectories, directional=True, use_segments=True, clustering_algori
             raise ValueError("Each trajectory must be a numpy array of shape (n, 2).")
 
     # Partition trajectories using MDL-based partitioning
+    start_partitions = time.time()
     partitions = []
     for trajectory in trajectories:
         partitions.append(partition(trajectory, directional=directional, progress_bar=False, 
                                     w_perpendicular=mdl_weights[0], w_angular=mdl_weights[2]))
+    end_partitions = time.time()
+    print("Partitioning time: ", end_partitions - start_partitions)
 
     # Convert partitions to segments if specified
+    start_segments = time.time()
     segments = []
     if use_segments:
         for parts in partitions:
             segments += partition2segments(parts)
     else:
         segments = partitions
+    end_segments = time.time()
+    print("Segments time: ", end_segments - start_segments)
 
     # Compute the distance matrix for clustering
+    start_vectorization = time.time()
     dist_matrix = get_vectorice_distance_matrix(segments, directional=directional, 
                                                 w_perpendicular=d_weights[0], 
                                                 w_parallel=d_weights[1], 
                                                 w_angular=d_weights[2])
+    end_vectorization = time.time()
+    print("Vectorization time: ", end_vectorization - start_vectorization)
 
     # Perform clustering
+    start_clustering = time.time()
     clusters, cluster_assignments = clustering(segments, dist_matrix, clustering_algorithm, 
                                                 optics_min_samples, optics_max_eps, optics_metric, optics_algorithm, 
                                                 dbscan_min_samples, dbscan_eps, dbscan_metric, dbscan_algorithm, 
                                                 hdbscan_min_samples, hdbscan_metric, hdbscan_algorithm, 
                                                 spect_n_clusters, spect_affinity, spect_assign_labels,
                                                 aggl_n_clusters, aggl_linkage, aggl_metric)
+    end_clustering = time.time()
+    print("Clustering time: ", end_clustering - start_clustering)
 
     # Extract representative trajectories for each cluster
+    start_representatives = time.time()
     representative_trajectories = []
     for cluster in clusters:
         representative_trajectories.append(get_representative_trajectory(cluster))
+    end_representatives = time.time()
+    print("Representatives time: ", end_representatives - start_representatives)
 
     return partitions, segments, dist_matrix, clusters, cluster_assignments, representative_trajectories

@@ -35,6 +35,7 @@ def get_page_dataupdate():
                     id='upload-data',  # ID of the upload component
                     children=html.Button('Seleccionar archivo'),  # Button for file selection
                     multiple=False,  # Set to False to allow only one file upload at a time
+                    accept='.csv,.xlsx',  # Allow only Excel files
                 ),
             ], className='box inputfile'),  # CSS class for styling the file upload box
 

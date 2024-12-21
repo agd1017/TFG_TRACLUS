@@ -6,7 +6,7 @@ from shapely.geometry import LineString
 import base64
 import io
 
-def load_and_simplify_data(filename, rows, tolerance=0.001):
+def load_and_simplify_data(filepath, rows, tolerance=0.001):
     """
     Loads and simplifies data from a file, either CSV or Excel, and prepares it for processing.
 
@@ -22,11 +22,11 @@ def load_and_simplify_data(filename, rows, tolerance=0.001):
     """
     try:
         # Decode the base64-encoded file content
-        _, content_string = filename.split(',')
+        _, content_string = filepath.split(',')
         decoded = base64.b64decode(content_string)
 
         # Load data as DataFrame based on file type
-        if filename.endswith('.csv'):
+        if filepath.endswith('.csv'):
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), nrows=rows)
         else:
             df = pd.read_excel(io.BytesIO(decoded), nrows=rows)

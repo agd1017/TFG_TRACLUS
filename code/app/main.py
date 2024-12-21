@@ -102,23 +102,27 @@ def callback_navigate_experiment_page(n_clicks_new):
     return navigate_experiment_page(n_clicks_new)
 
 @app.callback(
-    Output('url', 'pathname', allow_duplicate=True),  # Target: URL pathname
-    [Input('experiment-dropdown', 'value'),  # Trigger: Folder selection
-    Input('load-exp-button', 'n_clicks')],  # Trigger: Click on "load" button
-    prevent_initial_call=True
+    [Output('url', 'pathname', allow_duplicate=True), # Target: URL pathname
+    Output('experiment-modal', 'is_open')], # Target: Modal visibility state
+    [Input('experiment-dropdown', 'value'), # Trigger: Folder selection
+    Input('load-exp-button', 'n_clicks')], # Trigger: Click on "load" button
+    [State('experiment-modal', 'is_open')], # State: Current modal visibility
+    prevent_initial_call=True # Prevent the callback from firing initially
 )
-def callback_display_files_in_selected_folder(folder_name, n_clicks_previous):
+def callback_display_files_in_selected_folder(folder_name, n_clicks_previous, is_modal_open):
     """
     Updates the application to display files from a selected folder.
 
     Parameters:
         folder_name (str): The name of the selected folder.
         n_clicks_previous (int): Number of clicks on the load button.
+        is_modal_open (bool): Current state of the modal.
 
     Returns:
         str: The pathname for the map page.
+        bool: The new state of the modal (open or closed).
     """
-    return display_files_in_selected_folder(folder_name, n_clicks_previous)
+    return display_files_in_selected_folder(folder_name, n_clicks_previous, is_modal_open)
 
 @app.callback(
     Output("delete-modal", "is_open"),  # Target: Modal's visibility state
@@ -167,7 +171,8 @@ def callback_delete_experiment(n_clicks, folder_name):
 # -- Callbacks for experiment page --
 
 @app.callback(
-    Output('url', 'pathname', allow_duplicate=True),  # Target: URL pathname
+    [Output('url', 'pathname', allow_duplicate=True),  # Target: URL pathname
+    Output('exp-data-modal', 'is_open')],  # Target: Modal visibility state
     Input('execute-button', 'n_clicks'),  # Trigger: Click on execute button
     [
         # State variables for OPTICS algorithm configuration
@@ -196,7 +201,9 @@ def callback_delete_experiment(n_clicks, folder_name):
         State('selector-spectralclustering', 'value'),
         State('dropdown-spectralclustering-affinity', 'value'),
         State('dropdown-spectralclustering-assign_labels', 'value'),
-        State('input-spectralclustering-n_clusters', 'value')
+        State('input-spectralclustering-n_clusters', 'value'),
+
+        State('exp-data-modal', 'is_open')  # State: Modal visibility
     ],
     prevent_initial_call=True  # Prevent callback from triggering on page load
 )
@@ -207,7 +214,8 @@ def callback_navigate_to_page_dataupdate(
     hdbscan_metric_value, hdbscan_algorithm_value, hdbscan_sample_value,
     checkagglomerativeclustering, aggl_metric_value, aggl_linkage_value,
     aggl_n_clusters_value, checkspectralclustering, spect_affinity_value,
-    spect_assign_labels_value, spect_n_clusters_value
+    spect_assign_labels_value, spect_n_clusters_value,
+    is_open
 ):
     """
     Navigates to the data update page with selected clustering configurations.
@@ -231,7 +239,8 @@ def callback_navigate_to_page_dataupdate(
         hdbscan_metric_value, hdbscan_algorithm_value, hdbscan_sample_value,
         checkagglomerativeclustering, aggl_metric_value, aggl_linkage_value,
         aggl_n_clusters_value, checkspectralclustering, spect_affinity_value,
-        spect_assign_labels_value, spect_n_clusters_value
+        spect_assign_labels_value, spect_n_clusters_value,
+        is_open
     )
 
 
@@ -475,7 +484,4 @@ if __name__ == '__main__':
     # Retrieve the port number from environment variables or default to 8080
     port = int(os.environ.get("PORT", 8080))
     # Run the server on host '0.0.0.0' (accessible externally) and specified port
-    app.run_server(debug=True, host='0.0.0.0', port=port)
-
-    
-    #app.run_server( host='127.0.0.1', port=8050) 
+    app.run_server(host='0.0.0.0', port=port)

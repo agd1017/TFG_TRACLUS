@@ -6,6 +6,7 @@ import os
 import io
 import plotly.express as px
 from collections import Counter
+import time
 
 from utils.config import UPLOAD_FOLDER
 from utils.data_saveload import save_data, load_data
@@ -239,11 +240,15 @@ def process_csv_from_url(n_clicks_upload, data, nrows, folder_name):
         if not nrows:
             return dash.no_update, html.Div(["No se ha introducido el número de filas."])
         
+        start_TRACLUS = time.time()
         result = data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, optics_eps, optics_sample, 
                                 dbscan_on, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample, 
                                 hdbscan_on, hdbscan_metric, hdbscan_algorithm, hdbscan_sample, 
                                 aggl_on, aggl_metric, aggl_linkage, aggl_n_clusters, 
                                 spect_on, spect_affinity, spect_assign_labels, spect_n_clusters)
+        end_TRACLUS = time.time()
+
+        print(f"Ejecution time: {end_TRACLUS - start_TRACLUS} segundos")
 
         global gdf, tray, html_map, html_heatmap
         global traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics
