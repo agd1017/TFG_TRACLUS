@@ -7,7 +7,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash import html, dcc
-from controllers.callbacks import *
+from .controllers.callbacks import *
 import os
 
 # Create a Dash app instance with Bootstrap styling and custom asset folder
