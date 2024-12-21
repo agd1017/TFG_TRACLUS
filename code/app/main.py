@@ -7,7 +7,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash import html, dcc
-from .controllers.callbacks import *
+from app.controllers.callbacks import *
 import os
 
 # Create a Dash app instance with Bootstrap styling and custom asset folder
@@ -485,4 +485,4 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
     # Run the server on host '0.0.0.0' (accessible externally) and specified port
     app.run_server(debug=True, host='0.0.0.0', port=port)
-    #app.run_server( host='127.0.0.1', port=8050) 
+    # app.run_server( host='127.0.0.1', port=8050) 
