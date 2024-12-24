@@ -1,6 +1,6 @@
 from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
 from concurrent.futures import ThreadPoolExecutor
-import threading
+from multiprocessing import Process, Manager
 import matplotlib
 matplotlib.use('Agg')
 import time
@@ -64,7 +64,7 @@ def get_experiment_results(df, segments, clusters,  cluster_assignments, represe
     return traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph
 
 # Functions to run clustering algorithms in separate threads
-def run_optics(tray, results, lock, optics_metric, optics_algorithm, optics_eps, optics_sample):
+def run_optics(df, tray, results, optics_metric, optics_algorithm, optics_eps, optics_sample):
     """
     Run TRACLUS with OPTICS clustering algorithm and store the results.
     """
@@ -74,13 +74,15 @@ def run_optics(tray, results, lock, optics_metric, optics_algorithm, optics_eps,
             optics_metric=optics_metric, optics_algorithm=optics_algorithm,
             optics_eps=optics_eps, optics_sample=optics_sample
         )
-        with lock:
-            results['optics'] = result
-    except Exception as e:
-        with lock:
-            results['errors'].append(f'Error en el algoritmo optics: {e}')
+        results['optics'] = result
+        segments, clusters, cluster_assignments, representative_clusters = result
+        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['optics_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
 
-def run_hdbscan(tray, results, lock, hdbscan_metric, hdbscan_algorithm, hdbscan_sample):
+    except Exception as e:
+        results['errors'].append(f'Error en el algoritmo optics: {e}')
+
+def run_hdbscan(df, tray, results, hdbscan_metric, hdbscan_algorithm, hdbscan_sample):
     """
     Run TRACLUS with HDBSCAN clustering algorithm and store the results.
     """
@@ -90,13 +92,15 @@ def run_hdbscan(tray, results, lock, hdbscan_metric, hdbscan_algorithm, hdbscan_
             hdbscan_metric=hdbscan_metric, hdbscan_algorithm=hdbscan_algorithm,
             hdbscan_sample=hdbscan_sample
         )
-        with lock:
-            results['hdbscan'] = result
-    except Exception as e:
-        with lock:
-            results['errors'].append(f'Error en el algoritmo hdbscan: {e}')
+        results['hdbscan'] = result
+        segments, clusters, cluster_assignments, representative_clusters = result
+        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['hdbscan_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
 
-def run_dbscan(tray, results, lock, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample):
+    except Exception as e:
+        results['errors'].append(f'Error en el algoritmo hdbscan: {e}')
+
+def run_dbscan(df, tray, results, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample):
     """
     Run TRACLUS with DBSCAN clustering algorithm and store the results.
     """
@@ -106,13 +110,15 @@ def run_dbscan(tray, results, lock, dbscan_metric, dbscan_algorithm, dbscan_eps,
             dbscan_metric=dbscan_metric, dbscan_algorithm=dbscan_algorithm,
             dbscan_eps=dbscan_eps, dbscan_sample=dbscan_sample
         )
-        with lock:
-            results['dbscan'] = result
-    except Exception as e:
-        with lock:
-            results['errors'].append(f'Error en el algoritmo dbscan: {e}')
+        results['dbscan'] = result
+        segments, clusters, cluster_assignments, representative_clusters = result
+        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['dbscan_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
 
-def run_spectral(tray, results, lock, spect_affinity, spect_assign_labels, spect_n_clusters):
+    except Exception as e:
+        results['errors'].append(f'Error en el algoritmo dbscan: {e}')
+
+def run_spectral(df, tray, results, spect_affinity, spect_assign_labels, spect_n_clusters):
     """
     Run TRACLUS with Spectral clustering algorithm and store the results.
     """
@@ -122,13 +128,15 @@ def run_spectral(tray, results, lock, spect_affinity, spect_assign_labels, spect
             spect_affinity=spect_affinity, spect_assign_labels=spect_assign_labels,
             spect_n_clusters=spect_n_clusters
         )
-        with lock:
-            results['spectral'] = result
-    except Exception as e:
-        with lock:
-            results['errors'].append(f'Error en el algoritmo spectral: {e}')
+        results['spectral'] = result
+        segments, clusters, cluster_assignments, representative_clusters = result
+        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['spectral_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
 
-def run_agglomerative(tray, results, lock, aggl_metric, aggl_linkage, aggl_n_clusters):
+    except Exception as e:
+        results['errors'].append(f'Error en el algoritmo spectral: {e}')
+
+def run_agglomerative(df, tray, results, aggl_metric, aggl_linkage, aggl_n_clusters):
     """
     Run TRACLUS with Agglomerative clustering algorithm and store the results.
     """
@@ -137,12 +145,13 @@ def run_agglomerative(tray, results, lock, aggl_metric, aggl_linkage, aggl_n_clu
             trajectories=tray, clustering_algorithm=AgglomerativeClustering,
             aggl_metric=aggl_metric, aggl_linkage=aggl_linkage, aggl_n_clusters=aggl_n_clusters
         )
-        with lock:
-            results['agglomerative'] = result
-    except Exception as e:
-        with lock:
-            results['errors'].append(f'Error en el algoritmo agglomerative: {e}')
+        results['agglomerative'] = result
+        segments, clusters, cluster_assignments, representative_clusters = result
+        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['agglomerative_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
 
+    except Exception as e:
+        results['errors'].append(f'Error en el algoritmo agglomerative: {e}')
 
 def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, optics_eps, optics_sample, 
                 dbscan_on, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample, 
@@ -165,34 +174,34 @@ def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, op
     traclus_map_aggl = traclus_map_cluster_aggl = traclus_map_segments_aggl = tabla_aggl = graph_aggl = None
 
     # Initialize placeholders for results and error handling
-    results = {'optics': None, 'hdbscan': None, 'dbscan': None, 
-                'spectral': None, 'agglomerative': None, 'errors': []}
-    lock = threading.Lock()
-
+    manager = Manager()
+    results = manager.dict({'optics': None, 'hdbscan': None, 'dbscan': None, 
+                            'spectral': None, 'agglomerative': None, 'errors': []})
+    
     # Create and start threads for each enabled clustering algorithm
-    threads = []
+    processes = []
     if optics_on:
-        t = threading.Thread(target=run_optics, args=(tray, results, lock, optics_metric, optics_algorithm, optics_eps, optics_sample))
-        threads.append(t)
+        p = Process(target=run_optics, args=(df, tray, results, optics_metric, optics_algorithm, optics_eps, optics_sample))
+        processes.append(p)
     if hdbscan_on:
-        t = threading.Thread(target=run_hdbscan, args=(tray, results, lock, hdbscan_metric, hdbscan_algorithm, hdbscan_sample))
-        threads.append(t)
+        p = Process(target=run_hdbscan, args=(df, tray, results, hdbscan_metric, hdbscan_algorithm, hdbscan_sample))
+        processes.append(p)
     if dbscan_on:
-        t = threading.Thread(target=run_dbscan, args=(tray, results, lock, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample))
-        threads.append(t)
+        p = Process(target=run_dbscan, args=(df, tray, results, dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample))
+        processes.append(p)
     if spect_on:
-        t = threading.Thread(target=run_spectral, args=(tray, results, lock, spect_affinity, spect_assign_labels, spect_n_clusters))
-        threads.append(t)
+        p = Process(target=run_spectral, args=(df, tray, results, spect_affinity, spect_assign_labels, spect_n_clusters))
+        processes.append(p)
     if aggl_on:
-        t = threading.Thread(target=run_agglomerative, args=(tray, results, lock, aggl_metric, aggl_linkage, aggl_n_clusters))
-        threads.append(t)
+        p = Process(target=run_agglomerative, args=(df, tray, results, aggl_metric, aggl_linkage, aggl_n_clusters))
+        processes.append(p)
     
     # Start and join all threads
     start_traclus = time.time()
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
     end_traclus = time.time()
 
     print(f"Tiempo de ejecución de TRACLUS: {end_traclus - start_traclus} segundos")
@@ -203,40 +212,16 @@ def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, op
         error_message = ' | '.join(results['errors'])
 
     # Unpack results and generate visualizations for each algorithm
-    start_maps = time.time()
     if optics_on and results.get('optics', None):
-        start_optics = time.time()
-        segments, clusters, cluster_assignments, representative_clusters = results.get('optics', (None, None, None, None))
-        traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)  
-        end_optics = time.time()
-        print(f"Tiempo de ejecución de OPTICS: {end_optics - start_optics} segundos")
+        traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics = results.get('optics_results', (None, None, None, None, None))
     if hdbscan_on and results.get('hdbscan', None):
-        start_hdbscan = time.time()
-        segments, clusters, cluster_assignments, representative_clusters = results.get('hdbscan', (None, None, None, None))
-        traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-        end_hdbscan = time.time()
-        print(f"Tiempo de ejecución de HDBSCAN: {end_hdbscan - start_hdbscan} segundos")
+        traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan = results.get('hdbscan_results', (None, None, None, None, None))
     if dbscan_on and results.get('dbscan', None):
-        start_dbscan = time.time()
-        segments, clusters, cluster_assignments, representative_clusters = results.get('dbscan', (None, None, None, None))
-        traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-        end_dbscan = time.time()
-        print(f"Tiempo de ejecución de DBSCAN: {end_dbscan - start_dbscan} segundos")
+        traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan = results.get('dbscan_results', (None, None, None, None, None))
     if spect_on and results.get('spectral', None):
-        start_spectral = time.time()
-        segments, clusters, cluster_assignments, representative_clusters = results.get('spectral', (None, None, None, None))
-        traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-        end_spectral = time.time()
-        print(f"Tiempo de ejecución de Spectral: {end_spectral - start_spectral} segundos")        
+        traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect = results.get('spectral_results', (None, None, None, None, None))
     if aggl_on and results.get('agglomerative', None):
-        start_aggl = time.time()
-        segments, clusters, cluster_assignments, representative_clusters = results.get('agglomerative', (None, None, None, None))
-        traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl = get_experiment_results(df, segments, clusters, cluster_assignments, representative_clusters)
-        end_aggl = time.time()
-        print(f"Tiempo de ejecución de Agglomerative: {end_aggl - start_aggl} segundos")
-    end_maps = time.time()
-
-    print(f"Tiempo de ejecución de mapas: {end_maps - start_maps} segundos")
+        traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl = results.get('agglomerative_results', (None, None, None, None, None))
 
     # Return all results and visualizations
     return  gdf, tray, html_map, html_heatmap, \
