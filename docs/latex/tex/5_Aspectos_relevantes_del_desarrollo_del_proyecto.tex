@@ -156,7 +156,7 @@ Las otras dos páginas se mantuvieron con diversos cambios en su diseño, adopta
 Sumado a lo anterior, se eliminaron diferentes funcionalidades que se buscaban al principio, como el zoom en los mapas, y se añadieron dos nuevas pantallas: una nueva página inicial donde se puede seleccionar si crear un nuevo experimento o reutilizar uno existente, y una pantalla previa a la carga de datos donde el usuario selecciona los algoritmos de clustering a utilizar. Estos cambios significativos durante el desarrollo requirieron reescribir y reorganizar el código en múltiples ocasiones, adoptando finalmente un enfoque basado en el modelo vista-controlador para mejorar la estructura y mantenibilidad del proyecto.
 
 
-\subsection{Optimización}
+\subsection{Optimización del algoritmo}
 
 Uno de los principales desafíos del proyecto fue el tiempo de procesamiento, debido a la gran cantidad de datos que debían manejarse. El tamaño y la complejidad de los datos afectaron tanto la carga inicial como la ejecución de algoritmos y la visualización, requiriendo una optimización constante para lograr resultados en tiempos razonables.
 
@@ -191,7 +191,6 @@ Para reducir estos tiempos, se realizaron múltiples pruebas y técnicas de opti
 Este proceso de optimización requirió numerosos ajustes y pruebas incrementales, en muchos casos con cambios mínimos y variaciones en el tamaño de los datos de prueba, lo que demandó una gran cantidad de horas de prueba y error sin obtener los resultados esperados. No se tiene un cálculo exacto, pero este apartado del proyecto consumió no solo decenas, sino cientos de horas dedicadas exclusivamente a la ejecución y análisis de pruebas.
 
 En conclusión, aunque Python es un lenguaje versátil, sus limitaciones en paralelización y threading efectivo complicaron la optimización de cálculos intensivos en comparación con otros lenguajes como Java, lo que limitó el rendimiento alcanzable en este proyecto.
-
 
 \subsection{Comparativa de algoritmos}
 
@@ -335,6 +334,39 @@ Al igual que el algoritmo anterior, no descarta datos. Aunque se generaron los m
 
 \end{enumerate}
 
+\subsection{Optimización de la página web} 
+
+Tras múltiples ejecuciones de la página web para comparar los resultados de los diferentes algoritmos de clustering aplicados al TRACLUS, se identificó un problema recurrente: el tiempo de ejecución elevado.
+
+En la aplicación, se podían ejecutar hasta cinco veces consecutivas el algoritmo TRACLUS, cada vez con modificaciones en el algoritmo de clustering. Esta ejecución lineal incrementaba significativamente los tiempos, ya que incluso con pocos datos, el algoritmo mostraba lentitud.
+
+\subsubsection{Estrategia inicial: Uso de hilos}
+Para abordar este problema, se reutilizó una estrategia previamente implementada: el uso de hilos. En el controlador \texttt{clustering.py}, que ya gestionaba correctamente el flujo de carga de datos, se dividió el código en funciones separadas, una por cada algoritmo de clustering. Estas funciones eran llamadas según las selecciones del usuario mediante la biblioteca \texttt{threading}.
+
+\subsubsection{Problemas con la generación de mapas y tablas}
+Posteriormente, se intentó incorporar la creación de mapas y tablas a estos hilos. Sin embargo, surgieron incompatibilidades con la biblioteca \texttt{matplotlib}, que no es compatible con librerías de hilos como \texttt{concurrent.futures} o \texttt{threading}. Por este motivo, se decidió separar estas tareas. Una vez finalizados todos los hilos, se invocaba una nueva función encargada de generar los mapas necesarios para visualizar los datos.
+
+\subsubsection{Limitaciones de Python}
+Aunque esta optimización redujo el tiempo de ejecución, los resultados no alcanzaron las expectativas iniciales. Se identificó que la principal limitación era Python. Su configuración interna impide utilizar múltiples núcleos del procesador de manera eficiente, lo que restringía la velocidad máxima en dispositivos locales. Sin embargo, estas limitaciones no afectaban significativamente la aplicación en entornos remotos, donde el alto rendimiento no era una prioridad debido a los costes asociados.
+
+\subsubsection{Exploración de alternativas de paralelización}
+Dado el potencial escalamiento de la aplicación, se exploraron otras estrategias de paralelización:
+- \texttt{asyncio}: Diseñada para tareas intensivas en I/O, pero no adecuada para este caso.
+- \texttt{Batch Processing}: Orientada a flujos simples, tampoco era aplicable.
+- \texttt{Dask} y \texttt{ProcessPoolExecutor}: Ambas opciones cumplían con los requisitos del proyecto.
+
+Se optó por \texttt{ProcessPoolExecutor} debido a su menor complejidad y capacidad para ejecutar funciones en diferentes núcleos del procesador.
+
+\subsubsection{Optimización del flujo de datos}
+Además del uso de \texttt{multiprocessing}, se unificó el flujo de representación de los datos en las funciones de multiproceso, lo que resolvió incompatibilidades previas con \texttt{matplotlib}. Esto incrementó considerablemente el rendimiento, ya que anteriormente estas tareas se ejecutaban en serie.
+
+\subsubsection{Resultados obtenidos}
+Tras implementar estas mejoras, se lograron resultados significativos:
+- \textbf{Operaciones singulares}: La ejecución de un solo TRACLUS con 100 filas de datos pasó de 312 segundos a 288 segundos.
+- \textbf{Ejecuciones simultáneas}: La ejecución de cinco TRACLUS con sus respectivos algoritmos de clustering se redujo drásticamente, de 1800 segundos a 450 segundos.
+
+Esta optimización no solo mejoró el rendimiento, sino que también eliminó errores previamente asociados al uso de hilos.
+
 
 \section{Despliegue de la aplicación}
 
@@ -394,6 +426,289 @@ El despliegue de la aplicación en Render se realizó siguiendo los pasos descri
 Aunque Render presenta ciertas limitaciones en su plan gratuito, como tiempos de inicio más lentos para aplicaciones en estado \textit{idle} y límites de recursos, estas no afectaron significativamente a nuestra aplicación durante el desarrollo. La elección de Render permitió concentrar esfuerzos en mejorar la funcionalidad y la experiencia del usuario, sin la necesidad de invertir en infraestructura de servidor.
 
 Con el despliegue en Render, la aplicación quedó lista para ser utilizada por cualquier usuario con acceso a Internet, cumpliendo así el objetivo de trasladar el trabajo desde un entorno local a un entorno accesible y escalable en la nube.
+
+\section{Pruebas funcionales}
+
+Para demostrar la utilidad del algoritmo y la aplicación creados, se propuso realizar múltiples pruebas con diferentes conjuntos de datos, tamaños y configuraciones aplicados a los algoritmos de clustering.
+
+\subsection{Conjuntos de datos}
+
+Durante el desarrollo del proyecto, se utilizó en prácticamente todo el conjunto de datos de Trayectorias Taxis \cite{trayectorias_taxis}. Para esta comprobación final, esto no era suficiente. Usar solo este conjunto de datos limitaría el proyecto a un análisis específico. Por lo tanto, se buscó encontrar múltiples conjuntos de datos cuyo único requisito fuera contener una columna con coordenadas en formato JSON de la siguiente forma: 
+[\texttt{[[latitud\_1, longitud\_1], [latitud\_2, longitud\_2], \dots]}]
+y que el nombre de dicha columna fuera \texttt{POLYLINE}.
+
+Al no encontrar conjuntos de datos con esta estructura exacta, se decidió adaptar otros conjuntos más comunes que incluyeran coordenadas geográficas en una columna. 
+
+El primer conjunto con esa estructura adaptada fue Geolife \cite{geolife_trajectories}. Este estudio organiza los datos en carpetas, una por cada sujeto al que se le registraron ubicaciones durante un periodo de tiempo. Dentro de cada carpeta se encontraban varios archivos \texttt{.plt} que contenían información sobre la latitud, longitud, hora y fecha de las mediciones. 
+
+Para organizar los datos de forma lógica para el algoritmo TRACLUS, no era viable crear una fila por cada archivo \texttt{.plt}, ya que algunos contenían más de 1000 mediciones. Por lo tanto, se decidió agrupar las mediciones por hora. Todas las mediciones tomadas dentro de la misma hora se combinaron en una única fila de un archivo Excel.
+
+Se creó una función para automatizar este proceso por carpeta, lo que permitió realizar pruebas fácilmente en diferentes sujetos. Para analizar los resultados, se utilizó un archivo Excel generado con todos los datos encontrados en la carpeta del sujeto \texttt{000}.
+
+Otro conjunto de datos probado fue uno de MoveBank \cite{movebank}, una plataforma que contiene miles de trayectorias de animales. Debido a la inmensidad de opciones disponibles, se seleccionó de forma semi-aleatoria el conjunto de datos titulado \textit{"Hammer-headed fruit bats (Hypsignathus monstrosus) in the Republic of Congo"}. Este conjunto incluía datos de múltiples murciélagos de la fruta registrados en diferentes días. 
+
+Tras analizar el número de mediciones por hora, se decidió dividir las trayectorias por murciélago y día, creando un conjunto de datos con filas más reducidas en comparación al anterior. Aun así, estas filas eran considerablemente más grandes que las del conjunto de Trayectorias Taxis, lo cual incrementó significativamente el tiempo de procesamiento por cada fila analizada.
+
+Ademas de estos tres se hicieron pruebas con otros como Citi Bikes \cite{} o Foursquare-NY \cite{} pero aunque organizándonos como los anteriores si que funcionaban se daba la peculiar condicion de que no se generaban los mapas de fondo lo que perdía parte de la razon del estudio, casualmente los dos se hubicaban en los estado unidos, nueva jork, lo que seguramente es la razon auque hasta el momento se habian usado hubicaciones muy diversas, portugal, china y el congo. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/CitiBike_trayectories.png}
+    \caption{Mapa de trayectorias sin tratar del cojunto Citi Bikes.}
+    \label{fig:clusters_Spectral}
+\end{figure}
+
+\subsection{Explicación de las pruebas}
+
+Para realizar un análisis coherente del TRACLUS con los diferentes algoritmos de clustering, es esencial definir claramente los objetivos, identificar los parámetros ajustables y establecer los límites de las pruebas. 
+
+El propósito de estas pruebas era comprobar el funcionamiento del programa desarrollado durante el proyecto, evaluar los tiempos de ejecución bajo diversas condiciones y analizar cómo los diferentes parámetros de los algoritmos de clustering impactan los resultados obtenidos.
+
+En cada algoritmo de clustering, existen parámetros configurables que influyen significativamente en los resultados. Los parámetros seleccionados para incluir en la aplicación son aquellos que se consideraron más relevantes para el análisis. A continuación, se explican en detalle los algoritmos y sus parámetros:
+
+\begin{enumerate}
+    \item \textbf{OPTICS (Ordering Points To Identify the Clustering Structure):}
+    Este algoritmo identifica clusters de diferentes densidades en los datos. Los principales parámetros configurables son:
+    \begin{enumerate}
+        \item \textbf{Metric:} Define la métrica utilizada para calcular las distancias entre puntos. Las opciones disponibles son:
+        \begin{enumerate}
+            \item \textbf{euclidean:} Utiliza la distancia euclidiana tradicional.
+            \item \textbf{l1:} Calcula la distancia Manhattan.
+            \item \textbf{l2:} Similar a euclidean, pero con ajustes para ciertas aplicaciones.
+            \item \textbf{manhattan:} Igual que \textit{l1}, mide la distancia entre dos puntos como la suma de sus diferencias absolutas.
+            \item \textbf{cosine:} Calcula la similitud basada en el coseno del ángulo entre vectores.
+            \item \textbf{cityblock:} Otra forma de describir la distancia Manhattan.
+        \end{enumerate}
+        \item \textbf{Algorithm:} Selecciona el método para encontrar vecinos más cercanos:
+        \begin{enumerate}
+            \item \textbf{auto:} Elige automáticamente el método más eficiente según los datos.
+            \item \textbf{ball\_tree:} Usa una estructura de árbol espacial para organizar los puntos.
+            \item \textbf{kd\_tree:} Similar a \textit{ball\_tree}, pero optimizado para ciertas métricas.
+            \item \textbf{brute:} Calcula las distancias directamente, sin estructuras optimizadas.
+        \end{enumerate}
+        \item \textbf{Max\_eps:} Establece el radio máximo para considerar puntos vecinos.
+        \item \textbf{Min\_samples:} Define el número mínimo de puntos necesarios para formar un cluster.
+    \end{enumerate}
+    
+    \item \textbf{DBSCAN (Density-Based Spatial Clustering of Applications with Noise):}
+    Este algoritmo agrupa puntos densos mientras ignora ruido. Comparte parámetros con OPTICS:
+    \begin{enumerate}
+        \item \textbf{Metric:} Igual que en OPTICS.
+        \item \textbf{Algorithm:} Igual que en OPTICS.
+        \item \textbf{Eps:} Especifica el radio para considerar vecinos.
+        \item \textbf{Min\_samples:} Igual que en OPTICS.
+    \end{enumerate}
+    
+    \item \textbf{HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise):}
+    Este algoritmo extiende DBSCAN para trabajar mejor con datos de densidad variable:
+    \begin{enumerate}
+        \item \textbf{Metric:} Igual que en OPTICS.
+        \item \textbf{Algorithm:} Igual que en OPTICS.
+        \item \textbf{Min\_samples:} Igual que en OPTICS.
+    \end{enumerate}
+    
+    \item \textbf{Agglomerative Clustering:}
+    Este algoritmo agrupa puntos en una jerarquía utilizando diferentes criterios de vinculación:
+    \begin{enumerate}
+        \item \textbf{Metric:} Igual que en OPTICS.
+        \item \textbf{Linkage:} Determina cómo calcular la distancia entre clusters:
+        \begin{enumerate}
+            \item \textbf{ward:} Minimiza la varianza dentro de los clusters.
+            \item \textbf{complete:} Maximiza la distancia entre puntos más lejanos de clusters diferentes.
+            \item \textbf{average:} Calcula la distancia media entre todos los puntos de dos clusters.
+            \item \textbf{single:} Minimiza la distancia entre los puntos más cercanos de dos clusters.
+        \end{enumerate}
+        \item \textbf{n\_clusters:} Especifica el número de clusters deseados en los resultados.
+    \end{enumerate}
+    
+    \item \textbf{Spectral Clustering:}
+    Este algoritmo utiliza el espectro del grafo de afinidad para realizar clustering:
+    \begin{enumerate}
+        \item \textbf{Affinity:} Define cómo construir el grafo de afinidad:
+        \begin{enumerate}
+            \item \textbf{nearest\_neighbors:} Usa vecinos más cercanos para definir las relaciones.
+            \item \textbf{rbf:} Utiliza una función base radial para calcular similitudes.
+            \item \textbf{precomputed:} Trabaja con una matriz de afinidad ya calculada.
+            \item \textbf{precomputed\_nearest\_neighbors:} Usa vecinos más cercanos predefinidos.
+        \end{enumerate}
+        \item \textbf{Assign\_labels:} Define el método para asignar etiquetas a clusters:
+        \begin{enumerate}
+            \item \textbf{kmeans:} Usa el algoritmo K-Means para asignar etiquetas.
+            \item \textbf{discretize:} Utiliza discretización para asignar etiquetas.
+            \item \textbf{cluster\_qr:} Asigna etiquetas usando descomposición QR.
+        \end{enumerate}
+        \item \textbf{n\_clusters:} Especifica el número de clusters deseados en los resultados.
+    \end{enumerate}
+\end{enumerate}
+
+Estas pruebas no solo validaron el funcionamiento de la aplicación, sino que también proporcionaron una comprensión más profunda de cómo los diferentes parámetros afectan el comportamiento de los algoritmos en diversos contextos.
+
+\subsubsection*{Criterios para las pruebas:}
+
+\begin{enumerate}
+    \item \textbf{Límite de tiempo:} Cada prueba debe durar un máximo de dos horas, considerando tanto el tiempo de ejecución como el de representación de los datos. Este límite puede variar según el tamaño del conjunto de datos y el número de coordenadas procesadas.
+    \item \textbf{Selección de parámetros:} No se probarán todas las combinaciones posibles. Se seleccionarán aquellas configuraciones que se consideren más relevantes y que puedan producir cambios significativos en los resultados.
+    \item \textbf{Pruebas iniciales intensivas:} Se realizarán pruebas más pesadas al inicio, aunque en menor cantidad, para estimar mejor los tiempos de ejecución y obtener resultados más representativos.
+\end{enumerate}
+
+\subsection{Resultados}
+
+Las pruebas iniciaron con un análisis de rendimiento. Primero, se evaluó cómo funcionaría la aplicación al ejecutarse en remoto utilizando Render. Los resultados fueron poco satisfactorios debido a varias limitaciones inherentes a la versión gratuita de Render, tales como un rendimiento bajo y restricciones significativas de memoria. Dado que el programa requiere recursos considerables para procesar correctamente grandes cantidades de datos o ejecutar múltiples algoritmos de clustering de forma simultánea, se produjeron errores al superar la memoria disponible o por tiempos de ejecución excesivos. 
+
+Debido a estas limitaciones económicas, se optó por realizar todas las pruebas de manera local.
+
+\subsubsection{Configuraci\'on inicial}
+
+Se comenzaron las pruebas utilizando diferentes conjuntos de datos y ajustando los parámetros a valores iniciales básicos. Los datos de prueba consistieron en 10 filas de cada conjunto, y se utilizaron los cinco algoritmos de clustering con los siguientes parámetros iniciales:
+
+\begin{itemize}
+    \item \textbf{Metric:} \texttt{euclidean}
+    \item \textbf{Algorithm:} \texttt{auto}
+    \item \textbf{Min\_samples:} 5
+    \item \textbf{Max\_eps:} 1
+    \item \textbf{Eps:} 0.1
+    \item \textbf{Linkage:} \texttt{ward}
+    \item \textbf{Affinity:} \texttt{nearest\_neighbors}
+    \item \textbf{Assign\_labels:} \texttt{kmeans}
+    \item \textbf{n\_clusters:} 7
+\end{itemize}
+
+\subsubsection{Análisis de los resultados}
+
+\paragraph{Rendimiento por conjunto de datos}
+
+\begin{itemize}
+    \item \textbf{Trayectorias Taxis} \cite{trayectorias_taxis}  \\
+    Tiempo de ejecución aproximado: \textbf{45 segundos}.
+
+    \item \textbf{Geolife} \cite{geolife_trajectories} (ordenado por horas)  \\
+    Tiempo de ejecución aproximado: \textbf{2 minutos y 50 segundos}.
+
+    \item \textbf{MoveBank} \cite{movebank} (ordenado por día y id)\\
+    Tiempo de ejecución aproximado: \textbf{1 minutos y 50 segundos}.
+\end{itemize}
+
+\paragraph{Hallazgos preliminares}
+
+\begin{enumerate}
+    \item \textbf{OPTICS y HDBSCAN producen resultados similares}  \\
+    En los tres conjuntos de datos, los resultados de OPTICS y HDBSCAN fueron idénticos cuando el parámetro \texttt{Max\_eps} se fijó en 1. Esto sugiere que, bajo los parámetros configurados en esta aplicación, ambos algoritmos interactúan de manera muy similar. Esto es consistente con la naturaleza de ambos, ya que son derivados de DBSCAN.
+
+    \item \textbf{Efecto del tamaño de los datos}  \\
+    El análisis reveló cómo el tamaño de los datos iniciales afecta los resultados. A continuación, se presentan los resultados específicos para cada conjunto de datos:
+\end{enumerate}
+
+\subparagraph{Geolife (10 filas)}
+
+Los resultados iniciales de Geolife mostraron trayectorias extensas y separadas, lo que influyó en los resultados de cada algoritmo:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Geolife/map_prueba_10datos.png}
+    \caption{Mapa de trayectorias Geolife, 10 filas.}
+    \label{fig:geolife_10}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{OPTICS y DBSCAN:} Dado que los datos estaban dispersos, estos algoritmos identificaron puntos medios de distancia con poca coherencia.
+    
+	\begin{figure}[h!]
+   		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Geolife/map_optics_10datos.png}
+    		\caption{Mapa trayectorias resultantes OPTICS y DBSCAN, 10 filas.}
+    		\label{fig:geolife_10}
+	\end{figure}
+    
+    \item \textbf{HDBSCAN:} Generó dos trayectorias principales, correspondientes a las zonas donde los movimientos del sujeto se concentraban.
+
+	\begin{figure}[h!]
+   		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Geolife/map_hdbscan_10datos.png}
+    		\caption{Mapa trayectorias resultantes HDBSCAN, 10 filas.}
+    		\label{fig:geolife_10}
+	\end{figure}    
+    
+    \item \textbf{Agglomerative Clustering y Spectral Clustering:} Fragmentaron los datos en zonas de interés similar a HDBSCAN, debido a la configuración de \texttt{n\_clusters} en 7.
+
+	\begin{figure}[h!]
+   		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Geolife/map_aggl_10datos.png}
+    		\caption{Mapa trayectorias resultantes Agglomerative, 10 filas.}
+    		\label{fig:geolife_10}
+	\end{figure}
+	
+	\begin{figure}[h!]
+   		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Geolife/map_spect_10datos.png}
+    		\caption{Mapa trayectorias resultantes Spectral, 10 filas.}
+    		\label{fig:geolife_10}
+	\end{figure}    
+    
+\end{itemize}
+
+
+\subparagraph{MoveBank (10 filas)}
+
+Este conjunto presentó movimientos concentrados en un área específica, con un desplazamiento esporádico a una gran distancia. Esto produjo que los algoritmos no fueran capaces de mostrar ningún resultado visible al igual que OPTICS Y DBSCAN en el conjunto anterior.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Movebank/map_prueba_10datos.png}
+    \caption{Mapa de trayectorias MoveBank, 10 filas.}
+    \label{fig:movebank_10}
+\end{figure}
+
+\subparagraph{Trayectorias Taxis (10 filas)}
+
+Este conjunto mostró trayectorias más homogéneas, con menor dispersión:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_prueba_10datos.png}
+    \caption{Mapa de trayectorias Taxis, 10 filas.}
+    \label{fig:taxis_10}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{OPTICS y DBSCAN:} Produjeron rutas consistentes.
+    
+	\begin{figure}[h!]
+    		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Taxis/map_optics_10datos.png}
+    		\caption{Mapa trayectorias resultantes OPTICS y DBSCAN, 10 filas.}
+    		\label{fig:taxis_10}
+	\end{figure}    
+    
+    \item \textbf{HDBSCAN:} Generó tres rutas principales, siendo una de ellas significativamente más extensa y errática.
+    
+    \begin{figure}[h!]
+    		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Taxis/map_hdbscan_10datos.png}
+    		\caption{Mapa trayectorias resultantes HDBSCAN, 10 filas.}
+    		\label{fig:taxis_10}
+	\end{figure}  
+    
+    \item \textbf{Agglomerative y Spectral Clustering:} Igual que los anteriores algoritmos representaron bien las zomas mas concurrentes pero su resultados restaron más erráticos debido al número de clusters predefinido.
+    
+    \begin{figure}[h!]
+    		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Taxis/map_aggl_10datos.png}
+    		\caption{Mapa trayectorias resultantes Agglomerative, 10 filas.}
+    		\label{fig:taxis_10}
+	\end{figure}  
+	
+	\begin{figure}[h!]
+    		\centering
+    		\includegraphics[width=0.5\textwidth]{img/Taxis/map_spect_10datos.png}
+    		\caption{Mapa trayectorias resultantes Spectral, 10 filas.}
+    		\label{fig:taxis_10}
+	\end{figure}  
+\end{itemize}
+
+Estas pruebas iniciales revelaron diferencias significativas en el comportamiento de los algoritmos bajo diferentes configuraciones y conjuntos de datos, como el nuemor de culters que se generaron en todos los conjuntos, cuatro en HDBSCAN y siete en el resto. Ademas consumió una cantidad de tiempo considerable lo que predijo lo extenso que podría ser comprobar y analizar resultados de diferentes configuraciones en diferentes conjuntos de datos.
+
+
+
 
 \section{Testing}
 
@@ -462,9 +777,15 @@ Lo ideal en este tipo de análisis es aplicarlo de manera continua durante las d
 
 Aunque este tipo de análisis no corrige directamente errores en la funcionalidad del algoritmo, resulta muy útil para evitar problemas menores, mejorar la mantenibilidad del código y garantizar un nivel básico de seguridad.
 
-\subsection{Pruebas unitarias}
+\subsection{Pruebas unitarias y su implementación}
 
-Las pruebas unitarias son fundamentales para garantizar la funcionalidad de cada componente del código. Estas pruebas...
+Las pruebas unitarias son fundamentales para garantizar la funcionalidad de cada componente del código y asegurar que los resultados generados sean consistentes y correctos. Durante el desarrollo de la aplicación, se planteó inicialmente realizar pruebas unitarias utilizando \texttt{pytest} que evaluaran el comportamiento de cada botón y función de la aplicación mientras esta se ejecutaba. El objetivo era cubrir todo el flujo de la web en tiempo real, desde la interacción del usuario con los botones hasta la ejecución de los \texttt{callbacks} de Dash.
 
+Sin embargo, esta aproximación presentó múltiples problemas. Dash, como framework basado en componentes interactivos, no es directamente compatible con las herramientas de testing tradicionales. Intentar realizar pruebas unitarias mientras la aplicación se encontraba en ejecución resultó inviable, ya que las pruebas no se ejecutaban correctamente, y la interacción con los componentes de la interfaz gráfica no podía ser simulada adecuadamente. Como resultado, las pruebas terminaban siendo llamadas directas a las funciones asociadas a los botones, sin representar el comportamiento real del flujo de la aplicación ni garantizar que los \texttt{callbacks} funcionaran en contexto.
 
+Ante esta limitación, se decidió cambiar el enfoque hacia pruebas más efectivas y relevantes. La nueva estrategia consistió en lo siguiente:
 
+\begin{itemize}
+    \item \textbf{Pruebas de funciones críticas:} Se probaron de manera individual las funciones más importantes de los modelos, como la implementación del algoritmo TRACLUS y su integración con diferentes algoritmos de clustering. Estas pruebas se realizaron utilizando conjuntos de datos generados de manera aleatoria para garantizar que el comportamiento del código fuese robusto ante diferentes escenarios.
+    \item \textbf{Representación de mapas:} Se verificó que las funciones encargadas de generar mapas, tanto de segmentos como de clústeres, produjeran respuestas correctas. 
+\end{itemize}
