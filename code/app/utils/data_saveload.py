@@ -28,7 +28,8 @@ def save_data(folder_name, gdf=None, html_map=None, html_heatmap=None,
             traclus_map_hdbscan=None, traclus_map_segments_hdbscan=None, traclus_map_cluster_hdbscan=None, tabla_hdbscan=None, graph_hdbscan=None,
             traclus_map_dbscan=None, traclus_map_segments_dbscan=None, traclus_map_cluster_dbscan=None, tabla_dbscan=None, graph_dbscan=None,
             traclus_map_spect=None, traclus_map_segments_spect=None, traclus_map_cluster_spect=None, tabla_spect=None, graph_spect=None,
-            traclus_map_aggl=None, traclus_map_segments_aggl=None, traclus_map_cluster_aggl=None, tabla_aggl=None, graph_aggl=None):
+            traclus_map_aggl=None, traclus_map_segments_aggl=None, traclus_map_cluster_aggl=None, tabla_aggl=None, graph_aggl=None,
+            params=None):
     """
     Saves multiple types of data (GeoDataFrame, HTML maps, tables, graphs) to a specific folder.
     It creates a new folder and saves the provided data inside it.
@@ -132,6 +133,16 @@ def save_data(folder_name, gdf=None, html_map=None, html_heatmap=None,
     if graph_aggl is not None:
         pd.DataFrame({'Data': graph_aggl}).to_csv(os.path.join(folder_path, "graph_agglomerativeclustering.csv"), index=False)
 
+    # 8. Save select parametes for each algorithm
+    if params:
+        params_file = os.path.join(folder_path, "algorithm_parameters.txt")
+        with open(params_file, 'w', encoding='utf-8') as f:
+            for algo, values in params.items():
+                f.write(f"{algo}:\n")
+                for param in values:
+                    f.write(f"  {param}\n")
+                f.write("\n")
+
 # Load data from a folder
 
 def read_html_file(file_path):
@@ -193,7 +204,7 @@ def load_data(files, folder_name):
                 dbscan_on = True
                 traclus_map_dbscan = read_html_file(file_path)
             elif file == "traclus_map_segments_dbscan.html":
-                traclus_map_cluster_dbscan = read_html_file(file_path)
+                traclus_map_segments_dbscan = read_html_file(file_path)
             elif file == "traclus_map_cluster_dbscan.html":
                 traclus_map_cluster_dbscan = read_html_file(file_path)
             elif file == "traclus_map_spectralclustering.html":

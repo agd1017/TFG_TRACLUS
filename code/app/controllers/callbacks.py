@@ -104,7 +104,7 @@ def download_data(n_clicks):
 
 # -- Callbacks for select page --
 
-def navigate_experiment_page( n_clicks_new):
+def navigate_experiment_page(n_clicks_new):
     if n_clicks_new > 0:
         return '/new-experiment'
     return '/'
@@ -175,33 +175,41 @@ def navigate_to_page_dataupdate(n_clicks_data, checkoptics, optics_metric_value,
         global spect_affinity, spect_assign_labels, spect_n_clusters
         spect_affinity = spect_assign_labels = spect_n_clusters = None
 
+        global params
+        params = {}
+
         if checkoptics and optics_metric_value and optics_algorithm_value and optics_eps_value and optics_sample_value:
             optics_on = True
             optics_metric = optics_metric_value
             optics_algorithm = optics_algorithm_value
             optics_eps = optics_eps_value
             optics_sample = optics_sample_value
+            params['optics'] = [optics_metric, optics_algorithm, optics_eps, optics_sample]
         if checkdbscan and dbscan_metric_value and dbscan_algorithm_value and dbscan_eps_value and dbscan_sample_value:
             dbscan_on = True
             dbscan_metric = dbscan_metric_value
             dbscan_algorithm = dbscan_algorithm_value
             dbscan_eps = dbscan_eps_value
             dbscan_sample = dbscan_sample_value
+            params['dbscan'] = [dbscan_metric, dbscan_algorithm, dbscan_eps, dbscan_sample]
         if checkhdbscan and hdbscan_metric_value and hdbscan_algorithm_value and hdbscan_sample_value:
             hdbscan_on = True
             hdbscan_metric = hdbscan_metric_value
             hdbscan_algorithm = hdbscan_algorithm_value
             hdbscan_sample = hdbscan_sample_value
+            params['hdbscan'] = [hdbscan_metric, hdbscan_algorithm, hdbscan_sample]
         if checkagglomerativeclustering and aggl_metric_value and aggl_linkage_value and aggl_n_clusters_value:
             aggl_on = True
             aggl_metric = aggl_metric_value
             aggl_linkage = aggl_linkage_value
             aggl_n_clusters = aggl_n_clusters_value
+            params['agglomerativeclustering'] = [aggl_metric, aggl_linkage, aggl_n_clusters]
         if checkspectralclustering and spect_affinity_value and spect_assign_labels_value and spect_n_clusters_value:
             spect_on = True
             spect_affinity = spect_affinity_value
             spect_assign_labels = spect_assign_labels_value
             spect_n_clusters = spect_n_clusters_value
+            params['spectralclustering'] = [spect_affinity, spect_assign_labels, spect_n_clusters]
 
         if optics_on or dbscan_on or hdbscan_on or aggl_on or spect_on:
             return '/data-update', is_open
@@ -276,7 +284,8 @@ def process_csv_from_url(n_clicks_upload, data, nrows, folder_name):
             traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan, 
             traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan, 
             traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect, 
-            traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl)
+            traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl,
+            params)
 
         return '/map-page', html.Div(['Procesamiento exitoso.'])
 
