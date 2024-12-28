@@ -19,6 +19,7 @@ def get_clusters_map(traclus_map, traclus_map_cluster, traclus_map_segments):
     Returns:
         html.Div: The layout with the carousel displaying the images.
     """
+
     # Convert the images to base64 for embedding in the browser
     traclus_map = bytes_to_base64(traclus_map)
     traclus_map_cluster = bytes_to_base64(traclus_map_cluster)

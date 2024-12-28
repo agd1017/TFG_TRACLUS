@@ -33,7 +33,7 @@ def get_navbar(pathname):
             
             # Download data button, disabled based on current pathname
             dbc.NavItem([
-                dbc.Button("Descargar Datos", id="btn-download-txt", className="navbar-text", disabled=disabled),
+                dbc.Button("Descargar Datos", id="btn-download-txt", className="btn btn-download", disabled=disabled),
                 dcc.Download(id="download-text"),
             ])
         ]),

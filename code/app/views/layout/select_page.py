@@ -27,13 +27,13 @@ def get_page_select():
                     className='dropdown-experiment'
                 ),
                 html.Div([  # Container for action buttons
-                    dbc.Button('Acceder a experimento anteriores', id='load-exp-button', n_clicks=0, className='button1-load'), 
-                    dbc.Button('Eliminar a experimento anteriores', id='delete-exp-button', n_clicks=0, className='button1-delete')
+                    dbc.Button('Acceder a experimento anteriores', id='load-exp-button', n_clicks=0, className='btn btn-load'), 
+                    dbc.Button('Eliminar a experimento anteriores', id='delete-exp-button', n_clicks=0, className='btn btn-delete')
                 ] ,className='button1-select-container'),               
             ],className='button1-container'),
 
             html.Div([  # Section for creating a new experiment button
-                dbc.Button('Crear nuevo experimento', id='new-exp-button', n_clicks=0, className='button2')
+                dbc.Button('Crear nuevo experimento', id='new-exp-button', n_clicks=0, className='btn btn-new')
             ], className='button2-container')
 
         ], className='buttons-wrapper'),  # Wrapper for all buttons

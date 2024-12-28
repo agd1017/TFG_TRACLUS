@@ -340,13 +340,13 @@ def get_page_experiment():
 
         # Button to execute the selected experiment configurations
         html.Div([
-            dbc.Button('Ejecutar funciones', id='execute-button', color='primary', className='execute-button')
+            dbc.Button('Ejecutar funciones', id='execute-button', color='primary', className='bnt bnt-execute')
         ], className='button-container'),
 
         # Modal for displaying the results of the experiment
         dbc.Modal(
             [
-                dbc.ModalHeader("Falata seleccionar datos"),
+                dbc.ModalHeader("Falta seleccionar datos"),
                 dbc.ModalBody("Como minimo selecione todos los datos de uno de los algoritmos."),
             ],
             id="exp-data-modal",

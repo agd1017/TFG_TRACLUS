@@ -8,6 +8,7 @@ table_clusters_trayectorias.txt
 table_relaciones.txt
 table_clusters.txt
 dataset_TSMC2014_NYC.txt
+algorithm_parameters.txt
 
 *.html
 # *.jpg

@@ -3,69 +3,76 @@ from dash import html, dcc
 
 def get_page_dataupdate():
     """
-    Creates the layout for the data upload page where users can input experiment details,
-    upload a file, and specify the number of trajectories to analyze.
-
+    Creates the layout for the data upload page with dynamic file name display.
+    
     Returns:
-        html.Div: A div containing the page layout with input fields and buttons for data upload.
+        html.Div: A div containing the page layout.
     """
     return html.Div([
         # Title Section
         html.Div([
-            html.H1("Introducción de datos previos"),  # Title of the page
-        ], className='box title'),
+            html.H1("Introducción de datos previos")  # Title of the page
+        ], className='title'),
 
-        # Input Fields Section (Experiment Name, File Upload, Number of Trajectories)
+        # Input Section
         html.Div([
             # Experiment Name Input
             html.Div([
-                html.H3("Introduce el nombre del experimento:"),  # Header for the experiment name input
+                html.H3("Nombre del experimento:"),
                 dcc.Input(
-                    id='input-name',  # ID of the input field
-                    type='text',  # Type of input (text)
-                    placeholder='Nombre del experimento',  # Placeholder text
-                    className='name-input'  # CSS class for styling
+                    id='input-name',
+                    type='text',
+                    placeholder='Escribe el nombre del experimento',
+                    className='name-input'
                 ),
-            ], className='box inputtext'),  # CSS class for styling the input box
+            ], className='inputtext'),
 
             # File Upload Input
             html.Div([
-                html.H3("Introduce el enlace del archivo que se va a analizar:"),  # Header for file upload input
-                dcc.Upload(  # Upload component from Dash
-                    id='upload-data',  # ID of the upload component
-                    children=html.Button('Seleccionar archivo'),  # Button for file selection
-                    multiple=False,  # Set to False to allow only one file upload at a time
-                    accept='.csv,.xlsx',  # Allow only Excel files
+                html.H3("Selecciona el archivo a analizar:"),
+                dcc.Upload(
+                    id='upload-data',
+                    children=html.Div([
+                        'Arrastra el archivo o ',
+                        html.A('haz clic aquí')
+                    ], className='file-upload'),
+                    multiple=False,
+                    accept='.csv,.xlsx'
                 ),
-            ], className='box inputfile'),  # CSS class for styling the file upload box
+                # Area to display the selected file name
+                html.Div(id='selected-file-name', className='selected-file')
+            ], className='inputfile'),
 
             # Number of Trajectories Input
             html.Div([
-                html.H3("Número de trayectorias que se van a usar:"),  # Header for number of rows input
+                html.H3("Número de trayectorias:"),
                 dcc.Input(
-                    id='nrows-input',  # ID of the input field
-                    type='number',  # Type of input (number)
-                    placeholder='Número de filas',  # Placeholder text
-                    value='',  # Default value for the input
-                    className='number-input'  # CSS class for styling the input box
-                )
-            ], className='box inputnumber'),  # CSS class for styling the number input box
+                    id='nrows-input',
+                    type='number',
+                    placeholder='Número de trayectorias',
+                    className='number-input'
+                ),
+            ], className='inputnumber'),
 
             # Start Processing Button
             html.Div([
-                dbc.Button('Comenzar procesamiento', id='process-url-button', n_clicks=0)  # Button to trigger processing
-            ], className='box buttonsconfirm')  # CSS class for styling the button
-        ], className='grid-data-container'),  # Container for the grid layout
+                dbc.Button(
+                    'Comenzar procesamiento',
+                    id='process-url-button',
+                    n_clicks=0,
+                    className='btn btn-confirm'
+                )
+            ], className='buttonsconfirm')
+        ], className='grid-data-container'),
 
-        # Output Section (Loading Spinner and Output Display)
+        # Output Section
         html.Div([
-            dbc.Spinner(children=[  # Loading spinner while data is being processed
-                html.Div(id='output-container', className='box output')  # Area to show results
+            dbc.Spinner([
+                html.Div(id='output-container', className='output')  # Output display area
             ])
-        ], className='box output'),  # CSS class for styling the output section
+        ], className='output'),
 
-        # Data Store Component (to store data for use in other callbacks)
-        html.Div([
-            dcc.Store(id='data-store')  # Dash Store component to keep data for later use
-        ], className='box data-store')  # CSS class for styling the data store section
-    ], className='gid-dataupdate-container')  # CSS class for overall page layout
+        # Hidden Data Store
+        dcc.Store(id='data-store')
+    ], className='grid-dataupdate-container')
+

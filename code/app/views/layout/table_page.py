@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import dash_table, html, dcc
 
-def get_table(tabla):
+def get_table(table):
     """
     Creates an interactive table to display the given data.
 
@@ -14,14 +14,15 @@ def get_table(tabla):
     Returns:
         dash_table.DataTable: The interactive table to display the data.
     """
+    
     # Convert non-serializable values (e.g., geometry) to strings
-    if 'geometry' in tabla.columns:
-        tabla['geometry'] = tabla['geometry'].apply(lambda geom: str(geom))
+    if 'segment' in table.columns:
+        table['segment'] = table['segment'].apply(lambda geom: str(geom))
 
     return dash_table.DataTable(
         id='table',  # Unique ID for the table component
-        columns=[{"name": i, "id": i} for i in tabla.columns],  # Create column names dynamically
-        data=tabla.to_dict('records'),  # Convert the DataFrame into a format Dash can use
+        columns=[{"name": i, "id": i} for i in table.columns],  # Create column names dynamically
+        data=table.to_dict('records'),  # Convert the DataFrame into a format Dash can use
         filter_action='native',  # Allow filtering within the table
         sort_action='native',  # Allow sorting by columns
         page_action='native',  # Enable pagination

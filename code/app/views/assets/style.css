@@ -2,7 +2,7 @@
 
 /* Global styles */     
 body {
-    font-family: italic;
+    font-family: Arial;
     background-color: #fff6ee;
     text-align: center;
 }
@@ -55,6 +55,49 @@ body {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+/* General Button Styles */
+.btn {
+    background-color: rgb(255, 255, 255);
+    color: #000000;
+    border: 2px solid #000000;
+    cursor: pointer;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.8);
+    border-radius: 100px;
+    transition: 
+        transform 0.3s ease,        /* Smooth elevation transition */
+        box-shadow 0.3s ease,       /* Smooth shadow transition */
+        background-color 0.3s ease, /* Smooth background color transition */
+        color 0.3s ease;
+    padding: 10px 30px;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 12px 15px rgba(0, 0, 0, 0.4);
+    color: white;
+}
+
+/* Modals Styles */
+
+.modal-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.modal-body {
+    font-size: 1rem;
+}
+
+/* Navbar Button Styles */
+
+.btn-download {
+    background-color: #206246;
+    color: white;
+    border: 2px solid #206246;
 }
 
 /* Main Container for Layout */
@@ -113,10 +156,7 @@ body {
 
 .button1-container {
     grid-area: button1;
-    background-image: url('./images/Map_load.jpg') !important;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    position: relative;
     height: 600%;
     display: grid;
     grid-template-areas: 'dropdown-experiment'
@@ -124,47 +164,78 @@ body {
     grid-template-rows: auto 63%;
 }
 
+.button1-container::before {
+    grid-area: button1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('./images/Map_load.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.7; 
+    z-index: -1;
+}
+
 .dropdown-experiment {
     grid-area: dropdown-experiment;
-    padding: 0.5%;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    box-shadow: 0px 8px 10px rgba(0, 0, 0, 0.8); 
+    color: #000000;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .button1-select-container {
     grid-area: button-select;
     display: grid;
-    grid-template-areas: 'button1-load button1-delete';
+    grid-template-areas: 'button-load button-delete';
 }
 
-.button1-load {
-    grid-area: button1-load;
+.btn-load{
+    grid-area: button-load;
     height: 40%;
     margin-right: 10%;
     justify-self: center;
 }
 
-.button1-delete {
-    grid-area: button1-delete;
+.btn-delete {
+    grid-area: button-delete;
     height: 40%;
-    margin-left: 10%;
+    margin-right: 10%;
     justify-self: center;
 }
 
 .button2-container {
     grid-area: button2;
-    background-image: url('./images/Map_create.jpg') !important;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    position: relative;
     height: 600%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.button2 {
-    justify-self: center;
+.button2-container::before {
+    grid-area: button2;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('./images/Map_create.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.7; 
+    z-index: -1;
+}
+
+.btn-new{
     width: 40%;
     height: 25%;
+    margin-right: 10%;
+    justify-self: center;
 }
 
 /* Experiment Page Layout */
@@ -174,13 +245,15 @@ body {
     grid-template-areas: 'title' 
                             'grid-selecetors-container'
                             'button-container';
-    grid-template-rows: auto 90% auto;
+    grid-template-rows: auto 1fr auto;
+    row-gap: 1.5rem;
 }
 
 .experiment-title{
     grid-area: title;
     margin-top: 1%;
-    font-size: 150%;
+    font-size: 1.5rem;
+    text-align: center;
 }
 
 .grid-selecetors-container {
@@ -199,19 +272,33 @@ body {
 .grid-row-container {
     grid-area: row1, row2;
     display: grid;
-    padding: 0 1%;
-    margin: 0.7% 0;
+    padding-left: 1%;
+    padding-right: 6%;
+    margin: 0.5% 0;
     grid-template-areas: 'selector row-label dropdown1 dropdown2 input1 input2';
     grid-template-columns: 5% 13% 16% 16% 25% 25%;
+    gap: 1%;
 }
 
 .selector {
-    justify-self: start;  
-    width: 100%;
+    justify-self: center;
+    width: 1.5rem; /* Adjusted size for checkbox */
+    height: 1.5rem;
+    cursor: pointer; /* Changes cursor to pointer for better UX */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.selector:hover {
+    border-color: #000;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 .row-label {
     justify-self: start; 
+    font-weight: bold;
+    font-size: 95%;
 }
 
 .dropdown {
@@ -222,106 +309,95 @@ body {
 .input {
     justify-self: center;
     width: 100%;
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .button-container {
     text-align: center;
 }
 
-.execute-button {
-    width: 50%;
-    height: 120%;
+.bnt-execute {
+    width: 30%;
+    height: 100%;
+    justify-self: center;
 }
 
 hr {
     border: none;
     border-top: 1px solid #ccc;
-    margin: 0.7% 0;
+    margin: 1rem 0;
 }
 
 /* Data Update Container Layout */
 
-.grid-dataupdate-container{
-    height: 100%;
-    width: 100%;
+.grid-dataupdate-container {
     display: grid;
-    grid-template-areas: 'title' 
-                            'grid-data-container'
-                            'output';
+    grid-template-areas: 
+        'title' 
+        'grid-data-container'
+        'output';
     grid-template-rows: auto 90% auto;
 }
 
-.title{
+.title {
     grid-area: title;
-    margin-top: 3%;
-}
-
-.output{
-    grid-area: output;
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-}
-
-.grid-data-container{
-    grid-area: grid-data-container;
-    height: 100%;
-    width: 50%;
-    margin-left: 25%;
-    margin-top: 3%;
-    border: 1px solid black;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.4);
-    display: grid;
-    grid-template-areas: 'text text'
-                            'file file' 
-                            'number number'
-                            'button_load button_load';
-    grid-template-rows: auto auto auto;
-    grid-template-columns: 50% 50%;
-}
-
-.inputtext{
-    grid-area: text;
-    margin-top: 2%; 
-}
-
-.name-input{
-    width: 50%;
-    border: 1px solid #000;
-    border-radius: 5px;
-}
-
-.inputfile{
-    grid-area: file;
+    text-align: center;
     margin-top: 1%;
     margin-bottom: 1%;
 }
 
-.file-upload{
-    width: 50%;
-    border: 1px solid #000;
-    border-Radius: 5px; 
-} 
-
-.inputnumber{
-    grid-area: number;
-    width: 100%;
-    padding: 12px 20px;
+.grid-data-container {
+    grid-area: grid-data-container;
+    width: 60%;
     margin: 0 auto;
-    display: block;
+    padding: 20px;
+    /*background-color: #fff;*/
+    border: 1px solid #ddd; /* Borde sutil */
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); /* Sombra suave */
+    display: grid;
+    grid-template-areas: 
+        'text'
+        'file' 
+        'number'
+        'button_load';
+    grid-template-rows: auto auto auto auto;
 }
 
-.number-input{
-    width: 50%;
-    border: 1px solid #000;
-    border-radius: 6px;
+.inputtext, .inputfile, .inputnumber {
+    width: 100%;
 }
 
-.buttonsconfirm{
+.name-input, .number-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.inputfile .file-upload {
+    width: 100%;
+    padding: 10px;
+    border: 1px dashed #aaa; /* Borde diferenciado */
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #f5f5f5;
+}
+
+.btn-confirm {
     grid-area: button_load;
-    margin-top: 3%;
-    margin-bottom: 3%;
+    width: 40%;
+    text-align: center;
+}
+
+.output {
+    grid-area: output;
+    margin-top: 1%;
 }
 
 /* Map Container Layout */
@@ -347,19 +423,19 @@ hr {
     display: grid;
     grid-template-areas: 'menu1 menu2' 
                             'map1 map2';
-    grid-template-rows: 7% auto;
+    grid-template-rows: 10% auto;
     grid-template-columns: 50% 50%;
 }
 
 .menu1{
     grid-area: menu1;
-    margin-top: 0.5%;
-    margin-bottom: 0.5%;
+    margin-top: 1%;
+    margin-bottom: 0.7%;
 }
+
 .menu2{
     grid-area: menu2;
-    margin-top: 0.5%;
-    margin-bottom: 0.5%;
+    margin-top: 1%;
 }
 
 .map1{
