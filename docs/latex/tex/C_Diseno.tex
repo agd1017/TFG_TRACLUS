@@ -18,38 +18,34 @@ El diseño de datos de este proyecto se centra en la gestión, almacenamiento y 
 
 \subsection{Estructura de los datos}
 
-Los datos utilizados en este proyecto provienen de archivos en formato CSV o Excel, los cuales contienen trayectorias geoespaciales representadas mediante coordenadas GPS. Cada fila del archivo representa una trayectoria, que incluye varios atributos necesarios para el análisis.
+Los datos utilizados en este proyecto consisten en archivos en formato CSV o Excel que representan trayectorias geoespaciales mediante coordenadas GPS. Cada fila del archivo corresponde a una trayectoria individual y contiene atributos esenciales para su análisis. La correcta estructura de los datos es fundamental para garantizar la compatibilidad con el algoritmo TRA-CLUS.
+
+\subsubsection{Requisitos de los datos}
+
+Para que los datos sean procesados correctamente, deben cumplir con los siguientes requisitos:
 
 \begin{itemize}
-    \item \textbf{Estructura básica del archivo Trayectorias de Taxis:}
+    \item \textbf{Formato del archivo}: Los datos deben estar almacenados en un archivo delimitado por comas CSV o Excel, compatible con la lectura en Python.
+    \item \textbf{Columna \texttt{POLYLINE}}: 
     \begin{itemize}
-        \item \texttt{TRIP\_ID}: Identificador único de cada trayectoria.
-        \item \texttt{CALL\_TYPE}: Tipo de llamada para el servicio de taxi (A, B o C).
-        \item \texttt{ORIGIN\_CALL}: Identificador del cliente (si aplica).
-        \item \texttt{ORIGIN\_STAND}: Identificador del punto de recogida (si aplica).
-        \item \texttt{TAXI\_ID}: Identificador único del taxi.
-        \item \texttt{TIMESTAMP}: Marca temporal del inicio de la trayectoria.
-        \item \texttt{DAY\_TYPE}: Tipo de día (laboral, fin de semana, festivo).
-        \item \texttt{MISSING\_DATA}: Indica si faltan datos en la trayectoria.
-        \item \texttt{POLYLINE}: Lista de coordenadas GPS que componen la trayectoria.
+        \item Es obligatorio que exista una columna llamada \texttt{POLYLINE}.
+        \item La columna debe contener las trayectorias GPS en formato JSON, representadas como listas de coordenadas. Ejemplo:
+        \[\texttt{[[latitud\_1, longitud\_1], [latitud\_2, longitud\_2], \dots]}\]
     \end{itemize}
-    \item \textbf{Requisitos de formato:}
-    \begin{itemize}
-        \item El archivo debe estar correctamente delimitado por comas o tabulaciones.
-        \item La columna \texttt{POLYLINE} debe contener las coordenadas en un formato JSON válido.
-        \item No se permiten valores nulos en las columnas clave, particularmente en \texttt{POLYLINE}, que será la única columna tratada por el algoritmo.
-    \end{itemize}
+    \item \textbf{Ausencia de valores nulos}: No se permiten valores nulos en la columna \texttt{POLYLINE}, ya que esta será la única tratada por el algoritmo.
 \end{itemize}
 
-Se han utilizado otros archivos con parámetros diferentes, pero dado que el algoritmo TRACLUS solo necesita trayectorias para funcionar, únicamente se toma en cuenta esta columna para el análisis.
+\subsubsection{Motivación del formato}
+
+El formato descrito se adapta específicamente a los requisitos del algoritmo TRA-CLUS. Este diseño asegura que los datos se procesen de manera eficiente, evitando errores y optimizando los cálculos necesarios para identificar patrones en las trayectorias.
 
 \subsection{Modelo de datos}
 
-Para facilitar el procesamiento y análisis de los datos, estos se estructuran internamente en un modelo basado en un \textbf{GeoDataFrame}, que permite integrar datos tabulares y geoespaciales de manera eficiente.
+Para facilitar el procesamiento y análisis de los datos, estos se estructuran internamente en un modelo basado en un \textbf{GeoDataFrame} \cite{geopandas2023}, que permite integrar datos tabulares y geoespaciales de manera eficiente.
 
 \begin{itemize}
-    \item Cada fila del \texttt{GeoDataFrame} representa una trayectoria única.
-    \item Las coordenadas en \texttt{POLYLINE} se convierten en objetos de geometría tipo \texttt{LineString}, lo que permite su uso en análisis geoespaciales.
+    \item Cada fila del \texttt{GeoDataFrame} \cite{geopandas2023} representa una trayectoria única.
+    \item Las coordenadas en \texttt{POLYLINE} se convierten en objetos de geometría tipo \texttt{LineString} \cite{shapely2023}, lo que permite su uso en análisis geoespaciales.
 \end{itemize}
 
 \subsection{Gestión de datos}
@@ -65,17 +61,34 @@ Los datos son procesados en diferentes etapas para asegurar su calidad y consist
 
 \subsection{Almacenamiento de resultados}
 
-Los resultados obtenidos del análisis y ejecución del algoritmo TRACLUS se almacenan en un directorio específico dentro de la aplicación. Este directorio incluye:
+Los resultados obtenidos del análisis y ejecución del algoritmo TRACLUS se almacenan en un directorio específico dentro de la aplicación. Este directorio organiza los experimentos realizados en carpetas separadas, garantizando un almacenamiento estructurado y accesible.
+
+Independientemente de los algoritmos seleccionados, siempre se generan los siguientes cuatro archivos comunes:
 
 \begin{itemize}
-    \item Los datos procesados, guardados en un archivo GeoJSON.
-    \item Archivos CSV con las trayectorias procesadas y los clústeres generados.
-    \item Mapas en formato HTML para su visualización.
+	\item \textbf{data\_gdf}: contiene todos los datos del archivo CSV o Excel analizado, incluyendo cada trayectoria representada en formato \texttt{LineString}. Este archivo se almacena en formato \texttt{.geojson}.
+	\item \textbf{algorithm\_parameters}: archivo \texttt{.txt} que registra los parámetros seleccionados por el usuario para ejecutar el experimento.
+	\item \textbf{html\_map}: mapa interactivo en formato HTML que muestra todas las trayectorias sin procesar.
+	\item \textbf{html\_heatmap}: mapa de calor en formato HTML basado en los datos sin procesar.
 \end{itemize}
 
-\subsection{Conclusión}
+Adicionalmente, por cada algoritmo de clustering seleccionado, se generan los siguientes archivos específicos:
 
-Este diseño garantiza que los datos se carguen y procesen correctamente, aplicando el algoritmo TRACLUS de manera eficiente. Además, permite que los experimentos se revisen de forma sencilla y fluida, facilitando su uso tanto para análisis como para futuros desarrollos.
+\begin{itemize}
+	\item \textbf{traclus\_map\_\textit{nombre}}: mapa HTML que representa las trayectorias finales procesadas.
+	\item \textbf{traclus\_map\_cluster\_\textit{nombre}}: mapa HTML que visualiza los clusters generados durante el proceso.
+	\item \textbf{traclus\_map\_segments\_\textit{nombre}}: mapa HTML que muestra los segmentos obtenidos tras la segmentación.
+	\item \textbf{table\_\textit{nombre}}: tabla en formato CSV con las siguientes columnas:
+	\begin{itemize}
+		\item Número de la trayectoria original.
+		\item Segmento al que pertenece.
+		\item Cluster asignado.
+		\item Trayectoria final resultante.
+	\end{itemize}
+	\item \textbf{graph\_\textit{nombre}}: tabla en formato CSV que asocia cada segmento con su cluster correspondiente.
+\end{itemize}
+
+Los formatos seleccionados priorizan un equilibrio entre velocidad de guardado/cargado y uso eficiente del espacio en memoria. Este diseño asegura que los datos se gestionen de manera eficiente, facilitando tanto la revisión de los experimentos como el análisis y el desarrollo futuro de la aplicación.
 
 \section{Diseño procedimental}
 

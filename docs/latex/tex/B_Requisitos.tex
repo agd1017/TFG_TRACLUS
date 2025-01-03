@@ -57,17 +57,19 @@ A continuación, se enumeran los requisitos funcionales del sistema:
         \item \textbf{RF-2.5: Análisis tabular.}  
         Los resultados deben incluirse en tablas detalladas que permitan a los usuarios analizar los datos agrupados y realizar comparaciones.
     \end{enumerate}
-
-    \item \textbf{RF-3: Avance en la implementación del algoritmo TRA-CLUS}
+    
+    \item \textbf{RF-3: Descarga de datos}
     \begin{enumerate}
-        \item \textbf{RF-3.1: Optimización del algoritmo TRA-CLUS.}  
-        El sistema debe avanzar en la implementación real del algoritmo TRA-CLUS, mejorando su rendimiento y asegurando su capacidad para manejar grandes volúmenes de datos geoespaciales. Este avance debe incluir optimizaciones en la precisión de los clústeres generados y en la eficiencia de procesamiento.
-    \end{enumerate}
-
-    \item \textbf{RF-4: Descarga de datos}
-    \begin{enumerate}
-        \item \textbf{RF-4.1: Exportar resultados.}  
+        \item \textbf{RF-3.1: Exportar resultados.}  
         El sistema debe incluir un botón en la barra de navegación que permita descargar los resultados generados en formatos .zip.
+    \end{enumerate}
+    
+    \item \textbf{RF-4: Borrado de un experimento existente} 
+    \begin{enumerate}
+        \item \textbf{RF-4.1: Eliminar un experimento previamente guardado de manera irreversible} 
+        El sistema permitirá al usuario eliminar un experimento que haya sido previamente guardado en el sistema. Esta acción será irreversible, y no se podrá recuperar el experimento una vez eliminado.
+        \item \textbf{RF-4.2: Asegurarse de que la eliminación es deseada por el usuario} 
+		Antes de proceder con la eliminación, el sistema solicitará al usuario una confirmación adicional para evitar la eliminación accidental. Esto puede implicar un cuadro de diálogo de confirmación con opciones como "Sí, eliminar" o "Cancelar".
     \end{enumerate}
 
 \end{itemize}
@@ -85,6 +87,8 @@ A continuación, se detallan los requisitos no funcionales del sistema:
         \item \textbf{RNF-1.2: Renderización de mapas.}  
         Los mapas interactivos deben renderizarse sin interrupciones.
     \end{enumerate}
+        \item \textbf{RNF-1.3: Optimización del algoritmo TRA-CLUS.}  
+        El sistema debe avanzar en la implementación real del algoritmo TRA-CLUS, mejorando su rendimiento y asegurando su capacidad para manejar grandes volúmenes de datos geoespaciales. Este avance debe incluir optimizaciones en la precisión de los clústeres generados y en la eficiencia de procesamiento.
 
     \item \textbf{RNF-2: Usabilidad}
     \begin{enumerate}
@@ -111,16 +115,6 @@ A continuación, se detallan los requisitos no funcionales del sistema:
         \item \textbf{RNF-4.2: Control de errores.}  
         El sistema debe manejar errores comunes como formatos de datos incorrectos, alertando al usuario y ofreciendo posibles soluciones.
     \end{enumerate}
-    
-    \item \textbf{RF-5: Borrado de un experimento existente} 
-    \begin{enumerate}
-        \item \textbf{RF-5.1: Eliminar un experimento previamente guardado de manera irreversible} 
-        El sistema permitirá al usuario eliminar un experimento que haya sido previamente guardado en el sistema. Esta acción será irreversible, y no se podrá recuperar el experimento una vez eliminado.
-        \item \textbf{RF-5.2: Asegurarse de que la eliminación es deseada por el usuario} 
-		Antes de proceder con la eliminación, el sistema solicitará al usuario una confirmación adicional para evitar la eliminación accidental. Esto puede implicar un cuadro de diálogo de confirmación con opciones como "Sí, eliminar" o "Cancelar".
-    \end{enumerate}
-
-
 \end{itemize}
 
 \section{Especificación de requisitos}
@@ -152,7 +146,7 @@ A continuación se mostrarán las tablas de uso:
 		\toprule
 		\textbf{Versión}              & 1.0    \\
 		\textbf{Autor}                & Álvaro González Delgado \\ 
-		\textbf{Requisitos asociados} & RF-1, RF-2, RF-3 \\
+		\textbf{Requisitos asociados} & RF-1, RF-2 \\
 		\textbf{Descripción}          & El usuario crea un nuevo experimento seleccionando los algoritmos y los datos que se van a usar. Los datos se cargan automáticamente, y el experimento se guarda en el sistema. El usuario es dirigido a la página de visualización de datos. \\
 		\textbf{Precondición}         & El sistema debe permitir crear un nuevo experimento, no debe haber restricciones previas. Se debe haber seleccionado como mínimo un experimento y rellenado sus datos. El usuario deba haber introducido un conjunto de datos balido. \\
 		
@@ -212,7 +206,7 @@ A continuación se mostrarán las tablas de uso:
 		\toprule
 		\textbf{Versión}              & 1.0    \\
 		\textbf{Autor}                & Álvaro González Delgado \\
-		\textbf{Requisitos asociados} & RF-4 \\
+		\textbf{Requisitos asociados} & RF-3 \\
 		\textbf{Descripción}          & El usuario puede descargar los resultados generados por el algoritmo TRA-CLUS en formato .zip. \\
 		\textbf{Precondición}         & El usuario debe estar en una de las páginas de visualización de datos. \\
 		\textbf{Acciones}             &
@@ -239,7 +233,7 @@ A continuación se mostrarán las tablas de uso:
 		\toprule
 		\textbf{Versión}              & 1.0    \\
 		\textbf{Autor}                & Alumno \\
-		\textbf{Requisitos asociados} & RF-5 \\
+		\textbf{Requisitos asociados} & RF-4 \\
 		\textbf{Descripción}          & El usuario puede borrar un experimento previamente guardado. La eliminación es irreversible. \\
 		\textbf{Precondición}         & El experimento debe existir previamente. \\
 		\textbf{Acciones}             &

@@ -1,25 +1,140 @@
 \capitulo{4}{Técnicas y herramientas}
 
+\section{Introducción}
+
 En esta sección se presentan las técnicas metodológicas y las herramientas de desarrollo que se han utilizado para llevar a cabo el proyecto. Se han considerado diferentes alternativas de metodologías y herramientas, y se ofrece un resumen de los aspectos más destacados de cada opción, junto con una justificación de las elecciones realizadas.
 
-\section{GitHub}
-GitHub es una plataforma de desarrollo colaborativo basada en la web que utiliza el sistema de control de versiones Git. Es ampliamente utilizado en la comunidad de desarrollo de software por varias razones:
+\section{Python}
 
+Python es un lenguaje de programación versátil y fácil de aprender, ampliamente utilizado en el desarrollo de aplicaciones web, análisis de datos y machine learning. En este proyecto, se han utilizado varias bibliotecas de Python que han enriquecido el desarrollo y la funcionalidad de la aplicación:
+
+\subsection{Dash}
+
+Dash es un marco de trabajo desarrollado por Plotly que permite la creación de aplicaciones web analíticas e interactivas utilizando Python. Es especialmente popular en la comunidad de ciencia de datos y visualización debido a sus características y beneficios:
+    
 \begin{itemize}
-    \item \textbf{Control de versiones:} GitHub facilita el seguimiento de cambios en el código, lo que permite a los desarrolladores revertir a versiones anteriores si es necesario. Esto es esencial para la gestión de errores y la mejora continua del software.
-    \item \textbf{Integración continua:} GitHub se puede integrar con diversas herramientas de automatización, como GitHub Actions, que facilitan la construcción, prueba y despliegue automático del código, mejorando la eficiencia del flujo de trabajo.
-    \item \textbf{Documentación y seguimiento de issues:} Proporciona herramientas para documentar el código y gestionar tareas o problemas a través de un sistema de “issues”, lo que facilita la organización y planificación del desarrollo.
+	\item \textbf{Interactividad:} Dash permite crear aplicaciones que responden a las interacciones del usuario, como clics, desplazamientos y entradas de datos. Esto es crucial para el análisis de datos en tiempo real y la visualización interactiva.
+	\item \textbf{Integración con Plotly:} Las visualizaciones de Dash se basan en la biblioteca Plotly, que permite crear gráficos complejos y visualizaciones de alta calidad con facilidad. Esto enriquece la presentación de datos y facilita la comunicación de resultados.
+	\item \textbf{Composición de componentes:} Dash permite combinar diferentes componentes (gráficos, tablas, controles de entrada) en una sola interfaz, lo que facilita la creación de aplicaciones integrales que ofrecen una experiencia de usuario fluida.
+	\item \textbf{Despliegue sencillo:} Las aplicaciones construidas con Dash se pueden desplegar fácilmente en servidores web, lo que permite compartir los resultados del análisis con un público más amplio sin requerir instalación adicional por parte del usuario final.
+	\item \textbf{Flexibilidad:} Al estar basado en Python, los desarrolladores pueden aprovechar la amplia gama de bibliotecas disponibles para manipular datos, realizar análisis y crear visualizaciones personalizadas, lo que proporciona gran flexibilidad en el desarrollo de aplicaciones.
 \end{itemize}
 
-\section{Texmaker}
-Texmaker es un editor de texto multiplataforma para la creación de documentos en \LaTeX. Es una herramienta esencial para la redacción académica y técnica, y ha sido fundamental en la redacción de este trabajo por las siguientes razones:
+Dash fue elegido para este proyecto debido a su idoneidad en la integración de visualizaciones interactivas con análisis de datos, permitiendo la creación de una interfaz eficiente y dinámica para los usuarios.
 
+\subsection{scikit-learn}
+
+Scikit-learn es una biblioteca robusta y eficiente para machine learning en Python. Proporciona herramientas de análisis predictivo, clustering y aprendizaje automático supervisado y no supervisado. Los algoritmos y parámetros utilizados en este proyecto incluyen:
+
+\begin{enumerate}
+    \item \textbf{OPTICS (Ordering Points To Identify the Clustering Structure):}
+    Este algoritmo identifica clusters de diferentes densidades en los datos. Los principales parámetros configurables son:
+    \begin{enumerate}
+        \item \textbf{Metric:} Define la métrica utilizada para calcular las distancias entre puntos. Las opciones disponibles son:
+        \begin{enumerate}
+            \item \textbf{euclidean:} Utiliza la distancia euclidiana tradicional.
+            \item \textbf{l1:} Calcula la distancia Manhattan.
+            \item \textbf{l2:} Similar a euclidean, pero con ajustes para ciertas aplicaciones.
+            \item \textbf{manhattan:} Igual que \textit{l1}, mide la distancia entre dos puntos como la suma de sus diferencias absolutas.
+            \item \textbf{cosine:} Calcula la similitud basada en el coseno del ángulo entre vectores.
+            \item \textbf{cityblock:} Otra forma de describir la distancia Manhattan.
+        \end{enumerate}
+        \item \textbf{Algorithm:} Selecciona el método para encontrar vecinos más cercanos:
+        \begin{enumerate}
+            \item \textbf{auto:} Elige automáticamente el método más eficiente según los datos.
+            \item \textbf{ball\_tree:} Usa una estructura de árbol espacial para organizar los puntos.
+            \item \textbf{kd\_tree:} Similar a \textit{ball\_tree}, pero optimizado para ciertas métricas.
+            \item \textbf{brute:} Calcula las distancias directamente, sin estructuras optimizadas.
+        \end{enumerate}
+        \item \textbf{Max\_eps:} Establece el radio máximo para considerar puntos vecinos.
+        \item \textbf{Min\_samples:} Define el número mínimo de puntos necesarios para formar un cluster.
+    \end{enumerate}
+    
+    \item \textbf{DBSCAN (Density-Based Spatial Clustering of Applications with Noise):}
+    Este algoritmo agrupa puntos densos mientras ignora ruido. Comparte parámetros con OPTICS:
+    \begin{enumerate}
+        \item \textbf{Metric:} Igual que en OPTICS.
+        \item \textbf{Algorithm:} Igual que en OPTICS.
+        \item \textbf{Eps:} Especifica el radio para considerar vecinos.
+        \item \textbf{Min\_samples:} Igual que en OPTICS.
+    \end{enumerate}
+    
+    \item \textbf{HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise):}
+    Este algoritmo extiende DBSCAN para trabajar mejor con datos de densidad variable:
+    \begin{enumerate}
+        \item \textbf{Metric:} Igual que en OPTICS.
+        \item \textbf{Algorithm:} Igual que en OPTICS.
+        \item \textbf{Min\_samples:} Igual que en OPTICS.
+    \end{enumerate}
+    
+    \item \textbf{Agglomerative Clustering:}
+    Este algoritmo agrupa puntos en una jerarquía utilizando diferentes criterios de vinculación:
+    \begin{enumerate}
+        \item \textbf{Metric:} Igual que en OPTICS.
+        \item \textbf{Linkage:} Determina cómo calcular la distancia entre clusters:
+        \begin{enumerate}
+            \item \textbf{ward:} Minimiza la varianza dentro de los clusters.
+            \item \textbf{complete:} Maximiza la distancia entre puntos más lejanos de clusters diferentes.
+            \item \textbf{average:} Calcula la distancia media entre todos los puntos de dos clusters.
+            \item \textbf{single:} Minimiza la distancia entre los puntos más cercanos de dos clusters.
+        \end{enumerate}
+        \item \textbf{n\_clusters:} Especifica el número de clusters deseados en los resultados.
+    \end{enumerate}
+    
+    \item \textbf{Spectral Clustering:}
+    Este algoritmo utiliza el espectro del grafo de afinidad para realizar clustering:
+    \begin{enumerate}
+        \item \textbf{Affinity:} Define cómo construir el grafo de afinidad:
+        \begin{enumerate}
+            \item \textbf{nearest\_neighbors:} Usa vecinos más cercanos para definir las relaciones.
+            \item \textbf{rbf:} Utiliza una función base radial para calcular similitudes.
+            \item \textbf{precomputed:} Trabaja con una matriz de afinidad ya calculada.
+            \item \textbf{precomputed\_nearest\_neighbors:} Usa vecinos más cercanos predefinidos.
+        \end{enumerate}
+        \item \textbf{Assign\_labels:} Define el método para asignar etiquetas a clusters:
+        \begin{enumerate}
+            \item \textbf{kmeans:} Usa el algoritmo K-Means para asignar etiquetas.
+            \item \textbf{discretize:} Utiliza discretización para asignar etiquetas.
+            \item \textbf{cluster\_qr:} Asigna etiquetas usando descomposición QR.
+        \end{enumerate}
+        \item \textbf{n\_clusters:} Especifica el número de clusters deseados en los resultados.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Otras librerías}
+
+Además de las bibliotecas principales, se emplearon diversas librerías complementarias que cubrieron necesidades específicas del proyecto. Estas se pueden agrupar en diferentes categorías según su funcionalidad:
+
+\subsubsection{Análisis y manipulación de datos}
 \begin{itemize}
-    \item \textbf{Interfaz amigable:} Proporciona un entorno intuitivo y fácil de usar que facilita la edición de documentos en \LaTeX, incluso para aquellos que son nuevos en el sistema.
-    \item \textbf{Compilación rápida:} Permite compilar documentos \LaTeX rápidamente con un solo clic, lo que agiliza el proceso de revisión y mejora la productividad.
-    \item \textbf{Herramientas integradas:} Incluye herramientas para la gestión de bibliografías, la inserción de gráficos y tablas, así como un visor PDF integrado que facilita la revisión del documento final.
-    \item \textbf{Plantillas y ejemplos:} Ofrece diversas plantillas y ejemplos que ayudan a los usuarios a comenzar rápidamente con sus documentos, promoviendo buenas prácticas en la redacción científica.
+    \item \textbf{NumPy:} Una biblioteca fundamental para cálculos numéricos que proporciona soporte para matrices y funciones matemáticas. Es la base de muchas otras librerías de análisis y aprendizaje automático.
+    \item \textbf{Pandas:} Ampliamente utilizado para trabajar con datos tabulares, se integra perfectamente con otras bibliotecas como NumPy y GeoPandas, facilitando tareas de limpieza, transformación y análisis de datos.
+    \item \textbf{GeoPandas:} Extiende las capacidades de Pandas para trabajar con datos geoespaciales, permitiendo análisis y visualizaciones de datos basados en ubicación.
+    \item \textbf{Shapely:} Diseñada para manipular y analizar geometrías en Python, es crucial para realizar operaciones como intersecciones y uniones de formas en análisis geoespacial.
+    \item \textbf{pyproj:} Facilita las transformaciones de coordenadas y es esencial para interoperar entre distintos sistemas de referencia espacial.
 \end{itemize}
+
+\subsubsection{Visualización de datos}
+\begin{itemize}
+    \item \textbf{Matplotlib:} Una biblioteca versátil para crear visualizaciones estáticas, animadas e interactivas, esencial para la comunicación de resultados.
+    \item \textbf{Contextily:} Permite añadir mapas de fondo a visualizaciones geográficas, mejorando la contextualización e interpretación de datos espaciales.
+\end{itemize}
+
+\subsubsection{Gestión de datos y archivos}
+\begin{itemize}
+    \item \textbf{JSON:} Proporciona herramientas para manipular datos en formato JSON, lo que facilita la interacción con APIs y configuraciones.
+    \item \textbf{Zipfile:} Utilizada para gestionar archivos comprimidos ZIP, mejorando la transferencia y almacenamiento eficiente de datos.
+    \item \textbf{io:} Ofrece funciones para manejar flujos de entrada y salida, útil para la manipulación de archivos y datos en memoria.
+    \item \textbf{Base64:} Facilita la codificación y decodificación de datos en formato Base64, útil para transmitir archivos binarios como imágenes o documentos en formatos textuales.
+\end{itemize}
+
+\subsubsection{Optimización y concurrencia}
+\begin{itemize}
+    \item \textbf{Time y threading:} Herramientas integradas en Python para gestionar temporización y tareas concurrentes, lo que mejora la eficiencia y la capacidad de respuesta de la aplicación.
+    \item \textbf{ThreadPoolExecutor y Process (módulos concurrent.futures y multiprocessing):} Estas herramientas permiten ejecutar tareas intensivas de manera concurrente y en paralelo, mejorando el rendimiento general. Se utilizan para evitar bloqueos en el flujo principal y optimizar la ejecución de operaciones costosas en términos de computación.
+\end{itemize}
+
+
 
 \section{CSS}
 Cascading Style Sheets (CSS) es un lenguaje utilizado para describir la presentación de documentos HTML y XML. En este proyecto, CSS se ha utilizado para mejorar la estética y la usabilidad de la interfaz de la aplicación desarrollada en Python con Dash. Las razones para su elección incluyen:
@@ -31,35 +146,86 @@ Cascading Style Sheets (CSS) es un lenguaje utilizado para describir la presenta
     \item \textbf{Compatibilidad:} CSS es compatible con todos los navegadores modernos, lo que asegura que el diseño se mantenga consistente en diferentes plataformas.
 \end{itemize}
 
-\section{Python}
-Python es un lenguaje de programación versátil y fácil de aprender, ampliamente utilizado en el desarrollo de aplicaciones web, análisis de datos y machine learning. En este proyecto, se han utilizado varias bibliotecas de Python que han enriquecido el desarrollo y la funcionalidad de la aplicación:
+Estas herramientas y bibliotecas han sido elegidas por su capacidad para facilitar el desarrollo, mejorar la eficiencia del trabajo y proporcionar funcionalidades que son fundamentales para el éxito del proyecto. Cada una de ellas contribuye a un enfoque integral que permite abordar las necesidades del análisis de datos y la creación de aplicaciones web interactivas.
+
+
+\section{Texmaker}
+Texmaker es un editor de texto multiplataforma para la creación de documentos en \LaTeX. Es una herramienta esencial para la redacción académica y técnica, y ha sido fundamental en la redacción de este trabajo por las siguientes razones:
 
 \begin{itemize}
-    \item \textbf{scikit-learn:} Una biblioteca para machine learning que ofrece herramientas eficientes para el análisis predictivo y la implementación de algoritmos de clustering, como DBSCAN y OPTICS. Su diseño optimizado permite realizar análisis complejos de manera rápida y sencilla.
- 
-    \item \textbf{Pandas:} Una biblioteca de análisis de datos que proporciona estructuras de datos y herramientas de manipulación para trabajar con datos tabulares. Permite la limpieza y transformación de datos, lo que es esencial para preparar los datos antes del análisis.
-    \item \textbf{GeoPandas:} Extiende las capacidades de Pandas para trabajar con datos geoespaciales, permitiendo realizar análisis y visualizaciones de datos geográficos de forma eficiente. Esto es crucial para proyectos que requieren análisis de datos basados en ubicación.
-    \item \textbf{Matplotlib:} Una biblioteca para crear visualizaciones estáticas, animadas e interactivas en Python. Es esencial para la representación gráfica de los resultados del análisis, facilitando la comunicación de hallazgos a través de gráficos claros y efectivos.
-    \item \textbf{NumPy:} Una biblioteca fundamental para realizar cálculos numéricos en Python, que proporciona soporte para matrices y funciones matemáticas. NumPy es la base sobre la cual se construyen muchas otras bibliotecas de ciencia de datos y machine learning.
-    \item \textbf{Shapely:} Utilizada para manipular y analizar geometrías en Python, es crucial en la gestión de datos geoespaciales, permitiendo realizar operaciones geométricas como intersecciones y uniones de formas.
-    \item \textbf{JSON:} Una biblioteca que permite trabajar con datos en formato JSON, facilitando la interacción con APIs y el manejo de configuraciones. Esto es importante para integrar servicios externos en la aplicación.
-    \item \textbf{Zipfile:} Utilizada para crear y leer archivos ZIP, facilitando la gestión de datos comprimidos y mejorando la eficiencia en la transferencia de datos.
-    \item \textbf{Contextily:} Permite añadir mapas de fondo a las visualizaciones geográficas, mejorando la contextualización de los datos y ayudando a los usuarios a interpretar la información espacial.
-    \item \textbf{io:} Proporciona funciones para manejar flujos de entrada y salida, útil en la manipulación de datos en memoria, permitiendo una gestión eficiente de archivos y datos temporales.
-    \item \textbf{pyproj:} Una biblioteca para realizar transformaciones de coordenadas, crucial para el trabajo con datos geográficos y la interoperabilidad entre diferentes sistemas de referencia espacial.
-    \item \textbf{Time y threading:} Utilizadas para gestionar la temporización y la ejecución de múltiples hilos de ejecución en la aplicación, lo que mejora la eficiencia y la capacidad de respuesta de la aplicación en tareas concurrentes.
-    \item \textbf{Base64:} Facilita la codificación y decodificación de datos en formato Base64, útil para la transferencia de datos binarios, como imágenes o archivos, en formatos que requieren representación textual.
-    \item \textbf{Dash:} 
-    Dash es un marco de trabajo desarrollado por Plotly que permite la creación de aplicaciones web analíticas e interactivas utilizando Python. Es especialmente popular en la comunidad de ciencia de datos y visualización debido a sus características y beneficios:
-    \begin{itemize}
-        \item \textbf{Interactividad:} Dash permite crear aplicaciones que responden a las interacciones del usuario, como clics, desplazamientos y entradas de datos. Esto es crucial para el análisis de datos en tiempo real y la visualización interactiva.
-        \item \textbf{Integración con Plotly:} Las visualizaciones de Dash se basan en la biblioteca Plotly, que permite crear gráficos complejos y visualizaciones de alta calidad con facilidad. Esto enriquece la presentación de datos y facilita la comunicación de resultados.
-        \item \textbf{Composición de componentes:} Dash permite combinar diferentes componentes (gráficos, tablas, controles de entrada) en una sola interfaz, lo que facilita la creación de aplicaciones integrales que ofrecen una experiencia de usuario fluida.
-        \item \textbf{Despliegue sencillo:} Las aplicaciones construidas con Dash se pueden desplegar fácilmente en servidores web, lo que permite compartir los resultados del análisis con un público más amplio sin requerir instalación adicional por parte del usuario final.
-        \item \textbf{Flexibilidad:} Al estar basado en Python, los desarrolladores pueden aprovechar la amplia gama de bibliotecas disponibles para manipular datos, realizar análisis y crear visualizaciones personalizadas, lo que proporciona gran flexibilidad en el desarrollo de aplicaciones.
-    \end{itemize}
+    \item \textbf{Interfaz amigable:} Proporciona un entorno intuitivo y fácil de usar que facilita la edición de documentos en \LaTeX, incluso para aquellos que son nuevos en el sistema.
+    \item \textbf{Compilación rápida:} Permite compilar documentos \LaTeX rápidamente con un solo clic, lo que agiliza el proceso de revisión y mejora la productividad.
+    \item \textbf{Herramientas integradas:} Incluye herramientas para la gestión de bibliografías, la inserción de gráficos y tablas, así como un visor PDF integrado que facilita la revisión del documento final.
+    \item \textbf{Plantillas y ejemplos:} Ofrece diversas plantillas y ejemplos que ayudan a los usuarios a comenzar rápidamente con sus documentos, promoviendo buenas prácticas en la redacción científica.
 \end{itemize}
 
-Estas herramientas y bibliotecas han sido elegidas por su capacidad para facilitar el desarrollo, mejorar la eficiencia del trabajo y proporcionar funcionalidades que son fundamentales para el éxito del proyecto. Cada una de ellas contribuye a un enfoque integral que permite abordar las necesidades del análisis de datos y la creación de aplicaciones web interactivas.
+
+\section{GitHub}
+GitHub es una plataforma de desarrollo colaborativo basada en la web que utiliza el sistema de control de versiones Git. Es ampliamente utilizado en la comunidad de desarrollo de software por varias razones:
+
+\begin{itemize}
+    \item \textbf{Control de versiones:} GitHub facilita el seguimiento de cambios en el código, lo que permite a los desarrolladores revertir a versiones anteriores si es necesario. Esto es esencial para la gestión de errores y la mejora continua del software.
+    \item \textbf{Integración continua:} GitHub se puede integrar con diversas herramientas de automatización, como GitHub Actions, que facilitan la construcción, prueba y despliegue automático del código, mejorando la eficiencia del flujo de trabajo.
+    \item \textbf{Documentación y seguimiento de issues:} Proporciona herramientas para documentar el código y gestionar tareas o problemas a través de un sistema de “issues”, lo que facilita la organización y planificación del desarrollo.
+\end{itemize}
+
+
+\section{Herramientas de control de tareas: Kanban y Scrum}
+
+Para llevar un control efectivo de las tareas y asegurar la evolución continua del proyecto, se han utilizado metodologías ágiles como \textbf{Kanban} y \textbf{Scrum}.
+
+\begin{itemize}
+    \item \textbf{Kanban:} Se utilizó Kanban debido a su flexibilidad y enfoque visual. Kanban nos permitió gestionar el flujo de trabajo mediante tarjetas en un tablero visual, donde las tareas se movían de una columna a otra (de "Por hacer" a "En progreso" y "Hecho"). Esto facilitó una vista clara de las tareas pendientes, así como una priorización y reestructuración rápida de las mismas según los requerimientos que surgían.
+    
+    \item \textbf{Scrum:} Se implementó Scrum en ciclos de trabajo denominados \textit{sprints}, con duraciones de dos semanas. Cada \textit{sprint} comenzaba con una reunión en la que se revisaban en retrospectiva las tareas realizadas el último \textit{sprint} y se planificaban los objetivos y metas para la siguiente reunión. Este ciclo permitió adaptar las prioridades en función de los avances realizados y los desafíos encontrados, proporcionando un proceso estructurado que se ajustó bien a las necesidades de fases más avanzadas del desarrollo.
+\end{itemize}
+
+El uso combinado de ambas metodologías facilitó tanto la flexibilidad como la estructura necesarias en diferentes fases del proyecto, contribuyendo a un flujo de trabajo eficiente y orientado a resultados.
+
+
+\section{Patrón Vista-Controlador}
+
+El patrón Vista-Controlador (MVC, por sus siglas en inglés) es un modelo arquitectónico ampliamente utilizado en el desarrollo de aplicaciones que separa la lógica de negocio, la lógica de presentación y la interacción del usuario en tres componentes distintos: Modelo, Vista y Controlador. En este proyecto, se adoptó una variante adaptada del patrón MVC para organizar y estructurar la aplicación desarrollada con Dash. 
+
+\begin{itemize}
+    \item \textbf{Modelo:} Representa la lógica de datos de la aplicación y maneja la interacción con el conjunto de datos, incluyendo el procesamiento de los mismos y su transformación para ser utilizados en la interfaz. Esto incluye las operaciones realizadas con bibliotecas como Pandas y GeoPandas.
+    \item \textbf{Vista:} Es la responsable de la presentación visual de la aplicación. En este proyecto, las vistas fueron diseñadas utilizando Dash, con un enfoque en la interactividad y la visualización de datos, haciendo uso de componentes como gráficos y tablas.
+    \item \textbf{Controlador:} Actúa como intermediario entre el modelo y la vista. En este proyecto, el controlador gestiona los callbacks de Dash, procesando las entradas del usuario y actualizando la vista en función de los cambios realizados en el modelo.
+\end{itemize}
+
+Esta separación de responsabilidades permitió un desarrollo modular, facilitando el mantenimiento y la escalabilidad del proyecto, al mismo tiempo que mejoró la claridad en la organización del código.
+
+
+\section{Testing: pytest y SonarCloud}
+
+El aseguramiento de la calidad del software es un aspecto crucial en el desarrollo de cualquier proyecto. En este trabajo, se implementaron pruebas automatizadas y herramientas de análisis de calidad del código para garantizar la robustez y el mantenimiento del sistema.
+
+\subsection*{pytest}
+
+pytest es un marco de pruebas para Python que permite escribir casos de prueba de manera sencilla y eficiente. Las razones para su elección incluyen:
+
+\begin{itemize}
+    \item \textbf{Simplicidad:} Permite escribir pruebas concisas utilizando una sintaxis clara y legible, lo que reduce el tiempo necesario para desarrollar y mantener los casos de prueba.
+    \item \textbf{Cobertura de pruebas:} Facilita la ejecución de pruebas automatizadas para verificar la funcionalidad de diferentes módulos del proyecto, asegurando que los cambios en el código no introduzcan errores.
+    \item \textbf{Extensibilidad:} pytest soporta la integración con complementos como \textit{pytest-cov}, que proporciona informes detallados sobre la cobertura de código, ayudando a identificar áreas que requieren pruebas adicionales.
+\end{itemize}
+
+En este proyecto, se utilizaron pruebas unitarias y funcionales para validar la entrada y salida de datos, la interacción entre componentes y el correcto funcionamiento de los algoritmos de clustering y visualización.
+
+\subsection*{SonarCloud}
+
+SonarCloud es una herramienta basada en la nube para analizar la calidad del código, identificar vulnerabilidades y mejorar la mantenibilidad del software. Su incorporación al proyecto permitió:
+
+\begin{itemize}
+    \item \textbf{Análisis estático de código:} Identificar problemas como código duplicado, complejidad ciclomática y vulnerabilidades de seguridad antes de la ejecución.
+    \item \textbf{Integración continua:} Integrar SonarCloud con GitHub para analizar automáticamente los cambios realizados en cada \textit{commit}, proporcionando retroalimentación inmediata sobre la calidad del código.
+    \item \textbf{Métricas de calidad:} Generar informes detallados sobre la calidad del código, ayudando a priorizar refactorizaciones y a mantener estándares de desarrollo altos.
+\end{itemize}
+
+La combinación de pytest y SonarCloud contribuyó a un enfoque integral para garantizar la calidad del proyecto, reduciendo errores y facilitando la detección temprana de problemas durante el desarrollo.
+
+
+
+
 
 

@@ -13,9 +13,12 @@ Todo el código de este proyecto se encuentra dentro de la carpeta \texttt{code}
     \item \texttt{Research and experiments/} -- Agrupa todas las pruebas y experimentos realizados durante el desarrollo. En esta carpeta se incluyen tanto los prototipos iniciales como los análisis realizados con diferentes componentes del proyecto. Solo se han conservado aquellas pruebas que se consideran claras y relevantes.
 \end{itemize}
 
-A continuación, se describe en detalle la estructura interna, incluyendo las funcionalidades principales de cada archivo o directorio.
-            
+Además, la documentación generada durante el desarrollo se encuentra en la carpeta \texttt{docs/latex}.
 
+A continuación, se describe la estructura interna en detalle, destacando las funcionalidades principales de cada archivo o directorio:
+
+\subsection*{Estructura de la aplicación}
+            
 \begin{itemize}
     \item \texttt{code/}
     \begin{itemize}
@@ -74,6 +77,21 @@ A continuación, se describe en detalle la estructura interna, incluyendo las fu
 		\item \texttt{requirements.txt} -- Archivo que especifica las dependencias necesarias para ejecutar el proyecto.
     \end{itemize}
 \end{itemize}
+
+\subsection*{Estructura de la documentación}
+
+\begin{itemize}
+    \item \texttt{img/} -- Imágenes utilizadas en la documentación.
+    \item \texttt{tex/} -- Archivos \LaTeX{} para generar documentos técnicos.
+    \item \texttt{README.md} -- Archivo con instrucciones generales del proyecto.
+    \item \texttt{anexos.pdf} -- Documento de anexos generado.
+    \item \texttt{anexos.tex} -- Código fuente del documento de anexos.
+    \item \texttt{bibliografia.bib} -- Archivo BibTeX con referencias bibliográficas principales.
+    \item \texttt{bibliografiaAnexos.bib} -- Archivo BibTeX con referencias adicionales.
+    \item \texttt{memoria.pdf} -- Documento principal del proyecto.
+    \item \texttt{memoria.tex} -- Código fuente del documento principal.
+\end{itemize}
+
 
 \section{Manual del programador}
 
@@ -188,6 +206,65 @@ Para realizar cambios en el código:
 \end{enumerate}
 
 Con estas instrucciones, el programador podrá compilar, instalar y ejecutar el proyecto localmente de manera efectiva.
+
+\section{Despliegue de la aplicación}
+
+Para que la aplicación web funcionase correctamente y otros usuarios pudieran utilizarla, era necesario desplegarla desde el entorno local a un entorno de producción. Existen dos formas principales de realizar este proceso: crear un servidor propio o subir la aplicación a un servidor en la nube proporcionado por un tercero. Por razones económicas, se decidió optar por la segunda opción y utilizar un servidor en la nube. Para ello, se exploraron diversos servicios compatibles con aplicaciones basadas en Python.
+
+Entre las opciones evaluadas se encontraron AWS, Azure, Heroku y Conduktor. Aunque muchas de estas plataformas ofrecían soluciones robustas con buen rendimiento, todas presentaban limitaciones económicas, ya que sus funcionalidades avanzadas suelen estar asociadas a costos recurrentes. Esto nos llevó a buscar servicios que ofrecieran una base gratuita que cubriese nuestras necesidades principales.
+
+\subsection{Render: la solución elegida}
+
+Tras evaluar diferentes opciones, se decidió utilizar \textbf{Render}, una plataforma que permite el despliegue de aplicaciones web, APIs y otros servicios. Render ofrece un plan gratuito que resulta ideal para proyectos pequeños o de desarrollo inicial, lo que lo convierte en una opción atractiva para aquellos con presupuestos limitados.
+
+Render proporciona varias ventajas para aplicaciones como la nuestra:
+\begin{itemize}
+    \item \textbf{Compatibilidad con Python:} Es compatible con aplicaciones basadas en frameworks como Dash, Flask o Django.
+    \item \textbf{Despliegue automático:} Permite integrar repositorios de GitHub o GitLab para desplegar automáticamente los cambios realizados en el código.
+    \item \textbf{Certificados SSL gratuitos:} Render ofrece certificados de seguridad SSL para garantizar conexiones seguras.
+    \item \textbf{Facilidad de configuración:} La plataforma cuenta con una interfaz intuitiva y bien documentada, lo que facilita el proceso de configuración incluso para usuarios con experiencia limitada en despliegues.
+    \item \textbf{Soporte para aplicaciones persistentes:} Render soporta aplicaciones que requieren bases de datos o almacenamiento adicional, ideal para aplicaciones web interactivas.
+\end{itemize}
+
+\subsection{Proceso de despliegue en Render}
+
+El despliegue de la aplicación en Render se realizó siguiendo los pasos descritos a continuación:
+
+\begin{enumerate}
+    \item \textbf{Preparación del repositorio:}
+    \begin{itemize}
+        \item El proyecto ya estaba alojado en un repositorio de GitHub, se incluyo un archivo \texttt{requirements.txt} que especifica las dependencias necesarias para ejecutar la aplicación.
+    \end{itemize}
+
+    \item \textbf{Creación del servicio en Render:}
+    \begin{itemize}
+        \item Se creó una cuenta gratuita en Render.
+        \item Desde el panel de control, se seleccionó la opción \textit{"New Web Service"} y se vinculó el repositorio de GitHub al servicio.
+    \end{itemize}
+
+    \item \textbf{Configuración del entorno:}
+    \begin{itemize}
+        \item Se especificó el comando de inicio de la aplicación, como \texttt{python code/app/main.py}.
+        \item Se configuraron las variables de entorno necesarias, como claves API o configuraciones específicas de la aplicación.
+    \end{itemize}
+
+    \item \textbf{Despliegue automático:}
+    \begin{itemize}
+        \item Render detectó automáticamente el contenido del repositorio y comenzó el proceso de construcción e implementación.
+        \item Una vez finalizado el proceso, se asignó una URL pública para acceder a la aplicación.
+    \end{itemize}
+
+    \item \textbf{Pruebas en producción:}
+    \begin{itemize}
+        \item Se realizaron pruebas para verificar que todas las funcionalidades de la aplicación estuvieran operativas y que no existieran problemas relacionados con dependencias o configuración.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Consideraciones finales}
+
+Aunque Render fue una herramienta muy útil durante el desarrollo, especialmente por su facilidad de uso y la ausencia de necesidad de gestionar infraestructura propia, las limitaciones en capacidad de procesamiento y memoria debido al bajo presupuesto impidieron realizar pruebas significativas de la aplicación. Estas restricciones, derivadas del plan gratuito, afectaron el rendimiento al procesar grandes volúmenes de datos y al manejar operaciones intensivas.  
+
+Para que la aplicación pueda ser probada y utilizada en todo su potencial, sería necesario aumentar considerablemente el presupuesto destinado a recursos de servidor, lo que permitiría un entorno de despliegue más robusto y acorde a los requisitos de la aplicación.
 
 \section{Pruebas del sistema}
 

@@ -4,44 +4,21 @@ En este apartado se presentan los conceptos teóricos fundamentales que permiten
 
 La discusión se centrará en los principios relacionados con el algoritmo TRACLUS, dado que este ha sido el enfoque principal del estudio y representa la mayor complejidad en su implementación y análisis.
 
-\section{TRACLUS}
+\section{Trayectorias GPS}
 
-TRACLUS es un algoritmo de agrupación (\textit{clustering}) especializado en datos de trayectorias, diseñado para identificar patrones comunes de movimiento en conjuntos de datos de trayectorias, como rutas de vehículos, movimientos de animales o trayectorias de fenómenos meteorológicos. A diferencia de los algoritmos tradicionales de \textit{clustering} que agrupan puntos individuales, TRACLUS se enfoca en el agrupamiento de trayectorias completas, descomponiendo cada trayectoria en segmentos y detectando patrones comunes en subtrayectorias específicas. Este enfoque es útil en estudios donde los objetos presentan secuencias de movimiento en el espacio y el tiempo, permitiendo identificar similitudes parciales dentro de grandes volúmenes de datos.
-
-\subsection*{Principios y Funcionamiento de TRACLUS}
-
-El funcionamiento de TRACLUS se basa en dos etapas principales: la segmentación de trayectorias y la agrupación de segmentos de trayectorias. Ambas etapas están diseñadas para abordar la naturaleza secuencial y direccional de las trayectorias, empleando un enfoque basado en densidad que permite una identificación precisa de subtrayectorias similares.
-
-\begin{enumerate}
-    \item \textbf{Segmentación de Trayectorias}: La primera etapa de TRACLUS es dividir cada trayectoria en segmentos de línea más cortos en función de cambios direccionales o puntos de inflexión. Estos puntos característicos dividen la trayectoria en subtrayectorias que pueden ser más fácilmente comparables. Este paso es crucial porque permite detectar patrones comunes en segmentos específicos, en lugar de requerir una coincidencia exacta en toda la trayectoria.
-
-    \item \textbf{Agrupación Basada en Densidad de Segmentos}: En lugar de agrupar puntos aislados, TRACLUS agrupa segmentos que se encuentran en regiones densas del espacio de trayectoria mediante una adaptación del algoritmo DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}). Esta agrupación basada en densidad identifica áreas de alta concentración de segmentos similares que constituyen patrones de movimiento comunes. Los clusters se forman en áreas de alta densidad de segmentos, separadas por regiones de baja densidad, permitiendo agrupar segmentos que comparten características similares, incluso si otras partes de la trayectoria son diferentes.
-\end{enumerate}
-
-\subsection*{Métrica de Similitud en TRACLUS}
-TRACLUS emplea una métrica de distancia específica para medir la similitud entre segmentos individuales en lugar de comparar la trayectoria completa. Esto contrasta con métricas como DTW (\textit{Dynamic Time Warping}) o LCSS (\textit{Longest Common Subsequence}), que calculan la similitud entre series temporales completas. En cambio, TRACLUS se enfoca en la dirección y la longitud de cada segmento, permitiendo detectar subtrayectorias similares en conjuntos de datos con trayectorias complejas.
-
-\subsection*{Ventajas de TRACLUS en el Análisis de Trayectorias}
-El algoritmo TRACLUS ofrece varias ventajas que lo hacen adecuado para el análisis de datos de trayectoria:
+Las trayectorias GPS se refieren a secuencias de puntos geoespaciales capturados mediante dispositivos de posicionamiento global (GPS). Cada punto de una trayectoria contiene información geográfica, como la latitud, longitud, y, en algunos casos, la altitud y el tiempo asociado. Estas trayectorias son fundamentales para analizar el movimiento de objetos o individuos a lo largo del tiempo y el espacio.
 
 \begin{itemize}
-    \item \textbf{Identificación de Subtrayectorias Similares}: TRACLUS no se limita a identificar patrones en trayectorias completas, sino que permite detectar similitudes en segmentos específicos. Esta capacidad es esencial en contextos donde solo algunas secciones de las trayectorias son comparables, mientras que otras presentan variaciones.
-    
-    \item \textbf{Adaptación a Escalas y Densidades Variables}: Gracias a su enfoque basado en densidad, TRACLUS es menos sensible a las variaciones en la escala y la densidad de los datos, lo que facilita su aplicación en contextos heterogéneos, como en estudios de tráfico o movimientos de fauna en diferentes ecosistemas.
-    
-    \item \textbf{Selección Automática de Parámetros}: Mediante el uso de heurísticas para definir automáticamente los valores de parámetros clave (como el radio de vecindad $\epsilon$ y el número mínimo de puntos vecinos), TRACLUS reduce la necesidad de ajustes manuales, lo cual incrementa su precisión y simplifica su aplicación en distintos conjuntos de datos.
+    \item \textbf{Formato típico}: Una trayectoria GPS suele representarse como una lista ordenada de coordenadas \([x, y]\), donde \(x\) corresponde a la longitud y \(y\) a la latitud. Un ejemplo típico es:
+    \[
+    [[\text{longitud}_1, \text{latitud}_1], [\text{longitud}_2, \text{latitud}_2], \dots]
+    \]
+    \item \textbf{Origen de los datos}: Estas trayectorias se generan a partir de dispositivos móviles, vehículos, sensores de navegación y otros sistemas de rastreo que capturan posiciones geográficas en intervalos regulares de tiempo.
+    \item \textbf{Aplicaciones}: Las trayectorias GPS son esenciales en áreas como la planificación de rutas, el análisis del tráfico, el monitoreo ambiental y la movilidad urbana. También sirven como base para algoritmos de agrupamiento y análisis de datos geoespaciales, como el algoritmo TRA-CLUS.
 \end{itemize}
 
-\subsection*{Aplicaciones de TRACLUS en la Investigación}
-TRACLUS se puede aplicar en múltiples campos de investigación, donde el análisis de patrones de movimiento es fundamental:
+La importancia de las trayectorias GPS radica en su capacidad para modelar patrones de movimiento complejos, facilitando la identificación de tendencias, comportamientos y anomalías en contextos espaciales y temporales. Sin embargo, su análisis presenta desafíos debido a la densidad y complejidad de los datos.
 
-\begin{itemize}
-    \item \textbf{Biología y Ecología}: Para analizar trayectorias de animales, identificando patrones de comportamiento, rutas migratorias o territorios de caza.
-    
-    \item \textbf{Meteorología}: Para el estudio de trayectorias de fenómenos climáticos como huracanes, permitiendo identificar patrones comunes en ciertos eventos.
-    
-    \item \textbf{Gestión del Tráfico y Transporte}: En el análisis de rutas vehiculares, detectando patrones de congestión, flujo de tráfico y rutas populares.
-\end{itemize}
 
 \section{Clustering}
 
@@ -49,9 +26,20 @@ El \textbf{clustering} o agrupamiento es una técnica de aprendizaje no supervis
 
 En el contexto de análisis de datos, el clustering se aplica en múltiples áreas como la segmentación de clientes, detección de patrones de comportamiento, agrupación de imágenes y análisis de redes sociales. Entre los métodos de clustering más utilizados en la práctica se incluyen algoritmos basados en densidad y en conectividad, que proporcionan flexibilidad y adaptabilidad para manejar datos complejos y de alta dimensionalidad.
 
+\subsection*{Clustering en el TRA-CLUS}
+
+En el algoritmo TRA-CLUS, el proceso de agrupamiento o \textit{clustering} es una parte fundamental que se utiliza para identificar trayectorias similares basándose en los segmentos generados tras la partición de las trayectorias originales. Para este proyecto, se considera la posibilidad de sustituir el método de agrupamiento original de TRA-CLUS por algoritmos más avanzados o específicos que permitan optimizar los resultados.
+
+La elección de un algoritmo de clustering para TRA-CLUS debe cumplir con las siguientes condiciones clave:
+\begin{itemize}
+    \item \textbf{Métrica de Distancia Predefinida}: El algoritmo debe ser compatible con una métrica de similitud o distancia previamente calculada, es decir, debe aceptar matrices de distancias precomputadas. Esto es esencial, ya que la similitud entre segmentos en TRA-CLUS se mide previamente y se organiza en una matriz de distancias.
+    \item \textbf{Adaptación a Densidades Variables}: Dado que las trayectorias suelen estar distribuidas en áreas con densidades variables, el algoritmo debe ser capaz de manejar estas diferencias para evitar sesgos en los resultados de agrupamiento.
+    \item \textbf{Eficiencia Computacional}: Dado el volumen potencialmente grande de datos en estudios de trayectorias, el algoritmo debe ser computacionalmente eficiente para garantizar tiempos de procesamiento razonables.
+\end{itemize}
+
 \subsection*{Algoritmos de Clustering en scikit-learn}
 
-A continuación, se presenta una descripción de los algoritmos de clustering más relevantes y ampliamente utilizados en la biblioteca \texttt{scikit-learn} de Python:
+A continuación, se presenta una descripción de los algoritmos de clustering que cumplen las condiciones anteriores de la biblioteca \texttt{scikit-learn} de Python:
 
 \subsubsection*{1. DBSCAN (Density-Based Spatial Clustering of Applications with Noise)}
 
@@ -79,7 +67,7 @@ Los algoritmos de clustering mencionados se diferencian principalmente en su enf
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{|l|l|l|l|}
+\begin{tabular}{|p{2.5cm}|p{3.7cm}|p{3.7cm}|p{4cm}|}
 \hline
 \textbf{Algoritmo} & \textbf{Tipo de Clustering} & \textbf{Ventaja Principal} & \textbf{Limitación Principal} \\
 \hline
@@ -91,4 +79,63 @@ Agglomerative Clustering & Jerárquico & Ofrece dendrograma jerárquico & Alta c
 \hline
 \end{tabular}
 \end{table}
+
+\subsubsection*{Conclusión}
+
+Los algoritmos basados en densidad, como DBSCAN, OPTICS y HDBSCAN, son especialmente útiles para datos con clusters de formas irregulares y en presencia de ruido, aunque requieren ajustes específicos de parámetros o presentan alta complejidad computacional. Por otro lado, métodos como Spectral Clustering y Agglomerative Clustering son más adecuados para datos que exhiben estructuras jerárquicas o formas no lineales, pero a costa de una mayor sensibilidad a la configuración inicial y un mayor costo computacional en datasets grandes.
+
+En el contexto del algoritmo TRA-CLUS, donde la similitud entre segmentos se precomputa y los datos presentan densidades variables, los algoritmos basados en densidad, como HDBSCAN, ofrecen ventajas significativas por su flexibilidad y capacidad para manejar variaciones en los datos sin requerir parámetros estrictos. Sin embargo, la elección del algoritmo debe balancear la precisión de los resultados con la eficiencia computacional, considerando las características específicas de las trayectorias a analizar.
+
+
+\section{TRACLUS}
+
+TRACLUS \cite{lee2007trajectory} es un algoritmo de agrupación (\textit{clustering}) especializado en datos de trayectorias, diseñado para identificar patrones comunes de movimiento en conjuntos de datos de trayectorias, como rutas de vehículos, movimientos de animales o trayectorias de fenómenos meteorológicos. A diferencia de los algoritmos tradicionales de \textit{clustering} que agrupan puntos individuales, TRACLUS se enfoca en el agrupamiento de trayectorias completas, descomponiendo cada trayectoria en segmentos y detectando patrones comunes en subtrayectorias específicas. Este enfoque es útil en estudios donde los objetos presentan secuencias de movimiento en el espacio y el tiempo, permitiendo identificar similitudes parciales dentro de grandes volúmenes de datos.
+
+\subsection*{Principios y Funcionamiento de TRACLUS}
+
+El funcionamiento de TRACLUS se basa en dos etapas principales: la segmentación de trayectorias y la agrupación de segmentos de trayectorias. Ambas etapas están diseñadas para abordar la naturaleza secuencial y direccional de las trayectorias, empleando un enfoque basado en densidad que permite una identificación precisa de subtrayectorias similares.
+
+\begin{enumerate}
+    \item \textbf{Segmentación de Trayectorias}: La primera etapa de TRACLUS es dividir cada trayectoria en segmentos de línea más cortos en función de cambios direccionales o puntos de inflexión. Estos puntos característicos dividen la trayectoria en subtrayectorias que pueden ser más fácilmente comparables. Este paso es crucial porque permite detectar patrones comunes en segmentos específicos, en lugar de requerir una coincidencia exacta en toda la trayectoria.
+
+    \item \textbf{Agrupación Basada en Densidad de Segmentos}: En lugar de agrupar puntos aislados, TRACLUS agrupa segmentos que se encuentran en regiones densas del espacio de trayectoria mediante una adaptación del algoritmo DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}). Esta agrupación basada en densidad identifica áreas de alta concentración de segmentos similares que constituyen patrones de movimiento comunes. Los clusters se forman en áreas de alta densidad de segmentos, separadas por regiones de baja densidad, permitiendo agrupar segmentos que comparten características similares, incluso si otras partes de la trayectoria son diferentes.
+\end{enumerate}
+
+\subsection*{Métrica de Similitud en TRACLUS}
+
+TRACLUS emplea una métrica de similitud diseñada específicamente para medir la relación entre segmentos individuales, en lugar de comparar trayectorias completas. Esta métrica evalúa la similitud entre segmentos considerando tres aspectos principales:
+
+\begin{itemize}
+    \item \textbf{Distancia perpendicular}: Mide la distancia más corta desde un punto de un segmento hasta la línea definida por el otro segmento. Esta medida capta la proximidad entre los segmentos desde una perspectiva geométrica.
+    \item \textbf{Distancia paralela}: Evalúa la proyección de un segmento sobre el otro, midiendo cuánto de un segmento está alineado en la misma dirección que el otro. Esto permite identificar segmentos con orientaciones similares.
+    \item \textbf{Diferencia en la longitud}: Compara las longitudes de los segmentos, lo que ayuda a identificar similitudes en términos de escala o tamaño.
+\end{itemize}
+
+La métrica de similitud en TRACLUS combina estas tres distancias en una medida agregada, lo que permite capturar tanto la proximidad espacial como la alineación y el tamaño relativo entre segmentos. Este enfoque es ideal para analizar conjuntos de datos con trayectorias complejas, ya que facilita la identificación de patrones subyacentes al dividir trayectorias en segmentos más pequeños.
+
+A diferencia de otras métricas como DTW (Dynamic Time Warping) o LCSS (Longest Common Subsequence), que se enfocan en medir la similitud entre series temporales completas, la métrica de TRACLUS proporciona mayor flexibilidad al detectar subtrayectorias similares. Esto resulta especialmente útil para aplicaciones que requieren identificar patrones locales dentro de trayectorias extensas y densas.
+
+\subsection*{Ventajas de TRACLUS en el Análisis de Trayectorias}
+El algoritmo TRACLUS ofrece varias ventajas que lo hacen adecuado para el análisis de datos de trayectoria:
+
+\begin{itemize}
+    \item \textbf{Identificación de Subtrayectorias Similares}: TRACLUS no se limita a identificar patrones en trayectorias completas, sino que permite detectar similitudes en segmentos específicos. Esta capacidad es esencial en contextos donde solo algunas secciones de las trayectorias son comparables, mientras que otras presentan variaciones.
+    
+    \item \textbf{Adaptación a Escalas Variables}: Aunque TRACLUS es sensible a la densidad debido a su enfoque basado en clustering por densidad, su capacidad para manejar variaciones en la escala de las trayectorias lo hace útil en aplicaciones heterogéneas, como estudios de tráfico o movimientos de fauna en diferentes ecosistemas.
+    
+    \item \textbf{Selección Automática de Parámetros}: Mediante el uso de heurísticas para definir automáticamente los valores de parámetros clave (como el radio de vecindad $\epsilon$ y el número mínimo de puntos vecinos), TRACLUS reduce la necesidad de ajustes manuales. Sin embargo, la elección adecuada de estos parámetros sigue siendo crucial para garantizar resultados precisos en diferentes conjuntos de datos.
+\end{itemize}
+
+
+\subsection*{Aplicaciones de TRACLUS en la Investigación}
+TRACLUS se puede aplicar en múltiples campos de investigación, donde el análisis de patrones de movimiento es fundamental:
+
+\begin{itemize}
+    \item \textbf{Biología y Ecología}: Para analizar trayectorias de animales, identificando patrones de comportamiento, rutas migratorias o territorios de caza.
+    
+    \item \textbf{Meteorología}: Para el estudio de trayectorias de fenómenos climáticos como huracanes, permitiendo identificar patrones comunes en ciertos eventos.
+    
+    \item \textbf{Gestión del Tráfico y Transporte}: En el análisis de rutas vehiculares, detectando patrones de congestión, flujo de tráfico y rutas populares.
+\end{itemize}
+
 
