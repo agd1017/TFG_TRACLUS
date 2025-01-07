@@ -99,6 +99,9 @@ El funcionamiento de TRACLUS se basa en dos etapas principales: la segmentación
     \item \textbf{Segmentación de Trayectorias}: La primera etapa de TRACLUS es dividir cada trayectoria en segmentos de línea más cortos en función de cambios direccionales o puntos de inflexión. Estos puntos característicos dividen la trayectoria en subtrayectorias que pueden ser más fácilmente comparables. Este paso es crucial porque permite detectar patrones comunes en segmentos específicos, en lugar de requerir una coincidencia exacta en toda la trayectoria.
 
     \item \textbf{Agrupación Basada en Densidad de Segmentos}: En lugar de agrupar puntos aislados, TRACLUS agrupa segmentos que se encuentran en regiones densas del espacio de trayectoria mediante una adaptación del algoritmo DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}). Esta agrupación basada en densidad identifica áreas de alta concentración de segmentos similares que constituyen patrones de movimiento comunes. Los clusters se forman en áreas de alta densidad de segmentos, separadas por regiones de baja densidad, permitiendo agrupar segmentos que comparten características similares, incluso si otras partes de la trayectoria son diferentes.
+    
+      \item \textbf{Representación de Trayectorias}:  
+    TRACLUS utiliza los \textit{clusters} de segmentos generados para representar patrones comunes de trayectorias. En lugar de visualizar cada segmento individual, los \textit{clusters} se representan mediante trayectorias representativas que resumen las características de todos los segmentos pertenecientes a un mismo grupo. Estas trayectorias representativas se calculan promediando las posiciones y direcciones de los segmentos agrupados, proporcionando una visualización simplificada y efectiva de los patrones de movimiento encontrados.
 \end{enumerate}
 
 \subsection*{Métrica de Similitud en TRACLUS}
@@ -111,7 +114,7 @@ TRACLUS emplea una métrica de similitud diseñada específicamente para medir l
     \item \textbf{Diferencia en la longitud}: Compara las longitudes de los segmentos, lo que ayuda a identificar similitudes en términos de escala o tamaño.
 \end{itemize}
 
-La métrica de similitud en TRACLUS combina estas tres distancias en una medida agregada, lo que permite capturar tanto la proximidad espacial como la alineación y el tamaño relativo entre segmentos. Este enfoque es ideal para analizar conjuntos de datos con trayectorias complejas, ya que facilita la identificación de patrones subyacentes al dividir trayectorias en segmentos más pequeños.
+La métrica de similitud en TRACLUS combina estas tres distancias en una medida agregada, lo que permite capturar tanto la proximidad espacial como la alineación y el tamaño relativo entre segmentos. Este enfoque es ideal para analizar conjuntos de datos con trayectorias complejas, ya que facilita la identificación de patrones subyacentes al dividir trayectorias en segmentos más pequeños. Sin embargo, este enfoque también conlleva consecuencias importantes en términos de complejidad computacional. Comparar las tres distancias para cada par de segmentos creados implica que cada una de estas mediciones tiene una complejidad de \(O(n^2)\), donde \(n\) es el número total de segmentos. Esta complejidad cuadrática puede afectar significativamente el rendimiento cuando se trabaja con conjuntos de datos de gran tamaño, haciendo fundamental la optimización de las operaciones de comparación para mejorar la eficiencia general del algoritmo.
 
 A diferencia de otras métricas como DTW (Dynamic Time Warping) o LCSS (Longest Common Subsequence), que se enfocan en medir la similitud entre series temporales completas, la métrica de TRACLUS proporciona mayor flexibilidad al detectar subtrayectorias similares. Esto resulta especialmente útil para aplicaciones que requieren identificar patrones locales dentro de trayectorias extensas y densas.
 
@@ -125,7 +128,6 @@ El algoritmo TRACLUS ofrece varias ventajas que lo hacen adecuado para el análi
     
     \item \textbf{Selección Automática de Parámetros}: Mediante el uso de heurísticas para definir automáticamente los valores de parámetros clave (como el radio de vecindad $\epsilon$ y el número mínimo de puntos vecinos), TRACLUS reduce la necesidad de ajustes manuales. Sin embargo, la elección adecuada de estos parámetros sigue siendo crucial para garantizar resultados precisos en diferentes conjuntos de datos.
 \end{itemize}
-
 
 \subsection*{Aplicaciones de TRACLUS en la Investigación}
 TRACLUS se puede aplicar en múltiples campos de investigación, donde el análisis de patrones de movimiento es fundamental:

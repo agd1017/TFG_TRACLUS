@@ -44,15 +44,26 @@ A continuación, se describe la estructura interna en detalle, destacando las fu
          	\item \texttt{TRACLUS.py} -- Implementa el núcleo del algoritmo TRACLUS.
 		\end{itemize}
         	\item \texttt{saved\_results/} -- Almacena resultados generados y guardados por el usuario.
+		\item \texttt{source/} -- Contiene los archivos fuente necesarios para generar la documentación con Sphinx.
+		\begin{itemize}
+    			\item \texttt{Makefile} -- Archivo de configuración para automatizar la generación de la documentación. Se usa con el comando \texttt{make}.
+   			\item \texttt{conf.py} -- Archivo de configuración principal para Sphinx. Define las opciones y extensiones utilizadas para generar la documentación.
+    			\item \texttt{index.rst} -- Página principal de la documentación, que actúa como índice para los demás archivos documentados.
+   			\item \texttt{modules.rst} -- Archivo que agrupa la documentación de los módulos del proyecto, organizados según la estructura de las carpetas.
+    			\item \texttt{some\_other\_doc.rst} -- Archivo adicional que puede contener documentación específica o guías de usuario.
+    			\item \texttt{\_static/} -- Carpeta reservada para archivos estáticos como imágenes, hojas de estilo personalizadas o archivos JS. Es importante para mantener el diseño y la estructura de la documentación HTML.
+		\end{itemize}
         	\item \texttt{test/} -- Contiene pruebas unitarias y funcionales.
         	\begin{itemize}
         		\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo de pruebas.
-        		\item \texttt{text\_callbacks.py} -- Pruebas específicas para los callbacks de la aplicación.
+        		\item \texttt{test\_mapping.py} -- Pruebas específicas para la representación de datos en los mapa.
+        		\item \texttt{test\_TRACLUS.py} -- Pruebas específicas para la ejecución del algoritmo TRACLUS.
 		\end{itemize}
         	\item \texttt{utils/} -- Incluye utilidades generales y configuraciones globales.
         	\begin{itemize}
         		\item \texttt{\_\_init\_\_.py} -- Archivo de inicialización del módulo.
          	\item \texttt{config.py} -- Configuraciones generales del proyecto, como rutas y parámetros predeterminados.
+         	\item \texttt{data\_saveload.py} -- Funciones para guardar y cargar los datos de los experimentos ya ejecutados.
         		\item \texttt{data\_utils.py} -- Funciones auxiliares para manipulación de datos.
         	\end{itemize}
         	\item \texttt{views/} -- Directorio que agrupa las vistas y la estructura visual de la aplicación.
@@ -67,6 +78,7 @@ A continuación, se describe la estructura interna en detalle, destacando las fu
            		\item \texttt{datauptate\_page.py} -- Página para la carga y actualización de datos.
             		\item \texttt{experiment\_page.py} -- Página para seleccionar algoritmos de clustering.
             		\item \texttt{map\_page.py} -- Página que muestra mapas con los datos sin tratar.
+            		\item \texttt{navbar.py} -- Barra de navegación, permite cambiar entre páginas y descargar los datos que estén siendo visualizados.
             		\item \texttt{select\_page.py} -- Página para la selección del experimento o la creación de uno nuevo.
             		\item \texttt{table\_page.py} -- Página para mostrar tablas con los resultados del análisis.
 				\item \texttt{TRACLUSmap\_page.py} -- Página que muestra mapas con los resultados del algoritmo TRACLUS.
@@ -78,18 +90,51 @@ A continuación, se describe la estructura interna en detalle, destacando las fu
     \end{itemize}
 \end{itemize}
 
+\subsection*{Estructura de las investigaciones}
+
+\begin{itemize}
+    \item \texttt{Research and experiments/}
+    \begin{itemize}
+        \item \texttt{Clusters Algorit test/}
+        \begin{itemize}
+            \item \texttt{Clusters\_algorit\_test.ipynb} -- Funciones que permitieron comparar los diferentes algoritmos antes de su implementación en la página web.
+        \end{itemize}
+        \item \texttt{Data comparative test/}
+        \begin{itemize}
+            \item \texttt{Data\_comparative\_test.ipynb} -- Funciones desarrolladas para representar los datos y comparar los resultados obtenidos.
+        \end{itemize}
+        \item \texttt{Data transformer/}
+        \begin{itemize}
+            \item \texttt{Geolife\_analizer.ipynb} -- Funciones que transforman los datos del conjunto de datos Geolife \cite{geolife_trajectories} al formato correcto para utilizar con el algoritmo TRACLUS.
+            \item \texttt{Movebank\_analizer.ipynb} -- Funciones que transforman los datos del conjunto de datos Movebank \cite{movebank} al formato correcto para utilizar con el algoritmo TRACLUS.
+        \end{itemize}
+        \item \texttt{TRACLUS test/}
+        \begin{itemize}
+            \item \texttt{Geolife\_test.ipynb} -- Pruebas para la creación de funciones de lectura y representación de datos.
+            \item \texttt{Optimization\_TRACLUS.ipynb} -- Pruebas realizadas para la optimización del algoritmo TRACLUS.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+
 \subsection*{Estructura de la documentación}
 
 \begin{itemize}
-    \item \texttt{img/} -- Imágenes utilizadas en la documentación.
-    \item \texttt{tex/} -- Archivos \LaTeX{} para generar documentos técnicos.
-    \item \texttt{README.md} -- Archivo con instrucciones generales del proyecto.
-    \item \texttt{anexos.pdf} -- Documento de anexos generado.
-    \item \texttt{anexos.tex} -- Código fuente del documento de anexos.
-    \item \texttt{bibliografia.bib} -- Archivo BibTeX con referencias bibliográficas principales.
-    \item \texttt{bibliografiaAnexos.bib} -- Archivo BibTeX con referencias adicionales.
-    \item \texttt{memoria.pdf} -- Documento principal del proyecto.
-    \item \texttt{memoria.tex} -- Código fuente del documento principal.
+	\item \texttt{docs/}
+	\begin{itemize}
+		\item \texttt{latex/}
+		\begin{itemize}
+   			\item \texttt{img/} -- Imágenes utilizadas en la documentación.
+    			\item \texttt{tex/} -- Archivos \LaTeX{} para generar documentos técnicos.
+    			\item \texttt{README.md} -- Archivo con instrucciones generales del proyecto.
+    			\item \texttt{anexos.pdf} -- Documento de anexos generado.
+    			\item \texttt{anexos.tex} -- Código fuente del documento de anexos.
+    			\item \texttt{bibliografia.bib} -- Archivo BibTeX con referencias bibliográficas principales.
+    			\item \texttt{bibliografiaAnexos.bib} -- Archivo BibTeX con referencias adicionales.
+    			\item \texttt{memoria.pdf} -- Documento principal del proyecto.
+    			\item \texttt{memoria.tex} -- Código fuente del documento principal.
+		\end{itemize}
+	\end{itemize}
 \end{itemize}
 
 
@@ -167,6 +212,54 @@ El archivo \texttt{requirements.txt} especifica las dependencias necesarias.
     pip install -r requirements.txt
     \end{verbatim}
 \end{enumerate}
+
+\subsubsection{Documentación sphinx html}
+
+Para generar y ver la documentación de este proyecto utilizando Sphinx, sigue los siguientes pasos:
+
+\begin{enumerate}
+    \item \textbf{Instalar las dependencias:}
+    Asegúrate de que tienes Sphinx instalado en tu entorno de desarrollo. Si no lo tienes, puedes instalarlo utilizando \texttt{pip}:
+
+    \begin{verbatim}
+    pip install sphinx
+    \end{verbatim}
+
+    Además, asegúrate de que todas las dependencias del proyecto estén instaladas, lo que puede incluir otras librerías necesarias para la documentación.
+
+    \item \textbf{Navegar al directorio de la documentación:}
+    Ve al directorio donde se encuentra la carpeta \texttt{source}, que contiene la documentación generada por Sphinx. Normalmente, se encuentra en el directorio raíz del proyecto.
+
+    \begin{verbatim}
+    cd /ruta/a/tu/proyecto/source
+    \end{verbatim}
+
+    \item \textbf{Generar la documentación HTML:}
+    Dentro del directorio \texttt{source}, utiliza el archivo \texttt{Makefile} para generar la documentación en formato HTML. Puedes hacerlo ejecutando el siguiente comando en tu terminal:
+
+    \begin{verbatim}
+    make html
+    \end{verbatim}
+    
+    O el archivo \texttt{make.bat} si \texttt{Makefile} no funciona:
+    
+    \begin{verbatim}
+    ./make.bat html
+    \end{verbatim}
+
+    Este comando generará los archivos HTML en el directorio \texttt{\_build/html}.
+
+    \item \textbf{Ver la documentación:}
+    Después de ejecutar \texttt{make html}, abre el archivo \texttt{index.html} que se encuentra en la carpeta \texttt{\_build/html} con tu navegador web favorito para ver la documentación generada.
+
+    \begin{verbatim}
+    start _build/html/index.html
+    \end{verbatim}
+
+    \item \textbf{Personalización:}
+    Si deseas modificar la apariencia o el contenido de la documentación, puedes editar los archivos en la carpeta \texttt{source}, como \texttt{index.rst}, \texttt{modules.rst}, y otros archivos de documentación. Tras realizar cambios, simplemente vuelve a ejecutar el comando \texttt{make html} para ver las actualizaciones.
+\end{enumerate}
+
 
 \section{Compilación, instalación y ejecución del proyecto}
 

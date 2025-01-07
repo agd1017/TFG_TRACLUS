@@ -148,6 +148,27 @@ Al igual que el algoritmo anterior, no descarta datos. Aunque se generaron los m
 
 \subsection{Conclusión}
 
+La comparativa de algoritmos de \textit{clustering} mostró diferencias significativas en los resultados obtenidos, claramente visibles en las imágenes de los clusters generados. Aunque se utilizó un conjunto de datos con 200 filas, aumentar la cantidad de datos podría mejorar la robustez de los resultados y proporcionar patrones más generalizables. En esta evaluación, \textbf{Spectral Clustering} y \textbf{Agglomerative Clustering} carecieron de configuraciones de parámetros que generaran clusters bien definidos, lo que resultó en trayectorias dispersas y difíciles de analizar. Por el contrario, \textbf{OPTICS} y \textbf{HDBSCAN} produjeron resultados más consistentes, siendo HDBSCAN el que clasificó un menor porcentaje de segmentos como "basura".
+
+\textbf{DBSCAN} mostró una tendencia hacia rutas centralizadas, aunque con una tasa alta de segmentos descartados. Esto sugiere que DBSCAN podría ser más efectivo para identificar trayectorias centrales claras, aunque a costa de una menor utilización de datos. La elección del algoritmo más adecuado dependerá del contexto específico y de la importancia relativa de la densidad frente a la centralización de las rutas.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Algoritmo} & \textbf{Segmentos} & \textbf{Segmentos 'basura'} & \textbf{Clusters}  \\
+\hline
+OPTICS & 2161 & 62.66\% & 106 \\
+DBSCAN & 2654 & 90.09\% & 37 \\
+HDBSCAN & 2161 & 53.54\% & 96 \\
+Spectral Clustering & 2654 & 0\% & 90 \\
+Agglomerative Clustering & 2654 & 0\% & 90 \\
+\hline
+\end{tabular}
+\caption{Resumen de resultados de los algoritmos de clustering}
+\label{tabla:comparacion_algoritmos}
+\end{table}
+
 
 
 \section{Pruebas funcionales}
@@ -205,11 +226,243 @@ Para comprender cómo los parámetros afectan el rendimiento de cada algoritmo, 
 
 Las métricas utilizadas para calcular las distancias entre puntos demostraron tener un impacto significativo en los resultados. Los hallazgos principales fueron los siguientes:
 
-- \textbf{Métricas no funcionales}: Algunas métricas, como \texttt{l1} y \texttt{cosine}, no pudieron procesar correctamente los datos seleccionados, lo que resultó en errores o en agrupaciones inadecuadas.
+- \textbf{Métricas no funcionales}: Algunas métricas, como \texttt{l1} y \texttt{cosine}, no pudieron procesar correctamente los datos seleccionados, lo que resultó en errores o en agrupaciones inadecuadas, sin embargo con otras cantidades u otros parámetros estas si que dieron resultado.
+
 - \textbf{Manhattan}: Esta métrica tendió a considerar todos los puntos como parte de un único clúster grande, resultando en una agrupación poco informativa. En el caso de las trayectorias, esto significó un único grupo, lo que limitó el análisis.
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/Taxis/map_optics_manhatan.png}
+    \caption{Resultados con la métrica Manhattan en OPTICS y HDBSCAN.}
+    \label{fig:manhattan}
+\end{figure}
+
+\FloatBarrier
+
+- \textbf{Euclidean y L2}: Ambas métricas ofrecieron resultados idénticos, creando agrupaciones claras y comprensibles. Estas métricas son particularmente adecuadas para este tipo de datos.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/Taxis/map_optics_l2.png}
+    \caption{Resultados con las métricas Euclidean y L2 en OPTICS y HDBSCAN.}
+    \label{fig:euclidean}
+\end{figure}
+
+\FloatBarrier
+
+- \textbf{Cityblock}: Aunque mostró similitudes con las métricas anteriores, los clústeres resultantes eran menos definidos y algo más dispersos, lo que afectó la precisión de las trayectorias.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/Taxis/map_optics_city.png}
+    \caption{Resultados con la métrica Cityblock en OPTICS y HDBSCAN.}
+    \label{fig:cityblock}
+\end{figure}
+
+\FloatBarrier
+
+En general, se determinó que el uso de métricas como Euclidean o L2 es más recomendable, mientras que Manhattan y otras métricas no lineales presentaron limitaciones significativas en este conjunto de datos. Sin embargo, esta conclusión no se pude aplicar en cambios de todos los parámetros.
 
 
+\paragraph{Algoritmo (\texttt{algorithm})}
+
+El parámetro \texttt{algorithm} define la estrategia interna utilizada por el algoritmo para calcular los clústeres. Los resultados variaron dependiendo del conjunto de datos empleado:
+
+-\textbf{Trayectorias Taxis}:
+
+A diferencia de las metricas que si se comportaban de la misma forma en los tres algoritmos, el parametro algoritmo variaba en gran mediada, para empezar, OPTICS no recibia cambios dando igual cual de ellas se probara.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_optics_auto.png}
+    \caption{Resultados con todos los algoritmos en OPTICS.}
+    \label{fig:taxis_algorith_optics}
+\end{figure}
+
+\FloatBarrier
+
+De la misma forma DBSCAN y HDBSCAN, ambas tienen los mismos resultados en cada algoritmo, aun cambiando el resto de datos, los diferentes algoritmos no parecían variar el resultado.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_dbscan_auto.png}
+    \caption{Resultados con todos los algoritmos en DBSCAN.}
+    \label{fig:taxis_algorith_dbscan}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_hdbscan_auto.png}
+    \caption{Resultados con todos los algoritmos en HDBSCAN.}
+    \label{fig:taxis_algorith_hdbscan}
+\end{figure}
+
+\FloatBarrier
+
+De la misma forma que los resultados eran afectados por los algoritmos en este conjunto lo fueran en los demás.
+
+- \textbf{Conjunto Movebank}: 
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Movebank/map_optics_auto.png}
+    \caption{Resultados con todos los algoritmos en OPTICS y HDBSCAN.}
+    \label{fig:movebank_algorith_optics}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Movebank/map_dbscan_auto.png}
+    \caption{Resultados con todos los algoritmos en DBSCAN.}
+    \label{fig:movebank_algorith_dbscan}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Movebank/map_hdbscan_auto.png}
+    \caption{Resultados con todos los algoritmos en HDBSCAN.}
+    \label{fig:movebank_algorith_hdbscan}
+\end{figure}
+
+\FloatBarrier
+
+- \textbf{Conjunto Geolife}: 
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Geolife/map_optics_auto.png}
+    \caption{Resultados con todos los algoritmos en OPTICS.}
+    \label{fig:geolife_algorith_optics}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Geolife/map_dbscan_auto.png}
+    \caption{Resultados con todos los algoritmos en DBSCAN.}
+    \label{fig:geolife_algorith_dbscan}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Geolife/map_hdbscan_auto.png}
+    \caption{Resultados con todos los algoritmos en HDBSCAN.}
+    \label{fig:geolife_algorith_hdbscan}
+\end{figure}
+
+\FloatBarrier
+
+La comparacion no es totalmente adecuada ya que aunque se haya usado el mismo numero de filas como el tiempo de ejecucion muestra la cantidad de datos no es la misma ya que cada cordenada cuanta para los calculos y los resultados.
+
+Aun asi se puede ver como varían los resultados mucho mas depenciendo del algoritmo de clustering utilizado y que en concreto el parametro algotimn no tiene un impacto visible en el conjunto de datos analizado.
+
+
+\paragraph{Max\_eps y eps}
+
+Este parámetro determinó el rango máximo considerado para la agrupación en OPTICS y el rando determinado en DBSCAN. 
+
+Por un lado DBSCAN produce cambios bastante significativos, el parametro eps debe estar entre 1 y 0, este es bastante común que falle, si se reduce mucho el numero es muy posible que no se encuentren datos que cumplan ese rango y por tanto no se pueda generar ningun resultado, por otro lado si se aumenta demasiado el numero se obtendrá el resultado contrario, todos los segmentos se agruparan en un solo cluster lo que hará los resultados inútiles.
+
+\paragraph{Min\_sample}
+
+Este parámetro controla el tamaño mínimo de los clústeres. En concreto se puede ver como las trayectorias resultantes se van separado unas de otras. Aumentar en gran medida este valor no parece conveniente ya que el centro del conjunto de datos aunque sea el mas poblado en cuanto a coordenadas termina desapareciendo acabando solo representados los bordes. Ademas si se aumenta en exceso se puede dar la condición de que solo uno de los clusters entre en las distancias o incluso ninguno y la operación falle.
+
+En la siguiente imagen se puede vislumbrar como las coordenadas trayectoria resultantes se han ido disgragando en gran medida comparadas con las anterior representación de HDBSCAN en el conjunto de Movebank:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Movebank/map_hdbscan_min.png}
+    \caption{Resultados con aumento del $\min_{\text{sample}}$ en HDBSCAN.}
+    \label{fig:min_sample}
+\end{figure}
+
+\subsubsection{Spectral y Agglomerative Clustering}
+
+Aunque todos los parámetros pueden causar cambios en los resultados en Spectral y Agglomerative el numero de clusters seleccionado en el parámetro mas significativo. Esta cambia absolutamente el resultado y el tiempo de ejecución, cuando se le ponen cantidades bajas respecto a la cantidad de datos analizada los resultados bastante erráticos aunque si se pueden ver las zonas mas pobladas de coordenadas, ademas la transición de clusters a la representación de rutas no toma datos desechables por lo que si se van aumentano los clusters poco a poco el resultado comienza a se mas difícil de analizar, sin embargo llega a un punto en el que el programa comienza a catalogar clusters como desechables y los resutados pasan a ser mas acotados en ocasiones similares a los demas algoritmos o mucho mas pequeños.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_spect_90.png}
+    \caption{Resultados con 90 clusters en Spectral.}
+    \label{fig:spectral_90}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_spect_500.png}
+    \caption{Resultados con 500 clustes en Spectral.}
+    \label{fig:spetral_500}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_agglo_90.png}
+    \caption{Resultados con 90 clusters en Agglomerative.}
+    \label{fig:agglo_90}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_agglo_500.png}
+    \caption{Resultados con 500 clustes en Agglomerative.}
+    \label{fig:agglo_500}
+\end{figure}
+
+Los otros parametros no se quedan tan atras en modificacion de los resultados. En ambios la agrupecion de los clusters se ve con multiples variaciones llegango ha hacer resultados vastante erraticos.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_spect_par.png}
+    \caption{Resultados con 90 clusters, $\text{precomputed}_{\text{nearest\_neighbors}}$ y discretize en Spectral.}
+    \label{fig:spectal_par}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Taxis/map_agglo_par.png}
+    \caption{Resultados con 90 clustes y single en Agglomerative.}
+    \label{fig:agglo_par}
+\end{figure}
+
+\subsection{Conclusión}
+
+Aunque todos los algoritmos muestran una determinada utilidad y aun se puedan hacer pruebas mas intensas y variadas ya se pueden llegar a algunas conclusiones.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Algoritmos} & \textbf{Trayectorias Taxis} & \textbf{MoveBank} & \textbf{Geolife}  \\
+\hline
+OPTICS & 344 s & 766 s & 3871 \\
+DBSCAN & 327 & 767 & 4048 \\
+HDBSCAN & 478 & 865 & 4947 \\
+Spectral Clustering & 469 & 928 & 4758 \\
+Agglomerative Clustering & 465 & 917 & 4757 \\
+\hline
+\end{tabular}
+\caption{tiempos de ejecución}
+\label{tabla:comparacion_algoritmos}
+\end{table}
+
+En el caso de que este algoritmo se aplicara en tiempo real o con grandes cantidades de datos los algoritmos Spectral y Agglomerative no seria los mejores ya que su tiempo de ejecución aumenta considerablemente ya que para obtener resultados mas claros necesitan de cantidades muy altas de clusters.
+
+Adicional a esto esta el hecho de adaptar los parametros por cada conjunto de datos y tamaño del mismo. Para esto HDBSCAN es podiblemente la herramenta mas versatil ya que el numero de clusters y el tamaño de estos se preduce internamente. Sin embargo esto tambien tiene consecuencias. En multiples ocasiones los datos no resultaban ilegibles.
+
+Por otro lado el algoritmo OPTICS parece util en todos los casos lo que explica el porque fue la selección predominantemente de el algoritmo inicial.
+
+Por último DBSCAN parece tender a conjuntos mas pequeños de clusters, donde rechaza la mayoría de segmentos y se centra en una zona mas acotada normalmente mucho mas cerca de la zona de mayor población que el resto de algoritmos cosa que también hacen los algoritmos Spectral y Agglomeration pero a la inversa ya que estos cuando tienen multitud de cluster la respresetación de estos se reduce en gran medida.
 
 
 

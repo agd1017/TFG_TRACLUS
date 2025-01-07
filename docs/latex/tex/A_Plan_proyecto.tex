@@ -446,7 +446,20 @@ El código fue revisado por última vez, prestando especial atención a los come
 
 Se evaluó el rendimiento del algoritmo TRACLUS utilizando diferentes conjuntos de datos y una variedad de parámetros. Estas pruebas finales permitieron obtener una visión más completa de las capacidades y limitaciones de la página web al implementar el algoritmo.
 
-Inicialmente, se estimaron 100 horas para completar este último \textit{sprint}. Sin embargo, la duración fue significativamente mayor debido a la complejidad de las pruebas y a las reformas en el código y la memoria. En total, se invirtieron aproximadamente 200 horas para alcanzar el nivel de calidad deseado.
+Inicialmente, se estimaron 90 horas para completar este último \textit{sprint}. Sin embargo, la duración fue significativamente mayor debido a la complejidad de las pruebas y a las reformas en el código y la memoria. En total, se invirtieron aproximadamente 140 horas para alcanzar el nivel de calidad deseado.
+
+\subsection{Resumen de las horas trabajadas}
+
+A continuación, se presenta un gráfico que ilustra las horas estimadas, las horas dedicadas y las horas totales trabajadas durante el desarrollo del proyecto. Las horas totales incluyen tanto el tiempo dedicado al trabajo directo como las horas invertidas en las pruebas del sistema. Es importante mencionar que, aunque las pruebas requirieron revisiones periódicas, no todas se contabilizaron como horas de trabajo activas, ya que en muchos casos implicaron tiempos de espera durante los cuales se realizaron otras tareas no relacionadas que no dependían del uso intensivo del ordenador debido a la alta demanda de recursos por parte del sistema. Los datos presentados representan estimaciones aproximadas que pueden haber variado en mayor o menor medida.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{img/horassprints.png}
+    \caption{Gráfico de horas de sprints}
+\end{figure}
+\FloatBarrier
+
+Como se observa en el gráfico, las horas estimadas fueron generalmente menores que las horas dedicadas, especialmente en las primeras fases del proyecto. Sin embargo, a medida que avanzó el desarrollo, las estimaciones se volvieron más precisas, reflejando un proceso de aprendizaje y mejora continua en la gestión del tiempo.
 
 \section{Estudio de viabilidad}
 
@@ -460,9 +473,9 @@ La viabilidad económica es un aspecto absolutamente necesario en cualquier proy
 
 Si este proyecto se hubiera llevado a cabo en una entidad privada, un ingeniero informático habría estado a cargo del desarrollo. El salario de este empleado dependería de la ubicación, el cargo y la experiencia. En este caso, tomaremos como referencia el salario medio bruto de un ingeniero informático en España. Según diversas fuentes como UAX, Bankinter y Talent.com, este ronda los 20.000 euros anuales para perfiles con poca experiencia.
 
-Teniendo en cuenta que el proyecto consumió alrededor de \textbf{X horas}, el salario correspondiente sería de aproximadamente \textbf{X euros}. 
+Teniendo en cuenta que el proyecto consumió alrededor de \textbf{700 horas}, sin contar las horas de pruebas, el salario correspondiente sería de aproximadamente \textbf{6.731 euros}. 
 
-Además, el trabajador podría enfrentarse a circunstancias imprevistas, como una baja médica, tal como ocurrió en este caso. Una situación así representaría un coste adicional para la empresa, que tendría que decidir entre sustituir al ingeniero durante la baja o postergar el proyecto. En España, durante una baja médica, el estado abona una parte del salario, mientras que la empresa debe cubrir otra. Si esta pausa hubiera durado 3 meses, el coste adicional podría ascender a aproximadamente \textbf{X euros}.
+Además, el trabajador podría enfrentarse a circunstancias imprevistas, como una baja médica, tal como ocurrió en este caso. Una situación así representaría un coste adicional para la empresa, que tendría que decidir entre sustituir al ingeniero durante la baja o postergar el proyecto. En España, durante una baja médica, el estado abona una parte del salario, mientras que la empresa debe cubrir otra. Si esta pausa hubiera durado 3 meses, el coste podría aumentar debido a la formación de un nuevo programador o la cobertura del sueldo de la baja si se asociara al proyecto.
 
 \subsection{Hardware}
 
@@ -492,7 +505,7 @@ La mayoría de las herramientas de software utilizadas en este proyecto son de c
 
 Sin embargo, el único servicio que sí representa un gasto es el proveedor de hosting para la página web, Render. Este cuenta con un plan gratuito, aunque no permite un despliegue sin interrupciones. Para evitar este problema, sería necesario optar por un plan de pago. 
 
-El plan más económico cuesta aproximadamente 7€ mensuales, pero tiene capacidades limitadas. En contraste, el plan \textit{Pro Ultra}, que ofrece una mayor capacidad de cómputo adecuada para experimentos a gran escala, tiene un coste de 450€ mensuales. Para esta simulación, se considerará este último plan como el elegido.
+El plan más económico cuesta aproximadamente 7€ mensuales, pero tiene capacidades limitadas. En contraste, el plan \textit{Pro Ultra}, que ofrece una mayor capacidad de cómputo adecuada para experimentos a gran escala, tiene un coste de 450€ mensuales. Para esta simulación, se considerará este último plan como el elegido, si se despliega los 3 últimos meses el precio seria de 1.350€ aunque este gasto seria periódico durante todo el tiempo que se quiera poner el servicio en funcionamiento.
 
 Otras opciones que podrían haber sido evaluadas incluyen AWS o Azure. Sin embargo, para una evaluación adecuada sería necesario considerar factores como el uso esperado o el número de usuarios simultáneos.
 
@@ -527,19 +540,19 @@ Finalmente, al calcular todos los costes, incluyendo los salarios, hardware, sof
 \toprule
 Descripción & Coste \\ 
 \midrule
-Personal (Neto) & X€ \\ 
-Hardware (Amortización) & X€ \\ 
-Software (Servicios) & X€ \\ 
-Gastos fijos & X€ \\ 
-\textbf{Total Anual} & \textbf{X€} \\ 
+Personal (Neto) & 6.731€ \\ 
+Hardware (Amortización) & 244€ \\ 
+Software (Servicios) & 1.350€  \\ 
+Gastos fijos & 2,000€ \\ 
+\textbf{Total Anual} & \textbf{10.325€} \\ 
 \bottomrule
 \end{tabular}
 \caption{Resumen de costes del proyecto.}
 \end{table}
 
-El coste total estimado del proyecto se sitúa en torno a \textbf{X euros}, considerando todos los aspectos mencionados.
+El coste total estimado del proyecto se sitúa en torno a \textbf{10.325 euros}, considerando todos los aspectos mencionados.
 
-En cuanto a los beneficios, estos dependerán del valor añadido que el proyecto pueda ofrecer a los usuarios finales y de la capacidad de la empresa para monetizar las funcionalidades desarrolladas. No obstante, este proyecto no parece estar diseñado para una monetización directa. Su principal utilidad radica en su carácter experimental, proporcionando una base sólida para continuar con la implementación del algoritmo TRACLUS en diferentes ámbitos. Por tanto, su valor reside más en su potencial académico y como base tecnológica que en su rentabilidad económica inmediata.
+En cuanto a los beneficios, estos dependerán del valor añadido que el proyecto pueda ofrecer a los usuarios finales y de la capacidad de la empresa para monetizar las funcionalidades desarrolladas. No obstante, este proyecto no está diseñado para una monetización directa. Su principal utilidad radica en su carácter experimental, proporcionando una base sólida para continuar con la implementación del algoritmo TRACLUS en diferentes ámbitos. Por tanto, su valor reside más en su potencial académico y como base tecnológica que en su rentabilidad económica inmediata.
 
 \subsection{Viabilidad legal}
 
