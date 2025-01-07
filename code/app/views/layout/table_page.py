@@ -14,7 +14,7 @@ def get_table(table):
     Returns:
         dash_table.DataTable: The interactive table to display the data.
     """
-    
+
     # Convert non-serializable values (e.g., geometry) to strings
     if 'segment' in table.columns:
         table['segment'] = table['segment'].apply(lambda geom: str(geom))

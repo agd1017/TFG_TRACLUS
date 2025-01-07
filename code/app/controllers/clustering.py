@@ -7,7 +7,7 @@ import time
 
 from models.TRACLUS import traclus as tr
 from models.mapping import get_coordinates, map_ilustration, map_heat, plot_map_traclus, plot_clusters_on_map, plot_segments_on_map
-from models.data_processing import load_and_simplify_data, relational_table, get_cluster_graph
+from models.data_processing import load_and_simplify_data, get_cluster_graph, get_relational_table
 
 # Function to generate clustered trajectories using specified algorithms and parameters.
 def get_cluster_trajectories(trajectories, directional=True, use_segments=True, clustering_algorithm=None, 
@@ -47,7 +47,7 @@ def get_experiment_results(df, segments, clusters,  cluster_assignments, represe
     
     # Generate relational table and cluster graph in parallel
     def generate_relational_table():
-        return relational_table(df, segments, cluster_assignments, representative_clusters)
+        return get_relational_table(df, segments, cluster_assignments, representative_clusters)
     
     def generate_cluster_graph():
         return get_cluster_graph(cluster_assignments)
@@ -58,10 +58,10 @@ def get_experiment_results(df, segments, clusters,  cluster_assignments, represe
         future_cluster_graph = executor.submit(generate_cluster_graph)
         
         # Collect results
-        tabla_relacional = future_relational_table.result()
+        relational_table = future_relational_table.result()
         filtered_cluster_graph = future_cluster_graph.result()
 
-    return traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph
+    return traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph
 
 # Functions to run clustering algorithms in separate threads
 def run_optics(df, tray, results, optics_metric, optics_algorithm, optics_eps, optics_sample):
@@ -69,6 +69,8 @@ def run_optics(df, tray, results, optics_metric, optics_algorithm, optics_eps, o
     Run TRACLUS with OPTICS clustering algorithm and store the results.
     """
     try:
+        start_optics = time.time()
+
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=OPTICS, 
             optics_metric=optics_metric, optics_algorithm=optics_algorithm,
@@ -76,9 +78,12 @@ def run_optics(df, tray, results, optics_metric, optics_algorithm, optics_eps, o
         )
         results['optics'] = result
         segments, clusters, cluster_assignments, representative_clusters = result
-        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
-        results['optics_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
+        traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['optics_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph)
 
+        end_optics = time.time()
+
+        print(f"Tiempo de ejecución de OPTICS: {end_optics - start_optics} segundos")
     except Exception as e:
         results['errors'].append(f'Error en el algoritmo optics: {e}')
 
@@ -87,6 +92,8 @@ def run_hdbscan(df, tray, results, hdbscan_metric, hdbscan_algorithm, hdbscan_sa
     Run TRACLUS with HDBSCAN clustering algorithm and store the results.
     """
     try:
+        start_hdbscan = time.time()
+
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=HDBSCAN,
             hdbscan_metric=hdbscan_metric, hdbscan_algorithm=hdbscan_algorithm,
@@ -94,9 +101,12 @@ def run_hdbscan(df, tray, results, hdbscan_metric, hdbscan_algorithm, hdbscan_sa
         )
         results['hdbscan'] = result
         segments, clusters, cluster_assignments, representative_clusters = result
-        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
-        results['hdbscan_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
+        traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['hdbscan_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph)
 
+        end_hdbscan = time.time()
+
+        print(f"Tiempo de ejecución de HDBSCAN: {end_hdbscan - start_hdbscan} segundos")
     except Exception as e:
         results['errors'].append(f'Error en el algoritmo hdbscan: {e}')
 
@@ -105,6 +115,8 @@ def run_dbscan(df, tray, results, dbscan_metric, dbscan_algorithm, dbscan_eps, d
     Run TRACLUS with DBSCAN clustering algorithm and store the results.
     """
     try:
+        start_dbscan = time.time()
+
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=DBSCAN,
             dbscan_metric=dbscan_metric, dbscan_algorithm=dbscan_algorithm,
@@ -112,9 +124,12 @@ def run_dbscan(df, tray, results, dbscan_metric, dbscan_algorithm, dbscan_eps, d
         )
         results['dbscan'] = result
         segments, clusters, cluster_assignments, representative_clusters = result
-        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
-        results['dbscan_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
+        traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['dbscan_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph)
 
+        end_dbscan = time.time()
+
+        print(f"Tiempo de ejecución de DBSCAN: {end_dbscan - start_dbscan} segundos")
     except Exception as e:
         results['errors'].append(f'Error en el algoritmo dbscan: {e}')
 
@@ -123,6 +138,8 @@ def run_spectral(df, tray, results, spect_affinity, spect_assign_labels, spect_n
     Run TRACLUS with Spectral clustering algorithm and store the results.
     """
     try:
+        start_spectral = time.time()
+
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=SpectralClustering,
             spect_affinity=spect_affinity, spect_assign_labels=spect_assign_labels,
@@ -130,9 +147,12 @@ def run_spectral(df, tray, results, spect_affinity, spect_assign_labels, spect_n
         )
         results['spectral'] = result
         segments, clusters, cluster_assignments, representative_clusters = result
-        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
-        results['spectral_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
+        traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['spectral_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph)
 
+        end_spectral = time.time()
+
+        print(f"Tiempo de ejecución de Spectral: {end_spectral - start_spectral} segundos")
     except Exception as e:
         results['errors'].append(f'Error en el algoritmo spectral: {e}')
 
@@ -141,15 +161,20 @@ def run_agglomerative(df, tray, results, aggl_metric, aggl_linkage, aggl_n_clust
     Run TRACLUS with Agglomerative clustering algorithm and store the results.
     """
     try:
+        start_agglomerative = time.time()
+
         result = get_cluster_trajectories(
             trajectories=tray, clustering_algorithm=AgglomerativeClustering,
             aggl_metric=aggl_metric, aggl_linkage=aggl_linkage, aggl_n_clusters=aggl_n_clusters
         )
         results['agglomerative'] = result
         segments, clusters, cluster_assignments, representative_clusters = result
-        traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
-        results['agglomerative_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, tabla_relacional, filtered_cluster_graph)
+        traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph = get_experiment_results(df, segments, clusters,  cluster_assignments, representative_clusters)
+        results['agglomerative_results'] = (traclus_map, traclus_map_cluster, traclus_map_segments, relational_table, filtered_cluster_graph)
 
+        end_agglomerative = time.time()
+
+        print(f"Tiempo de ejecución de Agglomerative: {end_agglomerative - start_agglomerative} segundos")
     except Exception as e:
         results['errors'].append(f'Error en el algoritmo agglomerative: {e}')
 
@@ -167,11 +192,11 @@ def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, op
     html_map = map_ilustration(gdf, minx, miny, maxx, maxy)
     html_heatmap = map_heat(gdf, minx, miny, maxx, maxy)
 
-    traclus_map_optics = traclus_map_cluster_optics = traclus_map_segments_optics = tabla_optics = graph_optics = None
-    traclus_map_hdbscan = traclus_map_cluster_hdbscan = traclus_map_segments_hdbscan = tabla_hdbscan= graph_hdbscan = None
-    traclus_map_dbscan = traclus_map_cluster_dbscan = traclus_map_segments_dbscan = tabla_dbscan = graph_dbscan = None
-    traclus_map_spect = traclus_map_cluster_spect = traclus_map_segments_spect = tabla_spect = graph_spect = None
-    traclus_map_aggl = traclus_map_cluster_aggl = traclus_map_segments_aggl = tabla_aggl = graph_aggl = None
+    traclus_map_optics = traclus_map_cluster_optics = traclus_map_segments_optics = table_optics = graph_optics = None
+    traclus_map_hdbscan = traclus_map_cluster_hdbscan = traclus_map_segments_hdbscan = table_hdbscan= graph_hdbscan = None
+    traclus_map_dbscan = traclus_map_cluster_dbscan = traclus_map_segments_dbscan = table_dbscan = graph_dbscan = None
+    traclus_map_spect = traclus_map_cluster_spect = traclus_map_segments_spect = table_spect = graph_spect = None
+    traclus_map_aggl = traclus_map_cluster_aggl = traclus_map_segments_aggl = table_aggl = graph_aggl = None
 
     # Initialize placeholders for results and error handling
     manager = Manager()
@@ -213,21 +238,21 @@ def data_constructor(data, nrows, optics_on, optics_metric, optics_algorithm, op
 
     # Unpack results and generate visualizations for each algorithm
     if optics_on and results.get('optics', None):
-        traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics = results.get('optics_results', (None, None, None, None, None))
+        traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, table_optics, graph_optics = results.get('optics_results', (None, None, None, None, None))
     if hdbscan_on and results.get('hdbscan', None):
-        traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan = results.get('hdbscan_results', (None, None, None, None, None))
+        traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, table_hdbscan, graph_hdbscan = results.get('hdbscan_results', (None, None, None, None, None))
     if dbscan_on and results.get('dbscan', None):
-        traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan = results.get('dbscan_results', (None, None, None, None, None))
+        traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, table_dbscan, graph_dbscan = results.get('dbscan_results', (None, None, None, None, None))
     if spect_on and results.get('spectral', None):
-        traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect = results.get('spectral_results', (None, None, None, None, None))
+        traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, table_spect, graph_spect = results.get('spectral_results', (None, None, None, None, None))
     if aggl_on and results.get('agglomerative', None):
-        traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl = results.get('agglomerative_results', (None, None, None, None, None))
+        traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, table_aggl, graph_aggl = results.get('agglomerative_results', (None, None, None, None, None))
 
     # Return all results and visualizations
     return  gdf, tray, html_map, html_heatmap, \
-            traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics, \
-            traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan, \
-            traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan, \
-            traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect, \
-            traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl, \
+            traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, table_optics, graph_optics, \
+            traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, table_hdbscan, graph_hdbscan, \
+            traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, table_dbscan, graph_dbscan, \
+            traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, table_spect, graph_spect, \
+            traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, table_aggl, graph_aggl, \
             error_message

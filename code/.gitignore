@@ -23,3 +23,7 @@ TRACLUS_3.py
 __init__.py
 # Estrustura final
 *.pyc
+
+# Ignorar archivos de compilación de Sphinx
+_build/
+doctrees/

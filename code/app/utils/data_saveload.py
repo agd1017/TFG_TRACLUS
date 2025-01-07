@@ -24,11 +24,11 @@ def save_html_or_binary(file_path, content):
             f.write(content)
 
 def save_data(folder_name, gdf=None, html_map=None, html_heatmap=None, 
-            traclus_map_optics=None, traclus_map_segments_optics=None, traclus_map_cluster_optics=None, tabla_optics=None, graph_optics=None,
-            traclus_map_hdbscan=None, traclus_map_segments_hdbscan=None, traclus_map_cluster_hdbscan=None, tabla_hdbscan=None, graph_hdbscan=None,
-            traclus_map_dbscan=None, traclus_map_segments_dbscan=None, traclus_map_cluster_dbscan=None, tabla_dbscan=None, graph_dbscan=None,
-            traclus_map_spect=None, traclus_map_segments_spect=None, traclus_map_cluster_spect=None, tabla_spect=None, graph_spect=None,
-            traclus_map_aggl=None, traclus_map_segments_aggl=None, traclus_map_cluster_aggl=None, tabla_aggl=None, graph_aggl=None,
+            traclus_map_optics=None, traclus_map_segments_optics=None, traclus_map_cluster_optics=None, table_optics=None, graph_optics=None,
+            traclus_map_hdbscan=None, traclus_map_segments_hdbscan=None, traclus_map_cluster_hdbscan=None, table_hdbscan=None, graph_hdbscan=None,
+            traclus_map_dbscan=None, traclus_map_segments_dbscan=None, traclus_map_cluster_dbscan=None, table_dbscan=None, graph_dbscan=None,
+            traclus_map_spect=None, traclus_map_segments_spect=None, traclus_map_cluster_spect=None, table_spect=None, graph_spect=None,
+            traclus_map_aggl=None, traclus_map_segments_aggl=None, traclus_map_cluster_aggl=None, table_aggl=None, graph_aggl=None,
             params=None):
     """
     Saves multiple types of data (GeoDataFrame, HTML maps, tables, graphs) to a specific folder.
@@ -47,7 +47,7 @@ def save_data(folder_name, gdf=None, html_map=None, html_heatmap=None,
     # Save data to the folder:
     # 1. Save GeoDataFrame as GeoJSON
     if gdf is not None:
-        gdf.to_file(os.path.join(folder_path, "resultado_gdf.geojson"), driver='GeoJSON')
+        gdf.to_file(os.path.join(folder_path, "data_gdf.geojson"), driver='GeoJSON')
 
     # 2. Save HTML maps if provided
     save_html_or_binary(os.path.join(folder_path, "html_map.html"), html_map if html_map is not None else "")
@@ -102,20 +102,20 @@ def save_data(folder_name, gdf=None, html_map=None, html_heatmap=None,
         save_html_or_binary(os.path.join(folder_path, "traclus_map_cluster_agglomerativeclustering.html"), traclus_map_cluster_aggl)
 
     # 6. Save algorithm-generated tables as CSV if provided
-    if tabla_optics is not None:
-        tabla_optics.to_csv(os.path.join(folder_path, "tabla_optics.csv"), index=False)
+    if table_optics is not None:
+        table_optics.to_csv(os.path.join(folder_path, "table_optics.csv"), index=False)
 
-    if tabla_hdbscan is not None:
-        tabla_hdbscan.to_csv(os.path.join(folder_path, "tabla_hdbscan.csv"), index=False)
+    if table_hdbscan is not None:
+        table_hdbscan.to_csv(os.path.join(folder_path, "table_hdbscan.csv"), index=False)
 
-    if tabla_dbscan is not None:
-        tabla_dbscan.to_csv(os.path.join(folder_path, "tabla_dbscan.csv"), index=False)
+    if table_dbscan is not None:
+        table_dbscan.to_csv(os.path.join(folder_path, "table_dbscan.csv"), index=False)
 
-    if tabla_spect is not None:
-        tabla_spect.to_csv(os.path.join(folder_path, "tabla_spectralclustering.csv"), index=False)
+    if table_spect is not None:
+        table_spect.to_csv(os.path.join(folder_path, "table_spectralclustering.csv"), index=False)
 
-    if tabla_aggl is not None:
-        tabla_aggl.to_csv(os.path.join(folder_path, "tabla_agglomerativeclustering.csv"), index=False)
+    if table_aggl is not None:
+        table_aggl.to_csv(os.path.join(folder_path, "table_agglomerativeclustering.csv"), index=False)
 
     # 7. Save graphs as CSV if provided
     if graph_optics is not None:
@@ -171,11 +171,11 @@ def load_data(files, folder_name):
     # Reset global variables
     optics_on = dbscan_on = hdbscan_on = aggl_on = spect_on  = False
     gdf = html_map = html_heatmap = None
-    traclus_map_optics = traclus_map_cluster_optics = traclus_map_segments_optics = tabla_optics = graph_optics  = None
-    traclus_map_hdbscan = traclus_map_cluster_hdbscan = traclus_map_segments_hdbscan = tabla_hdbscan = graph_hdbscan = None
-    traclus_map_dbscan = traclus_map_cluster_dbscan = traclus_map_segments_dbscan = tabla_dbscan = graph_dbscan = None
-    traclus_map_spect = traclus_map_cluster_spect = traclus_map_segments_spect = tabla_spect = graph_spect = None
-    traclus_map_aggl = traclus_map_cluster_aggl = traclus_map_segments_aggl = tabla_aggl = graph_aggl = None
+    traclus_map_optics = traclus_map_cluster_optics = traclus_map_segments_optics = table_optics = graph_optics  = None
+    traclus_map_hdbscan = traclus_map_cluster_hdbscan = traclus_map_segments_hdbscan = table_hdbscan = graph_hdbscan = None
+    traclus_map_dbscan = traclus_map_cluster_dbscan = traclus_map_segments_dbscan = table_dbscan = graph_dbscan = None
+    traclus_map_spect = traclus_map_cluster_spect = traclus_map_segments_spect = table_spect = graph_spect = None
+    traclus_map_aggl = traclus_map_cluster_aggl = traclus_map_segments_aggl = table_aggl = graph_aggl = None
     
     for file in files:
             file_path = os.path.join(UPLOAD_FOLDER, folder_name, file)
@@ -221,16 +221,16 @@ def load_data(files, folder_name):
                 traclus_map_segments_aggl = read_html_file(file_path)
             elif file == "traclus_map_cluster_agglomerativeclustering.html":
                 traclus_map_cluster_aggl= read_html_file(file_path)
-            elif file == "tabla_optics.csv":
-                tabla_optics = convert_to_dataframe(file_path)
-            elif file == "tabla_hdbscan.csv":
-                tabla_hdbscan = convert_to_dataframe(file_path)
-            elif file == "tabla_dbscan.csv":
-                tabla_dbscan = convert_to_dataframe(file_path)
-            elif file == "tabla_spectralclustering.csv":
-                tabla_spect = convert_to_dataframe(file_path)
-            elif file == "tabla_agglomerativeclustering.csv":
-                tabla_aggl= convert_to_dataframe(file_path)
+            elif file == "table_optics.csv":
+                table_optics = convert_to_dataframe(file_path)
+            elif file == "table_hdbscan.csv":
+                table_hdbscan = convert_to_dataframe(file_path)
+            elif file == "table_dbscan.csv":
+                table_dbscan = convert_to_dataframe(file_path)
+            elif file == "table_spectralclustering.csv":
+                table_spect = convert_to_dataframe(file_path)
+            elif file == "table_agglomerativeclustering.csv":
+                table_aggl= convert_to_dataframe(file_path)
             elif file == "graph_optics.csv":
                 graph_optics = pd.read_csv(file_path)['Data'].tolist()
             elif file == "graph_hdbscan.csv":
@@ -244,8 +244,8 @@ def load_data(files, folder_name):
 
     return optics_on, dbscan_on, hdbscan_on, aggl_on, spect_on, \
             gdf, html_map, html_heatmap, \
-            traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, tabla_optics, graph_optics, \
-            traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, tabla_hdbscan, graph_hdbscan, \
-            traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, tabla_dbscan, graph_dbscan, \
-            traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, tabla_spect, graph_spect, \
-            traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, tabla_aggl, graph_aggl
+            traclus_map_optics, traclus_map_cluster_optics, traclus_map_segments_optics, table_optics, graph_optics, \
+            traclus_map_hdbscan, traclus_map_cluster_hdbscan, traclus_map_segments_hdbscan, table_hdbscan, graph_hdbscan, \
+            traclus_map_dbscan, traclus_map_cluster_dbscan, traclus_map_segments_dbscan, table_dbscan, graph_dbscan, \
+            traclus_map_spect, traclus_map_cluster_spect, traclus_map_segments_spect, table_spect, graph_spect, \
+            traclus_map_aggl, traclus_map_cluster_aggl, traclus_map_segments_aggl, table_aggl, graph_aggl

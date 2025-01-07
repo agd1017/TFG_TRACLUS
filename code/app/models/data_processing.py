@@ -10,15 +10,16 @@ def load_and_simplify_data(filepath, rows, tolerance=0.001):
     """
     Loads and simplifies data from a file, either CSV or Excel, and prepares it for processing.
 
-    Parameters:
-    - filename: str, the uploaded file containing trajectory data.
-    - rows: int, the maximum number of rows to load.
-    - tolerance: float, the tolerance value used to simplify geometries.
+    Args:
+        filename (str): The uploaded file containing trajectory data.
+        rows (int): The maximum number of rows to load.
+        tolerance (float): The tolerance value used to simplify geometries.
 
     Returns:
-    - gdf: GeoDataFrame, geospatial data with simplified geometries.
-    - trayectorias: list, a list of numpy arrays representing trajectories.
-    - df: DataFrame, original data with converted geometries and filtered rows.
+        tuple: A tuple containing:
+            - gdf (GeoDataFrame): Geospatial data with simplified geometries.
+            - trayectorias (list): A list of numpy arrays representing trajectories.
+            - df (DataFrame): Original data with converted geometries and filtered rows.
     """
     try:
         # Decode the base64-encoded file content
@@ -65,30 +66,30 @@ def is_segment_in_trajectory(segment, trajectory):
     """
     Checks if a segment intersects a given trajectory.
 
-    Parameters:
-    - segment: list, a line segment represented as a list of points.
-    - trajectory: list, a trajectory represented as a list of points.
+    Args:
+        segment (list): A line segment represented as a list of points.
+        trajectory (list): A trajectory represented as a list of points.
 
     Returns:
-    - bool: True if the segment intersects the trajectory, False otherwise.
+        bool: True if the segment intersects the trajectory, False otherwise.
     """
     segment_line = LineString(segment)
     trajectory_line = LineString(trajectory)
     return segment_line.intersects(trajectory_line)
 
 
-def relational_table(df, segments, cluster_assignments, representative_trajectories):
+def get_relational_table(df, segments, cluster_assignments, representative_trajectories):
     """
     Creates a relational table that associates segments with trajectories, clusters, and representatives.
 
-    Parameters:
-    - df: DataFrame, the input data.
-    - segments: list, a list of segments as LineString objects.
-    - cluster_assignments: list, cluster IDs assigned to each segment.
-    - representative_trajectories: list, representative trajectories for each cluster.
+    Args:
+        df (DataFrame): The input data.
+        segments (list): A list of segments as LineString objects.
+        cluster_assignments (list): Cluster IDs assigned to each segment.
+        representative_trajectories (list): Representative trajectories for each cluster.
 
     Returns:
-    - GeoDataFrame: A GeoDataFrame containing segment relationships with clusters and representatives.
+        GeoDataFrame: A GeoDataFrame containing segment relationships with clusters and representatives.
     """
     gdf_stc_data = []
     i = 0  # Keeps track of the last processed trajectory index
@@ -129,10 +130,10 @@ def get_cluster_graph(cluster_assignments):
     """
     Creates a filtered list of cluster assignments for visualization.
 
-    Parameters:
-    - cluster_assignments: list, cluster IDs assigned to each segment.
+    Args:
+        cluster_assignments (list): Cluster IDs assigned to each segment.
 
     Returns:
-    - list: Cluster IDs excluding outliers (represented by -1).
+        list: Cluster IDs excluding outliers (represented by -1).
     """
     return [asig for asig in cluster_assignments if asig != -1]

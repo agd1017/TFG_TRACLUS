@@ -181,15 +181,13 @@ def d_angular(l1, l2, directional=True):
     The angular distance reflects the minimum angle of intersection between the segments,
     optionally scaled by the directional length of the longer line.
 
-    Parameters:
-    l1, l2 : ndarray
-        The input line segments, each defined by two points in 2D space (start and end).
-    directional : bool, optional (default=True)
-        If True, scales the angular distance by the length of the longer line segment.
+    Args:
+        l1 (np.ndarray): The input line segments, each defined by two points in 2D space (start and end).
+        l2 (np.ndarray): The input line segments, each defined by two points in 2D space (start and end).
+        directional (bool): If True, scales the angular distance by the length of the longer line segment.
 
     Returns:
-    float
-        The angular distance between the two line segments.
+        float: The angular distance between the two line segments.
     """
     
     # Determine the shorter and longer line segments based on their lengths
@@ -248,17 +246,13 @@ def d_angular_vectorized(vectors, line_lengths, directional=True):
     Vectorized calculation of the angular distance matrix for multiple line segments.
     Each pair of line segments is compared to compute their angular distance.
 
-    Parameters:
-    vectors : list of ndarray
-        List of line segments, each defined by two points in 2D space.
-    line_lengths : list of float
-        List of line segment lengths, corresponding to the vectors.
-    directional : bool, optional (default=True)
-        If True, scales the angular distance by the length of the longer line segment.
+    Args:
+        vectors (list): List of line segments, each defined by two points in 2D space.
+        line_lengths (list): List of line segment lengths, corresponding to the vectors.
+        directional (bool): If True, scales the angular distance by the length of the longer line segment.
 
     Returns:
-    ndarray
-        A matrix of angular distances between each pair of line segments.
+        np.ndarray: A matrix of angular distances between each pair of line segments.
     """
     
     n = len(vectors)
@@ -321,15 +315,12 @@ def d_parallel_vectorized(vectors, line_lengths):
     Compute the distance matrix based on the parallel relationship between line segments.
     The distance reflects how closely parallel the line segments are when projected onto each other.
 
-    Parameters:
-    vectors : list of ndarray
-        List of line segments, each defined by two points in 2D space.
-    line_lengths : list of float
-        List of line segment lengths, corresponding to the vectors.
+    Args:
+        vectors (list): List of line segments, each defined by two points in 2D space.
+        line_lengths (list): List of line segment lengths, corresponding to the vectors.
 
     Returns:
-    ndarray
-        A matrix of parallel distances between each pair of line segments.
+        np.ndarray: A matrix of parallel distances between each pair of line segments.
     """
     
     n = len(vectors)
@@ -369,20 +360,14 @@ def distance_vector(partitions, directional=True, w_perpendicular=1, w_parallel=
     The computation is performed in parallel threads to improve efficiency.
 
     Parameters:
-    partitions : list of ndarray
-        List of line segments, each defined by two points in 2D space.
-    directional : bool, optional (default=True)
-        If True, scales the angular distance by the length of the longer line segment.
-    w_perpendicular : float, optional (default=1)
-        Weight for the perpendicular distance calculation.
-    w_parallel : float, optional (default=1)
-        Weight for the parallel distance calculation.
-    w_angular : float, optional (default=1)
-        Weight for the angular distance calculation.
+        partitions (list): List of line segments, each defined by two points in 2D space.
+        directional (bool): If True, scales the angular distance by the length of the longer line segment.
+        w_perpendicular (float): Weight for the perpendicular distance calculation.
+        w_parallel (float): Weight for the parallel distance calculation.
+        w_angular (float): Weight for the angular distance calculation.
 
     Returns:
-    float
-        The total distance computed as the sum of perpendicular, parallel, and angular distances, each weighted.
+        float: The total distance computed as the sum of perpendicular, parallel, and angular distances, each weighted.
     """
 
     # Containers to store results of each distance type
@@ -438,20 +423,14 @@ def get_vectorice_distance_matrix(partitions, directional=True, w_perpendicular=
     The distance matrix is computed by calling `distance_vector`.
 
     Parameters:
-    partitions : list of ndarray
-        List of line segments, each defined by two points in 2D space.
-    directional : bool, optional (default=True)
-        If True, scales the angular distance by the length of the longer line segment.
-    w_perpendicular : float, optional (default=1)
-        Weight for the perpendicular distance calculation.
-    w_parallel : float, optional (default=1)
-        Weight for the parallel distance calculation.
-    w_angular : float, optional (default=1)
-        Weight for the angular distance calculation.
+        partitions (list): List of line segments, each defined by two points in 2D space.
+        directional (bool): If True, scales the angular distance by the length of the longer line segment.
+        w_perpendicular (float): Weight for the perpendicular distance calculation.
+        w_parallel(float): Weight for the parallel distance calculation.
+        w_angular (float): Weight for the angular distance calculation.
 
     Returns:
-    ndarray
-        The distance matrix where each element represents the weighted distance between a pair of line segments.
+        np.ndarray: The distance matrix where each element represents the weighted distance between a pair of line segments.
     """
 
     partitions = np.asarray(partitions)  # Ensure that partitions is a NumPy array
