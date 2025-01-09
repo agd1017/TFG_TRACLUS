@@ -1,3 +1,4 @@
+
 \apendice{Resultados estudio}
 
 \section{Introducción}
@@ -191,7 +192,7 @@ Otro conjunto de datos probado fue uno de MoveBank \cite{movebank}, una platafor
 
 Tras analizar el número de mediciones por hora, se decidió dividir las trayectorias por murciélago y día, creando un conjunto de datos con filas más reducidas en comparación al anterior. Aun así, estas filas eran considerablemente más grandes que las del conjunto de Trayectorias Taxis, lo cual incrementó significativamente el tiempo de procesamiento por cada fila analizada.
 
-Ademas de estos tres se hicieron pruebas con otros como Citi Bikes \cite{} o Foursquare-NY \cite{} pero los resultado no fueron visualmente atractivos para un buen analisis y muestra.
+Ademas de estos tres se hicieron pruebas con otros como Citi Bikes \cite{citybike} o Foursquare-NY \cite{foursquare} pero los resultado no fueron visualmente atractivos para un buen analisis y muestra.
 
 \subsection{Criterios para las pruebas:}
 
@@ -437,32 +438,34 @@ Los otros parametros no se quedan tan atras en modificacion de los resultados. E
 
 \subsection{Conclusión}
 
-Aunque todos los algoritmos muestran una determinada utilidad y aun se puedan hacer pruebas mas intensas y variadas ya se pueden llegar a algunas conclusiones.
+Aunque todos los algoritmos analizados muestran cierta utilidad, y aunque se podrían realizar pruebas más exhaustivas y variadas, es posible extraer algunas conclusiones preliminares.
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Algoritmos} & \textbf{Trayectorias Taxis} & \textbf{MoveBank} & \textbf{Geolife}  \\
+\textbf{Algoritmos} & \textbf{Trayectorias Taxis (seg)} & \textbf{MoveBank (seg)} & \textbf{Geolife (seg)}  \\
 \hline
-OPTICS & 344 s & 766 s & 3871 \\
+OPTICS & 344 & 766 & 3871 \\
 DBSCAN & 327 & 767 & 4048 \\
 HDBSCAN & 478 & 865 & 4947 \\
 Spectral Clustering & 469 & 928 & 4758 \\
 Agglomerative Clustering & 465 & 917 & 4757 \\
 \hline
 \end{tabular}
-\caption{tiempos de ejecución}
+\caption{Tiempos de ejecución de los algoritmos en segundos}
 \label{tabla:comparacion_algoritmos}
 \end{table}
 
-En el caso de que este algoritmo se aplicara en tiempo real o con grandes cantidades de datos los algoritmos Spectral y Agglomerative no seria los mejores ya que su tiempo de ejecución aumenta considerablemente ya que para obtener resultados mas claros necesitan de cantidades muy altas de clusters.
+Para aplicaciones en tiempo real o con grandes volúmenes de datos, los algoritmos Spectral y Agglomerative no son recomendables, ya que su tiempo de ejecución aumenta considerablemente. Para obtener resultados más claros, estos métodos requieren un número elevado de clústeres, lo que incrementa aún más el tiempo de procesamiento.
 
-Adicional a esto esta el hecho de adaptar los parametros por cada conjunto de datos y tamaño del mismo. Para esto HDBSCAN es podiblemente la herramenta mas versatil ya que el numero de clusters y el tamaño de estos se preduce internamente. Sin embargo esto tambien tiene consecuencias. En multiples ocasiones los datos no resultaban ilegibles.
+Además, la necesidad de ajustar los parámetros según el tamaño y las características de cada conjunto de datos es otro desafío. En este contexto, HDBSCAN destaca por su versatilidad, dado que determina automáticamente tanto el número como el tamaño de los clústeres. Sin embargo, esta flexibilidad tiene un costo: los resultados fueron en ocasiones poco interpretables, y el tiempo de ejecución superó al de OPTICS y DBSCAN.
 
-Por otro lado el algoritmo OPTICS parece util en todos los casos lo que explica el porque fue la selección predominantemente de el algoritmo inicial.
+Por otro lado, OPTICS demostró ser consistente y eficiente en todos los escenarios evaluados, lo que respalda su elección como algoritmo preferido en las pruebas iniciales.
 
-Por último DBSCAN parece tender a conjuntos mas pequeños de clusters, donde rechaza la mayoría de segmentos y se centra en una zona mas acotada normalmente mucho mas cerca de la zona de mayor población que el resto de algoritmos cosa que también hacen los algoritmos Spectral y Agglomeration pero a la inversa ya que estos cuando tienen multitud de cluster la respresetación de estos se reduce en gran medida.
+Finalmente, DBSCAN tiende a crear un número reducido de clústeres, concentrándose principalmente en las regiones de mayor densidad y rechazando segmentos menos poblados. Esta característica, compartida en cierta medida con los algoritmos Spectral y Agglomerative, se manifiesta de manera opuesta: mientras DBSCAN agrupa solo las áreas más densas, Spectral y Agglomerative distribuyen clústeres de manera amplia, pero con una representatividad reducida a medida que aumenta su número.
+
+
 
 
 
