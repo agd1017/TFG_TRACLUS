@@ -1,5 +1,9 @@
 \capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
 
+\section{Introducción}
+
+Este capítulo describe los aspectos técnicos más significativos que se encontraron a lo largo del proceso, así como las soluciones implementadas para superar los retos específicos. Además, se exploran las decisiones de diseño clave que influyeron en la estructura del código, la optimización del rendimiento y la adaptabilidad del sistema para manejar diferentes conjuntos de datos y escenarios de aplicación.
+
 \section{Formación y aprendizaje necesario}
 
 El desarrollo del proyecto requirió adquirir nuevos conocimientos y profundizar en diversas tecnologías y técnicas de análisis. A continuación, se describe la formación llevada a cabo en las herramientas y algoritmos más relevantes.
@@ -90,7 +94,7 @@ El que podríamos considerar como el segundo punto más relevante, y sin duda un
 
 \subsection{Visualización y dibujado de Mapas}
 
-El primer desafió en el rendimiento fue la visualización de mapas, especialmente al intentar realizar representaciones detalladas y visualmente atractivas. Al analizar distintas bibliotecas de Python para dibujar y visualizar mapas, se probaron y compararon múltiples opciones combinadas entre si, como \texttt{pandas}, \texttt{geopandas}, \texttt{folium}, \texttt{folium.plugins}, \texttt{matplotlib.pyplot}, \texttt{matplotlib.colors}, \texttt{contextily}, \texttt{pyproj}, \texttt{seaborn}, \texttt{pydeck}, \texttt{shapely.geometry}, \texttt{sklearn.preprocessing} y \texttt{scipy.stats}.
+El primer desafió en el rendimiento fue la visualización de mapas, especialmente al intentar realizar representaciones detalladas y visualmente atractivas. Al analizar distintas bibliotecas de Python para dibujar y visualizar mapas, se probaron y compararon múltiples opciones combinadas entre si, como \texttt{pandas}, \texttt{geopandas}, \texttt{folium}, \texttt{folium.plugins}, \texttt{matplotlib.pyplot}, \texttt{matplotlib.colors}, \texttt{contextily}, \texttt{pyproj}, \texttt{seaborn}, \texttt{pydeck}, \texttt{shapely-} \\ \texttt{.geometry}, \texttt{sklearn.preprocessing} y \texttt{scipy.stats}.
 
 Tras diversas pruebas de rendimiento y calidad visual, se optó por utilizar principalmente \texttt{contextily} y \texttt{matplotlib.pyplot} para la visualización de mapas, ya que estas bibliotecas ofrecieron la mejor relación entre rendimiento y calidad gráfica. Para la visualización de \textit{heatmaps}, se incluyeron \texttt{numpy} como las opciones más eficientes para generar mapas de calor. Sin embargo, para lograr un equilibrio óptimo entre rendimiento y visualización, se sacrificaron ciertas funcionalidades como el zoom en mapas interactivos y detalles visuales avanzados.
 
@@ -149,9 +153,12 @@ Aunque esta optimización redujo el tiempo de ejecución, los resultados no alca
 
 \subsubsection{Exploración de alternativas de paralelización}
 Dado el potencial escalamiento de la aplicación, se exploraron otras estrategias de paralelización:
-- \texttt{asyncio}: Diseñada para tareas intensivas en I/O, pero no adecuada para este caso.
-- \texttt{Batch Processing}: Orientada a flujos simples, tampoco era aplicable.
-- \texttt{Dask} y \texttt{ProcessPoolExecutor}: Ambas opciones cumplían con los requisitos del proyecto.
+\begin{itemize}
+	\item \texttt{asyncio}: Diseñada para tareas intensivas en I/O, pero no adecuada para este caso. 
+	\item \texttt{Batch Processing}: Orientada a flujos simples, tampoco era aplicable.
+	\item \texttt{Dask} y \texttt{ProcessPoolExecutor}: Ambas opciones cumplían con los requisitos del proyecto.
+\end{itemize} 
+
 
 Se optó por \texttt{ProcessPoolExecutor} debido a su menor complejidad y capacidad para ejecutar funciones en diferentes núcleos del procesador.
 
@@ -159,9 +166,11 @@ Se optó por \texttt{ProcessPoolExecutor} debido a su menor complejidad y capaci
 Además del uso de \texttt{multiprocessing}, se unificó el flujo de representación de los datos en las funciones de multiproceso, lo que resolvió incompatibilidades previas con \texttt{matplotlib}. Esto incrementó considerablemente el rendimiento, ya que anteriormente estas tareas se ejecutaban en serie.
 
 \subsubsection{Resultados obtenidos}
-Tras implementar estas mejoras, se lograron resultados significativos:
-- \textbf{Operaciones singulares}: La ejecución de un solo TRACLUS con 100 filas de datos pasó de 312 segundos a 288 segundos.
-- \textbf{Ejecuciones simultáneas}: La ejecución de cinco TRACLUS con sus respectivos algoritmos de clustering se redujo drásticamente, de 1800 segundos a 450 segundos.
+Tras implementar estas mejoras, se lograron resultados significativos: 
+\begin{itemize}
+	\item \textbf{Operaciones singulares}: La ejecución de un solo TRACLUS con 100 filas de datos pasó de 312 segundos a 288 segundos. 
+	\item \textbf{Ejecuciones simultáneas}: La ejecución de cinco TRACLUS con sus respectivos algoritmos de clustering se redujo drásticamente, de 1800 segundos a 450 segundos.
+\end{itemize}
 
 Esta optimización no solo mejoró el rendimiento, sino que también eliminó errores previamente asociados al uso de hilos.
 
