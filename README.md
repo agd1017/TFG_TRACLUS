@@ -13,23 +13,25 @@ This repository contains a web application developed using Python, Dash, and rel
 
 ## Project Structure
 
-TFG_TRACLUS
-├── code/
-│ ├── app/
-│ │ ├── controllers/
-│ │ ├── models/
-│ │ ├── utils/
-│ │ ├── views/
-│ │ │ ├── layout/
-│ │ │ ├── assets/
-│ │ ├── test/
-│ │ ├── source/
-│ │ ├── config/
-│ │ ├── main.py
-│ │ └── requirements.txt
-│ └── Research and experiments/
-├── docs/
-└── README.md
+```plaintext
+TFG_TRACLUS  
+├── code/  
+│   ├── app/  
+│   │   ├── controllers/  
+│   │   ├── models/  
+│   │   ├── utils/  
+│   │   ├── views/  
+│   │   │   ├── layout/  
+│   │   │   ├── assets/  
+│   │   ├── test/  
+│   │   ├── source/  
+│   │   ├── config/  
+│   │   ├── main.py  
+│   │   └── requirements.txt  
+│   └── Research and experiments/  
+├── docs/  
+└── README.md 
+``` 
 
 - `app/`: Contains the core application structure following MVC principles.
 - `controllers/`, `models/`, `views/`: Separate logic for handling data, business logic, and user interface components.
