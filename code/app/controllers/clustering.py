@@ -1,4 +1,4 @@
-from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering, Birch
+from sklearn.cluster import OPTICS, HDBSCAN, DBSCAN, SpectralClustering, AgglomerativeClustering
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Process, Manager
 import matplotlib
