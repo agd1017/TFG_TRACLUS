@@ -1,6 +1,6 @@
-# TFG TRACLUS: Web Application for Trajectory Clustering
+# TFG TRACLUS: Web application for Analice GPS trajectories
 
-This repository contains a web application developed using Python, Dash, and related technologies for trajectory clustering and visualization. The project focuses on the analysis and clustering of spatial trajectory data, supporting various algorithms and datasets.
+This repository contains a web application developed with Python, Dash and related technologies for clustering and visualizing GPS trajectories. The project focuses on the implementation and optimization of the TRA-CLUS algorithm.
 
 ## Table of Contents
 
@@ -83,4 +83,4 @@ TFG_TRACLUS
     Access the web interface at http://127.0.0.1:8080 in your browser.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
