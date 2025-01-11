@@ -485,4 +485,4 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
     # Run the server on host '0.0.0.0' (accessible externally) and specified port
     app.run_server(host='0.0.0.0', port=port)
-    # app.run_server( host='127.0.0.1', port=8050) 
+    #app.run_server(debug=True, host='127.0.0.1', port=8050)
